@@ -1,14 +1,22 @@
 import * as cdk from "aws-cdk-lib";
-import { Construct } from "constructs";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as ecr_assets from "aws-cdk-lib/aws-ecr-assets";
 import * as ecr from "aws-cdk-lib/aws-ecr";
-import * as path from "path";
+import * as ecr_assets from "aws-cdk-lib/aws-ecr-assets";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import {Construct} from "constructs";
+import * as dotenv from "dotenv";
 import * as fs from "fs";
+import * as path from "path";
+
+dotenv.config();
 
 export interface AgentToolsStackProps extends cdk.StackProps {
   // Optional filter – if set, deploy only this tool.
   toolFilter?: string;
+}
+
+// Check if all the environment variables are set
+if (!process.env.SCRAPINGANT_API_KEY) {
+  throw new Error("SCRAPINGANT_API_KEY environment variable is not set.");
 }
 
 export class AgentToolsStack extends cdk.Stack {
@@ -67,9 +75,9 @@ export class AgentToolsStack extends cdk.Stack {
         timeout: cdk.Duration.seconds(30),
         memorySize: 512,
         environment: {
-          EDGARTOOLS_DATA_DIR: "/tmp/edgar_data",
+          SCRAPINGANT_API_KEY: process.env.SCRAPINGANT_API_KEY || "",
           EDGAR_LOCAL_DATA_DIR: "/tmp/edgar_data",
-          EDGAR_USE_LOCAL_DATA: "1",
+
         },
 
       });

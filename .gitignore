@@ -69,3 +69,6 @@ crowd-fund-analysis/terraform/.terraform/providers/
 agent-tools/cdk/node_modules
 agent-tools/cdk/dist
 agent-tools/cdk/cdk.out
+agent-tools/cdk/.env
+
+
