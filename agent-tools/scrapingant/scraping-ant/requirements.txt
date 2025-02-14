@@ -1,0 +1,2 @@
+scrapingant-client
+beautifulsoup4
