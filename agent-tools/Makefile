@@ -39,3 +39,16 @@ cdk-diff:  ## Diff the deployed stack with the current state
 
 cdk-destroy:  ## Destroy the CDK stack
 	cd cdk && npm run build && npx cdk destroy --force
+
+
+# --- Generic Virtual Environment Targets using UV ---
+
+# Create a UV virtual environment for a single tool.
+# Usage: make venv-uv tool=<tool_name>
+venv-uv:
+	@if [ -z "$(tool)" ]; then \
+	  echo "Error: tool name must be provided. Usage: make venv-uv tool=<tool_name>"; \
+	  exit 1; \
+	fi
+	@echo "Creating $(tool) virtual environment using uv with Python 3.10..."
+	cd $(tool) && uv venv --python=python3.11 .venv && uv pip install -r requirements.txt
