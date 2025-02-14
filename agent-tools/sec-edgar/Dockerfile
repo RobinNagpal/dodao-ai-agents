@@ -1,6 +1,11 @@
 # Use the base Python 3.9 AWS Lambda image
 FROM public.ecr.aws/lambda/python:3.9
 
+# Set edgartools to use a writable directory for local data
+ENV EDGAR_USE_LOCAL_DATA=1
+ENV EDGARTOOLS_DATA_DIR=/tmp/edgar_data
+ENV EDGAR_LOCAL_DATA_DIR=/tmp/edgar_data
+
 # Copy requirements file from this folder
 COPY requirements.txt /tmp/requirements.txt
 

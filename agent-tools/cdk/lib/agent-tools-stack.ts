@@ -46,8 +46,7 @@ export class AgentToolsStack extends cdk.Stack {
 
       console.log(`Image asset for ${tool} created at ${imageAsset.imageUri}`);
 
-      // Get a reference to the automatically created ECR repository.
-      // (Override repositoryName so that it is predictable.)
+      // Create an ECR repository for the tool.
       const repository = new ecr.Repository(this, `${tool}Repo`, {
         repositoryName: tool,
         imageTagMutability: ecr.TagMutability.MUTABLE,
@@ -61,22 +60,39 @@ export class AgentToolsStack extends cdk.Stack {
         ],
       });
 
-      // (Optional) You could configure a custom process to push the built image
-      // into your repository. For simplicity, here we assume that the DockerImageAsset
-      // is used as the source for the Lambda function.
-      //
       // Create a Lambda function that uses the container image.
-      new lambda.DockerImageFunction(this, `${tool}Function`, {
+      const lambdaFunction = new lambda.DockerImageFunction(this, `${tool}Function`, {
         functionName: tool,
         code: lambda.DockerImageCode.fromImageAsset(toolDir),
         timeout: cdk.Duration.seconds(30),
         memorySize: 512,
+        environment: {
+          EDGARTOOLS_DATA_DIR: "/tmp/edgar_data",
+          EDGAR_LOCAL_DATA_DIR: "/tmp/edgar_data",
+          EDGAR_USE_LOCAL_DATA: "1",
+        },
+
       });
 
-      // (Optional) You might want to output the repository URI.
+      // Add a Lambda Function URL with no auth (public endpoint).
+      const functionUrl = lambdaFunction.addFunctionUrl({
+        authType: lambda.FunctionUrlAuthType.NONE,
+        cors: {
+          allowedOrigins: ["*"],
+          allowedMethods: [lambda.HttpMethod.POST, lambda.HttpMethod.GET], // adjust as needed
+        },
+      });
+
+      // Output the ECR repository URI.
       new cdk.CfnOutput(this, `${tool}RepoURI`, {
         value: repository.repositoryUri,
         description: `ECR repository URI for ${tool}`,
+      });
+
+      // Output the Lambda Function URL.
+      new cdk.CfnOutput(this, `${tool}FunctionUrl`, {
+        value: functionUrl.url,
+        description: `Lambda Function URL for ${tool}`,
       });
     }
   }
