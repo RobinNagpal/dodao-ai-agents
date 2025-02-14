@@ -1,5 +1,3 @@
 # Dependencies specific to the ScrapingAnt tool
-boto3
-aws-sam-cli
 scrapingant-client
-uv
+beautifulsoup4
