@@ -1,0 +1,5 @@
+# Dependencies specific to the SEC Edgar tool
+boto3
+aws-sam-cli
+edgartools
+uv

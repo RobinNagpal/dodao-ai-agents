@@ -1,0 +1,12 @@
+{
+  "agents": [
+    {
+      "name": "sec-edgar",
+      "enabled": true
+    },
+    {
+      "name": "scrapingant",
+      "enabled": true
+    }
+  ]
+}

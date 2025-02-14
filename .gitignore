@@ -1,0 +1,71 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+academy-ui/yarn-error.log
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+academy-ui/next-env.d.ts
+
+*.iml
+.idea
+.vscode
+
+academy-ui/.env
+data
+
+# langgraph ai agent
+langgraph-poetry/cf_analysis_agent/.env
+
+# Sentry Config File
+.envrc
+
+crew_ai_agent/.venv
+crew_ai_agent/.env
+crew_ai_agent/src/crew_ai_agent/__pycache__/
+crew_ai_agent/src/crew_ai_agent/tools/__pycache__/
+crowd-fund-analysis/cf_analysis_agent/.env
+
+clickable-demos/node_modules
+venv/
+out/
+shared/pull-tweets/accounts.db
+shared/pull-tweets/.env
+
+crowd-fund-analysis/terraform/.terraform.lock.hcl
+crowd-fund-analysis/terraform/terraform.tfstate
+crowd-fund-analysis/terraform/terraform.tfstate.backup
+crowd-fund-analysis/terraform/terraform.tfvars
+crowd-fund-analysis/terraform/.terraform/providers/
+
+
+agent-tools/cdk/node_modules
+agent-tools/cdk/dist
+agent-tools/cdk/cdk.out
