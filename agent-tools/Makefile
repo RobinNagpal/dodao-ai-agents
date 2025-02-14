@@ -19,6 +19,9 @@ help:  ## Show help for all targets
 	@echo "  make cdk-diff            - Diff the deployed stack with the current state"
 	@echo "  make cdk-destroy         - Destroy the CDK stack"
 
+cdk-bootstrap:  ## Bootstrap the CDK environment
+	cd cdk && npx cdk bootstrap
+
 cdk-synth:  ## Synthesize the CDK CloudFormation template
 	cd cdk && npm run build && npx cdk synth
 
