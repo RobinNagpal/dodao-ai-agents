@@ -3,3 +3,4 @@ boto3
 aws-sam-cli
 edgartools
 uv
+pytest

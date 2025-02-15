@@ -88,13 +88,13 @@ def lambda_handler(event, context):
         if result_text.startswith("Error:") or result_text.startswith("No "):
             return {
                 "statusCode": 404,
-                "body": json.dumps({"error": result_text}),
+                "message": result_text,
             }
 
         # Success
         response = {
             "statusCode": 200,
-            "body": json.dumps({"result": result_text}),
+            "message": result_text,
         }
         return response
 
@@ -102,5 +102,5 @@ def lambda_handler(event, context):
         print(e)
         return {
             "statusCode": 500,
-            "body": json.dumps({"error": f"Internal server error: {str(e)}"}),
+            "message": f"Internal server error: {str(e)}",
         }

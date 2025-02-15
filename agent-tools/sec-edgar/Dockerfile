@@ -1,9 +1,7 @@
 # Use the base Python 3.9 AWS Lambda image
-FROM public.ecr.aws/lambda/python:3.9
+FROM public.ecr.aws/lambda/python:3.11
 
 # Set edgartools to use a writable directory for local data
-ENV EDGAR_USE_LOCAL_DATA=1
-ENV EDGARTOOLS_DATA_DIR=/tmp/edgar_data
 ENV EDGAR_LOCAL_DATA_DIR=/tmp/edgar_data
 
 # Copy requirements file from this folder
@@ -16,4 +14,4 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 COPY . ${LAMBDA_TASK_ROOT}
 
 # Set the Lambda entry point to lambda_function.lambda_handler
-CMD [ "lambda_function.lambda_handler" ]
+CMD [ "src.lambda_function.lambda_handler" ]
