@@ -7,6 +7,10 @@
     {
       "name": "scrapingant",
       "enabled": true
+    },
+    {
+      "name": "s3-uploader",
+      "enabled": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-# Use the base Python 3.9 AWS Lambda image
+# Use the base Python 3.11 AWS Lambda image
 FROM public.ecr.aws/lambda/python:3.11
 
 # Set edgartools to use a writable directory for local data
