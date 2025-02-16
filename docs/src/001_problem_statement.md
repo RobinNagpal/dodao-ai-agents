@@ -26,33 +26,24 @@ What does Simply wall street lack
     - For evaluating oil companies we will consider ...
 
 
-**Below are some of the ways information can be useful**
-
-- **Presenting qualitative and qualitative information**
-  All of this information exists in SEC fillings, but is not presented, because it was historically a bit expensive
-  to extract, and there might not be that big of an audience for it, because basic investors want simple information
-  and institutional investors want very detailed and accurate information.
-  
-  This audience is underserved, and with AI we can serve them at a very low cost
-
-- **Presenting Sector specific information**
-  When diversifying you would want to invest into top ~1-3 players in each sector, but now how do you find top 2-3
-  players in each sector.
-
-- **Finding undervalued companies**
-  There is no easy way for a public investor to find this information
-
-- **Information on small/medium cap companies**
-  There is not much information available for $100mm < mid-cap < $1B companies. Pulling this information can help
-  provide qualitative information
-
-
-All this information can be also embedded in investing platforms like I have a trading account with RBC, but the
-information it provides is quite basic, and not much qualitative
 
 ## Use Case 2 - Strategy based investing in public equities
-There are many ways to invest, like in growth based sectors, under values sectors, strong dividend sectors, etc.
-If we
+Every investor has a different goals and different risk tolerance. Based on those goals and risk tolerance, they
+would want to access different types of information.
+
+For example a growth investor would want to invest in companies that are growing at a fast pace, and are not
+profitable yet. 
+
+A value investor would want to invest in companies that are undervalued. 
+
+A dividend investor would want to invest in companies that are paying good dividends.
+
+So based on the strategy, the information required will be different. Thee are many people that can recommend
+strategies, but there is no platform that can provide information based on those strategies.
+
+They can use our platform to get information and show it to their customers/clients.
+
+Target Market for these will be public investors, and institutional investors.
 
 ## Use Case 3 - Onchain
 TBills became a huge hit as an onchain product. Other than T-bills, there are not many quality products available
@@ -60,9 +51,15 @@ onchain. To bring good products on chain
 1. We need data to prove those are good products
 2. We need some comparative analysis.
 
-## Use Case 4 - ETFs
-Currently ETFs are not so growth centric. There can be ETFs that can be aggressive and growth centric. Many
-younger generation can create them, and DeFi allows them to create at very cheap prices.
+Target Market for these will be private investors, and institutional investors.
 
-These don't need to be securities and can be served as Reg-D offerings as there are many accredited investors who
-will be 
+## Use Case 4 - Growth ETFs
+Venture Capital is a very lucrative business, and one of the strategy they follow is to place high number of bets.
+They know that most of the bets will fail, but the ones that succeed will give them huge returns.
+
+Simple ETF products can be made based on this strategy. There products will not be famous
+in current public markets, but they can add a lot of value in the onchain world.
+
+DeFi offer primitives for DEX, and Lending/Borrowing, and those can add a lot of value.
+
+Target Market for these will be private investors, and institutional investors.

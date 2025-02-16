@@ -72,6 +72,10 @@ def generate_valuation_report(state: AgentState) -> StructuredReportResponse:
     
     Here is the information you have about the startup:
     {combined_content}
+    
+    
+    Make sure to evaluate if the valuation set by the company for the crowdfunding round is fair or not. Make sure to
+    consider realistic yearly current and projected ARR 
     """
 
     return structured_report_response(

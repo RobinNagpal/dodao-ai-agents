@@ -17,16 +17,20 @@ class StructuredLLMResponse(BaseModel):
 class ChecklistItem(BaseModel):
     """Checklist item with a score and comment."""
     checklistItem: str = Field(description="The item to be checked. Explain in 7-10 words.")
-    explanation: str = Field(description="A brief explanation of how the item was evaluated.")
+    oneLineExplanation: str = Field(description="A brief explanation of how the item was evaluated.")
+    informationUsed: str = Field(description="All the information used to evaluate the item.")
+    detailedExplanation: str = Field(description="A very detailed explanation of how the item was evaluated. Use numbers whenever possible like the numbers shared by startup or by industry standards")
+    calculationLogic: str = Field(description="The logic used to determine how the item was evaluated. Explain in a very detailed manner. Explain by using the numbers shared by startup or by industry standards")
     score: Literal[0, 1] = Field(description="The score given for this item 0 or 1.")
+
 
 class StructuredReportResponse(BaseModel):
     """Return llm response in a structured format"""
-    outputString: str = Field(description="The output string expected as the response to the prompt.")
     oneLineSummary: str = Field(description="A one-liner summary of the output.")
     status: Literal['success', 'failure'] = Field(
         description="If successful in processing the prompt and producing the output."
                     "Also fail if no proper input was provided.")
+    summary: str = Field(description="Summary of the output. One to two paragraphs long.")
     failureReason: Optional[str] = Field(description="The reason for the failure if the status is failed.")
     confidence: Optional[float] = Field(description="The confidence of the response in the range of 1-10, 10 being very confident and 1 being not confident at all.")
     performanceChecklist: List[ChecklistItem] = Field(description="A list of items to be checked with their scores and comments.")

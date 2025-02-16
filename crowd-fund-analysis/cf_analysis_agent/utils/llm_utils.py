@@ -58,7 +58,7 @@ def validate_report_output(operation_name: str, output: StructuredReportResponse
         raise Exception(f"Failed to generate output: {output.failureReason}")
 
     print(
-        f"Operation: {operation_name} completed with confidence: {output.confidence}. Output length {len(output.outputString)} ")
+        f"Operation: {operation_name} completed with confidence: {output.confidence}. Output length {len(output.summary)} ")
     return output
 
 

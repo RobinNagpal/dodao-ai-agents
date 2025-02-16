@@ -369,7 +369,10 @@ def update_report_status_in_progress(project_id: str, report_type: ReportType, t
 
 def update_report_with_structured_output(project_id: str, report_type: ReportType, structured_output: StructuredReportResponse):
     report_file_path = f"{project_id}/{report_type.value}.md"
-    upload_to_s3(structured_output.outputString, report_file_path)
+
+    output_string = generate_markdown_report(structured_output)
+
+    upload_to_s3(output_string, report_file_path)
     # Update status file to "completed"
     markdown_link = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/crowd-fund-analysis/{report_file_path}"
     project_file_contents = get_project_file(project_id)
@@ -387,7 +390,7 @@ def update_report_with_structured_output(project_id: str, report_type: ReportTyp
     for item in performance_checklist:
         new_item = {
             "checklistItem": item.checklistItem,
-            "explanation": item.explanation,
+            "explanation": item.oneLineExplanation,
             "score": item.score
         }
         report["performanceChecklist"].append(new_item)
@@ -528,3 +531,39 @@ def get_combined_reports_from_s3(project_id: str) -> str:
 
     return "".join(content_sections).strip()  # Remove trailing newlines
 
+
+def generate_markdown_report(report: StructuredReportResponse) -> str:
+    """
+    Generates a Markdown formatted string report.
+
+    The format includes:
+      - A summary section.
+      - For each checklist item:
+          - The item as a heading.
+          - informationUsed.
+          - detailedExplanation.
+          - calculationLogic.
+    """
+    md_lines = []
+
+    # Add the summary
+    md_lines.append("## Summary")
+    md_lines.append("")
+    md_lines.append(report.summary)
+    md_lines.append("")
+
+    # Add each checklist item with an index
+    for i, item in enumerate(report.performanceChecklist, start=1):
+        # Use the checklist item as a sub-heading with the index and score icon
+        score_icon = '✅' if item.score == 1 else '❌'
+        md_lines.append(f"### {i}. {score_icon} {item.checklistItem} ")
+        md_lines.append("")
+        md_lines.append(f"**Information Used:** {item.informationUsed}")
+        md_lines.append("")
+        md_lines.append(f"**Detailed Explanation:** {item.detailedExplanation}")
+        md_lines.append("")
+        md_lines.append(f"**Calculation Logic:** {item.calculationLogic}")
+        md_lines.append("")
+
+    # Join all the lines into a single string
+    return "\n".join(md_lines)

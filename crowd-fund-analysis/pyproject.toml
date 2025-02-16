@@ -5,6 +5,10 @@ description = ""
 authors = ["Hassaan Qaisar <hassaanqaisar2@gmail.com>"]
 readme = "README.md"
 
+[virtualenvs]
+create = true
+in-project = true
+
 [tool.poetry.dependencies]
 python = "^3.10"
 langgraph = "0.2.70"
