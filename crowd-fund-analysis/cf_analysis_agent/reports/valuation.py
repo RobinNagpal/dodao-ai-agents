@@ -22,50 +22,26 @@ def generate_valuation_report(state: AgentState) -> StructuredReportResponse:
     prompt = f"""
     You are an expert startup valuation analyst. Analyze that the valuation set by the company for the crowdfunding round is fair or not:
     
-    When considering the valuation dont just consider the revenue, consider other things also like possible repeat rate, possible total 
-    lifetime value, and consider the valuation of the company based on revenue and it can produce in the future and that revenue can be
-    sustained in every year.
+    When considering the valuation consider 
+    1. Total Addressable Market (TAM)
+    2. Serviceable Available Market (SAM) 
+    3. Serviceable Obtainable Market (SOM)
+    
+    Based on the information available, calculate 
+    1. Yearly revenue based valuation using realistic revenue projections. Do it next 1, 3, and 5 years.
+    2. Calculate the profit margins and the profits which can be generated in the next 1, 3, and 5 years.
+    
+    Then based on this information calculate the valuation.
+    
+    Then rate the valuation set by the company for the crowdfunding round on the following criteria:
+    1. Valuation based on the type of industry, sector, and the market size.
+    2. Valuation based on the traction and progress of the startup.
+    3. Valuation based on TAM, SAM, and SOM.
+    4. Valuation based on the yearly revenue in next 1, 3, and 5 years.
+    5. Valuation based on the profit margins and profits which can be generated in the next 1, 3, and 5 years
 
-    **Valuation Report Requirements**:
-    1. The valuation set by the company for the crowdfunding round.
-    2. **Market Analysis**:
-       - Calculate TAM (Total Addressable Market):
-         * Use top-down analysis with latest sector-specific data
-         * Clearly state assumptions and data sources
-       - Calculate SAM (Serviceable Available Market):
-         * Consider geographic, demographic, and product constraints
-         * Bottom-up analysis using startup's actual capabilities
-       - Calculate SOM (Serviceable Obtainable Market):
-         * Realistic 3-5 year projection based on execution capabilities
-         * Include market share analysis vs competitors
-
-    2. **Startup Specifics**:
-       - Traction Analysis:
-         * Revenue/User growth rates (monthly/quarterly)
-         * Customer acquisition costs vs lifetime value
-         * Retention metrics and churn rates
-         * Compare metrics to sector benchmarks
-       - Progress Assessment:
-         * Product development stage (prototype to scaling)
-         * IP/technology advantages
-         * Regulatory approvals/milestones achieved
-    3. **Expected Valuation**:
-         - Calculate yearly revenue based valuation using realistic revenue projections
-         - If the yearly revenue is not available, consider the possible repeat rate, possible total lifetime value, and consider the
-           valuation of the company based on revenue and it can produce in the future and that revenue can be sustained in every year.
-         - Make a range from conservative to realistic valuation estimates
-         - Explain in detail how you arrived at these estimates
-    4. **Comparing Presented Valuation**:
-       - Compare the valuation you calculated with the valuation set by the company in the crowdfunding round
-       - Highlight any discrepancies or optimistic assumptions the company has made
-
-    **Format Requirements**:
-    - You can use small ranges for valuation estimates
-    - Clearly explain calculation methodologies
-    - Flag any unrealistic assumptions
-    - Compare startup's metrics to sector benchmarks
-    - Maintain skeptical but fair tone throughout
-
+    Make sure to use as much numerical data as possible to make your analysis more accurate.
+    
     Return final valuation analysis only.
     
     {create_prompt_for_checklist('Company Valuation')}

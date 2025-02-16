@@ -54,8 +54,8 @@ def validate_structured_output(operation_name: str, output: StructuredLLMRespons
 def validate_report_output(operation_name: str, output: StructuredReportResponse) -> StructuredReportResponse:
     """Validate the structured output from the LLM"""
     if output.status == "failed":
-        print(f"Failed to generate output for {operation_name}: {output.failureReason}")
-        raise Exception(f"Failed to generate output: {output.failureReason}")
+        print(f"Failed to generate output for {operation_name}: {output.failure_reason}")
+        raise Exception(f"Failed to generate output: {output.failure_reason}")
 
     print(
         f"Operation: {operation_name} completed with confidence: {output.confidence}. Output length {len(output.summary)} ")

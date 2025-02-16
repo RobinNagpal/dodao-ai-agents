@@ -382,15 +382,15 @@ def update_report_with_structured_output(project_id: str, report_type: ReportTyp
     report["status"] = ProcessingStatus.COMPLETED
     report["endTime"] = datetime.now().isoformat()
     report["markdownLink"] = markdown_link
-    report["summary"] = structured_output.oneLineSummary
+    report["summary"] = structured_output.oneLine_summary
     report["confidence"] = structured_output.confidence
     report["performanceChecklist"] = []
-    performance_checklist = structured_output.performanceChecklist or []
+    performance_checklist = structured_output.performance_checklist or []
 
     for item in performance_checklist:
         new_item = {
-            "checklistItem": item.checklistItem,
-            "explanation": item.oneLineExplanation,
+            "checklistItem": item.checklist_item,
+            "explanation": item.one_line_explanation,
             "score": item.score
         }
         report["performanceChecklist"].append(new_item)
@@ -553,16 +553,16 @@ def generate_markdown_report(report: StructuredReportResponse) -> str:
     md_lines.append("")
 
     # Add each checklist item with an index
-    for i, item in enumerate(report.performanceChecklist, start=1):
+    for i, item in enumerate(report.performance_checklist, start=1):
         # Use the checklist item as a sub-heading with the index and score icon
         score_icon = '✅' if item.score == 1 else '❌'
-        md_lines.append(f"### {i}. {score_icon} {item.checklistItem} ")
+        md_lines.append(f"### {i}. {score_icon} {item.checklist_item} ")
         md_lines.append("")
-        md_lines.append(f"**Information Used:** {item.informationUsed}")
+        md_lines.append(f"**Information Used:** {item.information_used}")
         md_lines.append("")
-        md_lines.append(f"**Detailed Explanation:** {item.detailedExplanation}")
+        md_lines.append(f"**Detailed Explanation:** {item.detailed_explanation}")
         md_lines.append("")
-        md_lines.append(f"**Calculation Logic:** {item.calculationLogic}")
+        md_lines.append(f"**Calculation Logic:** {item.evaluation_logic}")
         md_lines.append("")
 
     # Join all the lines into a single string
