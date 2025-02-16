@@ -1,17 +1,17 @@
+terraform-old/.terraform
+terraform-old/terraform.tfstate
+terraform-old/terraform.tfstate.backup
+terraform-old/terraform.tfvars
+terraform-old/terraform-provider-*
+terraform-old/.terraform*
+
+
 terraform/.terraform
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
 terraform/terraform.tfvars
 terraform/terraform-provider-*
 terraform/.terraform*
-
-
-new-terraform/.terraform
-new-terraform/terraform.tfstate
-new-terraform/terraform.tfstate.backup
-new-terraform/terraform.tfvars
-new-terraform/terraform-provider-*
-new-terraform/.terraform*
 
 
 
