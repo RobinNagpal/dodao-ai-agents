@@ -2,7 +2,7 @@
 There are a few problem statements we are working towards. We right now don't know what will be our first target
 use case or market. May be we will get clarity after we create
 
-### General Investing in Pubic Equities
+## Use Case 1 - General Investing in Pubic Equities
 
 Because of the high inflation globally, investing is more important than ever.
 
@@ -50,17 +50,17 @@ What does Simply wall street lack
 All this information can be also embedded in investing platforms like I have a trading account with RBC, but the
 information it provides is quite basic, and not much qualitative
 
-### Strategy based investing in public equities
+## Use Case 2 - Strategy based investing in public equities
 There are many ways to invest, like in growth based sectors, under values sectors, strong dividend sectors, etc.
 If we
 
-### Onchain
+## Use Case 3 - Onchain
 TBills became a huge hit as an onchain product. Other than T-bills, there are not many quality products available
 onchain. To bring good products on chain
 1. We need data to prove those are good products
 2. We need some comparative analysis.
 
-### ETFs
+## Use Case 4 - ETFs
 Currently ETFs are not so growth centric. There can be ETFs that can be aggressive and growth centric. Many
 younger generation can create them, and DeFi allows them to create at very cheap prices.
 
