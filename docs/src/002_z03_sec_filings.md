@@ -7,7 +7,7 @@ This feature has two main parts
   shown in a timeline.
 
 
-### Summarized SEC EDGAR Filings
+### 1. Summarized SEC EDGAR Filings
 
 For creating great information on REITs we need to make sure the SEC fillings information is nicely extracted. Nicely
 means
@@ -47,6 +47,4 @@ See more information on collecting information from PDFs in the [Collecting Info
 These can be easily summarized by LLMs, but they don't contain much information.
 
 
-
-
-### SEC Fillings Timeline
+### 2. SEC Fillings Timeline
