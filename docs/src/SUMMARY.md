@@ -10,6 +10,7 @@
 - [Architecture](./003_architecture.md)
 - [Technical Details](./004_technical_details.md)
   - [Extracting Information from Long Text](./004_z01_collecting_info_from_pdf.md)
+  - [Processing Long SEC Filings](./004_z02_processing_long_sec_filings.md)
 - [Tasks](./005_tasks.md)
   - [Crowd Funding](./005_z01_crowd_fundin_tasks.md)
   
