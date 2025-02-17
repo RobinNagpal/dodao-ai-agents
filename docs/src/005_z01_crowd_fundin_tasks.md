@@ -16,21 +16,63 @@
 - The prompt can be: "Provide a summary of the startup in 3-4 sentenctes and in next paragraph provide the amount of money that
   they are raising in the current crowdfunding round and the valuation."
 
-## Pull/Push agent-status.json to s3 using tool
+## **Pull/Push `agent-status.json` to S3 Using Langflow Components**
 
-- Explain what we are trying to do here
-  - Here we are trying to update the agent_status.json file whenever the a report is generated so that we can update the status to (in_progress, failed or complete )
-  - So for that we will be creating a tool in langlfow which takes the report_type as input and fetch agent_status.json using the its public link based on project_id.
-  - Then we update for the report type the status of it and than use the lambda we created to upload the updated agent_status.json file
-- Explain how this tool will be used in langflow
-  - In langflow this tool will work in a way that it will be a custom component which takes the report type and project id as inputs.
-  - Then based on this input we fetch from the public link the agent status file for project and than update it accordingly
-  - output it will return the updated json file agent_status
-- Explain how the full flow will work
-  - the full flow works in a way that when the processing of a report starts than this component is given the project id and report type and it updates the status of report to in_progress
-  - Than when either the report is generated successfully or fails than based on that result the component is again called to update the status to failed or complete.
-- Explain the list of things you are changing or adding in the code
-  - Firstly we will add the logic for just getting the agent_status.json file
-  - Than update logic based on report name
-  - than just pass the stuff to the s3-uploader component which uploads the file
-  - Also we may have to pass the status as input also we can set the default as in_progress
+### **🔹 Objective**
+
+- We aim to **update `agent_status.json`** whenever a report status changes (`in_progress`, `failed`, or `completed`).
+- This involves **fetching `agent_status.json` from its public link**, modifying the status, and **uploading the updated file to S3** using an AWS Lambda function.
+
+---
+
+### **🔹 How This Works in Langflow**
+
+- Three separate **custom components** handle different report status updates:
+  1. **`status_file_updater.py`** → Updates `agent_status.json` for `in_progress` and `failed` statuses.
+  2. **`status_file_updater_for_completed_report.py`** → Updates `agent_status.json` for `completed` status.
+  3. **`s3_uploader.py`** → Uploads the modified `agent_status.json` back to S3.
+
+#### **📌 Component Workflow**
+
+1. **Fetching**: The tool fetches `agent_status.json` via its **public S3 link**.
+2. **Updating**: Modifies the status for the given `report_type`.
+3. **Uploading**: The updated file is passed to `s3_uploader.py` for storage in S3.
+
+---
+
+### **🔹 How the Full Flow Works**
+
+1. **Processing Starts** (`in_progress`)
+
+   - `status_file_updater.py` fetches `agent_status.json`, updates the status, and passes it to `s3_uploader.py` for upload.
+
+2. **Processing Fails** (`failed`)
+
+   - The same component is triggered with `failed` status.
+   - Updates `agent_status.json` and reuploads.
+
+3. **Processing Completes** (`completed`)
+   - `status_file_updater_for_completed_report.py` is triggered.
+   - Adds structured output (`summary`, `confidence`, `checklist`, `markdown path`).
+   - **Returns four outputs**:
+     - **Markdown content** (report text).
+     - **Markdown path** (S3 location of the report).
+     - **Updated `agent_status.json`** (with completion details).
+     - **Agent status file path** (S3 location of `agent-status.json`).
+   - Passes the updated `agent_status.json` to `s3_uploader.py`.
+
+---
+
+### **🔹 List of Changes & Additions**
+
+1. **Separated components for different statuses**:
+
+   - `status_file_updater.py` for `in_progress` and `failed`.
+   - `status_file_updater_for_completed_report.py` for `completed` with structured output.
+
+2. **`status_file_updater_for_completed_report.py` is now connected to two uploaders**:
+
+   - **Sends Markdown content and path to `s3_uploader.py`.**
+   - **Sends `agent_status.json` updates to another `s3_uploader.py` instance.**
+
+3. **Delegated file upload** to `s3_uploader.py` instead of handling S3 writes inside status update components.
