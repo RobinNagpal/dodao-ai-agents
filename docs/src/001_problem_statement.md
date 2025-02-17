@@ -71,3 +71,12 @@ They can use our platform to get information and show it to their customers/clie
 
 Target Market for these will be public investors, and institutional investors.
 
+# Next Steps
+- V0 - First we need to prove the effectiveness of the agent which will be done by 
+  1) First understanding how agents work
+  2) Creating an agent for CrowdFunding
+  3) Making the agent quite accurate
+- V1 - Then we can target another sector which deal with REITs
+- V2 - Then with private credit/public credit firms.
+
+See more here - [Features](002_main_milestones.md)

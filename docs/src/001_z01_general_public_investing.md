@@ -22,5 +22,6 @@ provide qualitative information
 
 
 ---
+
 Note: All this information can be also embedded in investing platforms like I have a trading account with RBC, but the
 information it provides is quite basic, and not much qualitative

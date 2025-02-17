@@ -1,1 +1,0 @@
-# Collecting Information from PDFs
