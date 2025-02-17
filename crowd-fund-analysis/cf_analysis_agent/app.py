@@ -11,9 +11,10 @@ from cf_analysis_agent.utils.agent_utils import generate_hashed_key, get_admin_n
 # # Add the parent directory of app.py to the Python path this maybe temporary we can change it later for that we will have to change docker file as well
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from cf_analysis_agent.utils.report_utils import update_status_to_not_started_for_all_reports, \
+from cf_analysis_agent.utils.report_utils import RepopulatableFields, update_status_to_not_started_for_all_reports, \
     initialize_project_in_s3, update_report_status_in_progress
 from cf_analysis_agent.controller import prepare_processing_command
+from cf_analysis_agent.utils.process_project_utils import repopulate_project_field
 
 app = Flask(__name__)
 CORS(app)  # This will allow all origins by default
@@ -247,6 +248,37 @@ def authenticate():
                 }), 200
 
     return jsonify({"status": "error", "message": "Invalid code"}), 401
+
+@app.route('/api/projects/<projectId>/repopulate/<projectField>', methods=['POST'])
+def populate_project_info_field(projectId, projectField):
+    try:
+        # Get admin name from request
+        admin_name, error_response = get_admin_name_from_request()
+        if error_response:
+            return error_response  # If there's an error, return it
+        
+        if projectField not in RepopulatableFields.list():
+            return jsonify({
+                "status": "error",
+                "message": f"Invalid field '{projectField}'. Allowed fields: {RepopulatableFields.list()}"
+            }), 400
+
+        repopulate_project_field(projectId, projectField)
+
+        return jsonify({
+            "status": "success",
+            "message": f"Repopulation of '{projectField}' for project {projectId} has started successfully."
+        }), 200
+        
+    except FileNotFoundError as e:
+        print(traceback.format_exc())
+        return jsonify({"status": "error", "message": str(e)}), 404
+    except ValueError as e:
+        print(traceback.format_exc())
+        return jsonify({"status": "error", "message": str(e)}), 400
+    except Exception as e:
+        print(traceback.format_exc())
+        return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

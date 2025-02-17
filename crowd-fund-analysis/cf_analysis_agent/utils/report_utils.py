@@ -5,6 +5,7 @@ from typing import List, Dict, Optional
 from dotenv import load_dotenv
 from typing_extensions import TypedDict, NotRequired
 
+from enum import Enum
 from cf_analysis_agent.agent_state import ProjectInfo, ProcessingStatus, ReportType
 from cf_analysis_agent.structures.report_structures import StructuredReportResponse
 from cf_analysis_agent.structures.startup_metrics import InformationStatus
@@ -18,6 +19,19 @@ load_dotenv()
 # 1) TypedDict Definitions
 # ---------------------------------------------------------
 
+
+class RepopulatableFields(str, Enum):
+    INDUSTRY_DETAILS = "industryDetails"
+    STARTUP_METRICS = "startupMetrics"
+    STARTUP_SUMMARY = "startupSummary"
+    SEC_INFO = "secInfo"
+    CROWDFUNDING_CONTENT = "contentOfCrowdfundingUrl"
+    WEBSITE_CONTENT = "contentOfWebsiteUrl"
+
+    @classmethod
+    def list(cls):
+        """Returns a list of all valid repopulatable field names."""
+        return [field.value for field in cls]
 
 class ProjectInfoInputSchema(TypedDict):
     """
@@ -90,16 +104,22 @@ class ProcessesStartupMetricsSchema(TypedDict, total=False):
     paybackPeriod: MetricSchema
     revenueGrowth: MetricSchema
     churnRate: MetricSchema
-
+    
+class SectorDetailSchema(TypedDict):
+    basicInfo: str
+    growthRate: str
+    
+class MarketDetailSchema(TypedDict):
+    details: str
+    calculationLogic: str
 
 class ProcessedIndustryAndForecastsSchema(TypedDict):
-    """
-    Stores the processed industry details and forecast content.
-    """
-    industryDetailsAndForecast: str
-    totalAddressableMarket: str
-    serviceableAddressableMarket: str
-    serviceableObtainableMarket: str
+    sectorDetails: SectorDetailSchema
+    subSectorDetails: SectorDetailSchema
+    totalAddressableMarket: MarketDetailSchema
+    serviceableAddressableMarket: MarketDetailSchema
+    serviceableObtainableMarket: MarketDetailSchema
+    profitMargins: MarketDetailSchema
 
 class ProcessedProjectInfoSchema(TypedDict):
     """
