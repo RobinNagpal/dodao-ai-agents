@@ -2,7 +2,33 @@
 There are a few problem statements we are working towards. We right now don't know what will be our first target
 use case or market. May be we will get clarity after we create
 
-## Use Case 1 - General Investing in Pubic Equities
+## Use Case 1 - Onchain
+TBills became a huge hit as an onchain product. Other than T-bills, there are not many quality products available
+onchain. To bring good products on chain
+1. We need data to prove those are good products
+2. We need some comparative analysis.
+
+Target Market for these will be private investors, and institutional investors.
+
+## Use Case 2 - Investor Reports
+Right now there are hundreds of thousands of analysts that are writing reports on companies. A lot of these reports
+can be automated by AI. We will be producing quality reports for a sector and then will ask for work to 
+create agents for these type of reports.
+
+
+## Use Case 3 - Growth ETFs
+Venture Capital is a very lucrative business, and one of the strategy they follow is to place high number of bets.
+They know that most of the bets will fail, but the ones that succeed will give them huge returns.
+
+Simple ETF products can be made based on this strategy. There products will not be famous
+in current public markets, but they can add a lot of value in the onchain world.
+
+DeFi offer primitives for DEX, and Lending/Borrowing, and those can add a lot of value.
+
+Target Market for these will be private investors, and institutional investors.
+
+
+## Use Case 4 - General Investing in Pubic Equities
 
 Because of the high inflation globally, investing is more important than ever.
 
@@ -27,7 +53,7 @@ What does Simply wall street lack
 
 
 
-## Use Case 2 - Strategy based investing in public equities
+## Use Case 5 - Strategy based investing in public equities
 Every investor has a different goals and different risk tolerance. Based on those goals and risk tolerance, they
 would want to access different types of information.
 
@@ -45,21 +71,3 @@ They can use our platform to get information and show it to their customers/clie
 
 Target Market for these will be public investors, and institutional investors.
 
-## Use Case 3 - Onchain
-TBills became a huge hit as an onchain product. Other than T-bills, there are not many quality products available
-onchain. To bring good products on chain
-1. We need data to prove those are good products
-2. We need some comparative analysis.
-
-Target Market for these will be private investors, and institutional investors.
-
-## Use Case 4 - Growth ETFs
-Venture Capital is a very lucrative business, and one of the strategy they follow is to place high number of bets.
-They know that most of the bets will fail, but the ones that succeed will give them huge returns.
-
-Simple ETF products can be made based on this strategy. There products will not be famous
-in current public markets, but they can add a lot of value in the onchain world.
-
-DeFi offer primitives for DEX, and Lending/Borrowing, and those can add a lot of value.
-
-Target Market for these will be private investors, and institutional investors.
