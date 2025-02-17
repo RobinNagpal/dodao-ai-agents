@@ -77,9 +77,10 @@ def lambda_handler(event, context):
     print("EDGAR_LOCAL_DATA_DIR:", os.environ.get("EDGAR_LOCAL_DATA_DIR"))
 
     try:
+        body = json.loads(event["body"])
         # Grab parameters from the event with defaults
-        ticker = event.get("ticker", "AAPL")
-        report_type = event.get("report_type", "balance_sheet")
+        ticker = body.get("ticker", "AAPL")
+        report_type = body.get("report_type", "balance_sheet")
 
         # Perform extraction
         result_text = get_latest_10q_report_text(ticker, report_type)
@@ -88,19 +89,36 @@ def lambda_handler(event, context):
         if result_text.startswith("Error:") or result_text.startswith("No "):
             return {
                 "statusCode": 404,
-                "message": result_text,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": json.dumps({
+                    "status": 404,
+                    "message": result_text
+                }),
             }
 
         # Success
-        response = {
+        return {
             "statusCode": 200,
-            "message": result_text,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": json.dumps({
+                "status": 200,
+                "message": result_text
+            }),
         }
-        return response
 
     except Exception as e:
         print(e)
         return {
             "statusCode": 500,
-            "message": f"Internal server error: {str(e)}",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": json.dumps({
+                "status": 500,
+                "message": f"Internal server error: {str(e)}"
+            }),
         }

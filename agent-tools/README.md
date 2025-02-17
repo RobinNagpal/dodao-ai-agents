@@ -19,6 +19,8 @@ The deployment works by leveraging AWS CDK and a Makefile to automate the creati
 
 - **Environment Variables:**  
   Critical environment variables (e.g., `SCRAPINGANT_API_KEY`) are verified during deployment to ensure all runtime requirements are met.
+  1. Navigate to the **CDK** folder in your project directory.
+  2. Create a `.env` file containing the necessary keys
 
 - **Key Commands:**  
   Use the provided Makefile for deployment tasks:
