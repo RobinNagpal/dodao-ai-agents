@@ -69,12 +69,22 @@ class StartupMetrics(TypedDict):
     payback_period: Metric
     revenue_growth: Metric
     churn_rate: Metric
+    
+class SectorDetailPoints(TypedDict):
+    basic_info: str
+    growth_rate: str
+    
+class MarketDetailPoints(TypedDict):
+    details: str
+    calculation_logic: str
 
 class IndustryDetailsAndForecast(TypedDict):
-    industry_details_and_forecast: str
-    total_addressable_market: str
-    serviceable_addressable_market: str
-    serviceable_obtainable_market: str
+    sector_details: SectorDetailPoints
+    sub_sector_details: SectorDetailPoints
+    total_addressable_market: MarketDetailPoints
+    serviceable_addressable_market: MarketDetailPoints
+    serviceable_obtainable_market: MarketDetailPoints
+    profit_margins: MarketDetailPoints
 
 class ProcessedProjectInfo(TypedDict, total=False):
     additional_urls_used: Optional[list[str]]
@@ -129,6 +139,7 @@ def get_combined_content(state: AgentState) -> str:
     {sec_markdown_content} 
     
     
-    {json.dumps(industry_details_and_forecast.get('industry_details_and_forecast'))} 
+    {json.dumps(industry_details_and_forecast.get('sector_details'))} 
+    {json.dumps(industry_details_and_forecast.get('sub_sector_details'))} 
     """
     return combined_content
