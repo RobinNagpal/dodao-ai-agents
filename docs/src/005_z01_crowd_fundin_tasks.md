@@ -14,3 +14,9 @@ can provide the startup crowd funding page and website home page both.
 will be saved as part of summary only. 
 - The prompt can be: "Provide a summary of the startup in 3-4 sentenctes and in next paragraph provide the amount of money that 
 they are raising in the current crowdfunding round and the valuation."
+
+## Pull/Push agent-status.json to s3 using tool
+- Explain what we are trying to do here
+- Explain how this tool will be used in langflow
+- Explain how the full flow will work
+- Explain the list of things you are changing or adding in the code
