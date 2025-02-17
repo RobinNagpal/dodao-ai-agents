@@ -4,15 +4,15 @@ from typing import List
 
 from langchain_core.messages import HumanMessage
 
-from cf_analysis_agent.agent_state import ProcessingStatus, ProcessedProjectInfo, ProcessedSecInfo, Metric, \
+from cf_analysis_agent.agent_state import MarketDetailPoints, ProcessingStatus, ProcessedProjectInfo, ProcessedSecInfo, Metric, SectorDetailPoints, \
     StartupMetrics, IndustryDetailsAndForecast
 from cf_analysis_agent.structures.form_c_structures import StructuredFormCResponse
-from cf_analysis_agent.structures.startup_metrics import StartupMetricsStructure, IndustryDetailsAndForecastStructure, \
+from cf_analysis_agent.structures.startup_metrics import MarketDetailStructure, SectorDetailStructure, StartupMetricsStructure, IndustryDetailsAndForecastStructure, \
     MetricStructure
 from cf_analysis_agent.utils.llm_utils import get_startup_summary, structured_llm_response, MINI_4_0_CONFIG, \
     scrape_and_clean_content_with_same_details, get_llm, NORMAL_4_0_CONFIG
 from cf_analysis_agent.utils.project_utils import scrape_urls
-from cf_analysis_agent.utils.report_utils import get_project_status_file_path, ProcessedProjectInfoSchema, \
+from cf_analysis_agent.utils.report_utils import MarketDetailSchema, RepopulatableFields, SectorDetailSchema, get_project_status_file_path, ProcessedProjectInfoSchema, \
     ProjectStatusFileSchema, ProjectInfoInputSchema, ProcessedSecInfoSchema, ProcessedIndustryAndForecastsSchema, \
     ProcessesStartupMetricsSchema, MetricSchema
 from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
@@ -182,10 +182,30 @@ def get_project_industry_and_forecasts_info(project_text: str) -> IndustryDetail
     
     output the information in a structured format  and in the following JSON format: 
     { 
-      "industry_details_and_forecast": "Your detailed analysis of the industry and forecasts for the project. Make sure it is as per the guidelines provided.",
-      "total_addressable_market": "Total addressable market",
-      "serviceable_addressable_market": "Serviceable addressable market",
-      "serviceable_obtainable_market": "Serviceable obtainable market"
+      "sector_details": {
+        "basic_info": "Your detailed analysis of the sector/industry.",
+        "growth_rate": "Growth rate of the sector/industry"
+      },
+      "sub_sector_details": {
+        "basic_info": "Your detailed analysis of the sub-sector.",
+        "growth_rate": "Growth rate of the sub-sector"
+      },
+      "total_addressable_market": {
+        "details": "Total addressable market",
+        "calculation_logic": "How Calculation of the total addressable market was done"
+      },
+      "serviceable_addressable_market": {
+        "details": "Serviceable addressable market",
+        "calculation_logic": "How Calculation of the serviceable addressable market was done"
+      },
+      "serviceable_obtainable_market": {
+        "details": "Serviceable obtainable market",
+        "calculation_logic": "How Calculation of the serviceable obtainable market was done"
+      },
+      "profit_margins": {
+        "details": "Profitability of the sector/industry",
+        "calculation_logic": "How Calculation of the profit margins was done"
+      }
     }
     
     """ + project_text
@@ -316,7 +336,18 @@ def convert_metric_structure(metric: MetricStructure) -> MetricSchema:
         "informationStatus": metric.information_status
     }
 
+def convert_sector_structure(sector: SectorDetailStructure) -> SectorDetailSchema:
+    return {
+        "basicInfo": sector.basic_info,
+        "growthRate": sector.growth_rate,
+    }
 
+def convert_market_structure(market: MarketDetailStructure) -> MarketDetailSchema:
+    return {
+        "details": market.details,
+        "calculationLogic": market.calculation_logic,
+    }
+    
 def convert_s3_metrics(metrics_in_s3: MetricSchema) -> Metric:
     metric: Metric = {
         "explanation": metrics_in_s3.get("explanation"),
@@ -325,6 +356,22 @@ def convert_s3_metrics(metrics_in_s3: MetricSchema) -> Metric:
     }
 
     return metric
+
+def convert_s3_sector_points(sector_points_in_s3: SectorDetailSchema) -> SectorDetailPoints:
+    sector: SectorDetailPoints = {
+        "basic_info": sector_points_in_s3.get('basicInfo'),
+        "growth_rate": sector_points_in_s3.get('growthRate'),
+    }
+
+    return sector
+
+def convert_s3_market_points(market_points_in_s3: MarketDetailSchema) -> MarketDetailPoints:
+    market: MarketDetailPoints = {
+        "details": market_points_in_s3.get('details'),
+        "calculation_logic": market_points_in_s3.get('calculationLogic'),
+    }
+
+    return market
 
 
 def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoSchema) -> ProcessedProjectInfo:
@@ -338,10 +385,12 @@ def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoS
     industry_details_in_s3: ProcessedIndustryAndForecastsSchema = project_info_in_s3.get("industryDetails")
 
     industry_details: IndustryDetailsAndForecast = {
-        "industry_details_and_forecast": industry_details_in_s3.get("industryDetailsAndForecast"),
-        "total_addressable_market": industry_details_in_s3.get("totalAddressableMarket"),
-        "serviceable_addressable_market": industry_details_in_s3.get("serviceableAddressableMarket"),
-        "serviceable_obtainable_market": industry_details_in_s3.get("serviceableObtainableMarket"),
+        "sector_details": convert_s3_sector_points(industry_details_in_s3.get("sectorDetails")),
+        "sub_sector_details": convert_s3_sector_points(industry_details_in_s3.get("subSectorDetails")),
+        "total_addressable_market": convert_s3_market_points(industry_details_in_s3.get("totalAddressableMarket")),
+        "serviceable_addressable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableAddressableMarket")),
+        "serviceable_obtainable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableObtainableMarket")),
+        "profit_margins": convert_s3_market_points(industry_details_in_s3.get("profitMargins")),
     }
 
     startup_metrics_in_s3: ProcessesStartupMetricsSchema = project_info_in_s3.get("startupMetrics")
@@ -399,6 +448,95 @@ def scrape_additional_links_and_update_project_info(
         project_info["contentOfAdditionalUrls"] = content_of_scrapped_urls
     return project_info
 
+def get_agent_status_file_content(agent_status_file_path: str):
+    try:
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=f"crowd-fund-analysis/{agent_status_file_path}")
+        project_file_contents: ProjectStatusFileSchema = json.loads(response['Body'].read().decode('utf-8'))
+        return project_file_contents
+    except s3_client.exceptions.NoSuchKey:
+        print(traceback.format_exc())
+        raise FileNotFoundError(
+            f"agent-status.json not found in S3 at path: s3://{BUCKET_NAME}/crowd-fund-analysis/{agent_status_file_path}"
+        )
+        
+def repopulate_project_field(project_id: str, field: RepopulatableFields):
+    """
+    Generic function to repopulate a specific field in 'processedProjectInfo'.
+    Only updates the specified field and keeps other data intact.
+    """
+    agent_status_file_path = get_project_status_file_path(project_id)
+    project_file_contents = get_agent_status_file_content(agent_status_file_path)
+    project_info_in_s3 = project_file_contents.get("processedProjectInfo", {})
+
+    # Gather required text data for some fields
+    combined_text = (
+        project_info_in_s3.get("contentOfCrowdfundingUrl", "") +
+        project_info_in_s3.get("contentOfWebsiteUrl", "") +
+        project_info_in_s3.get("secInfo", {}).get("secMarkdownContent", "")
+    )
+
+    if field == RepopulatableFields.INDUSTRY_DETAILS.value:
+        print("Repopulating industry details...")
+        industry_and_forecast_structure = get_project_industry_and_forecasts_info(combined_text)
+        project_info_in_s3["industryDetails"] = {
+            "sectorDetails": convert_sector_structure(industry_and_forecast_structure.sector_details),
+            "subSectorDetails": convert_sector_structure(industry_and_forecast_structure.sub_sector_details),
+            "totalAddressableMarket": convert_market_structure(industry_and_forecast_structure.total_addressable_market),
+            "serviceableAddressableMarket": convert_market_structure(industry_and_forecast_structure.serviceable_addressable_market),
+            "serviceableObtainableMarket": convert_market_structure(industry_and_forecast_structure.serviceable_obtainable_market),
+            "profitMargins": convert_market_structure(industry_and_forecast_structure.profit_margins)
+        }
+
+    elif field == RepopulatableFields.STARTUP_METRICS.value:
+        print("Repopulating startup metrics...")
+        startup_metrics_structure = get_startup_metrics_info(combined_text)
+        project_info_in_s3["startupMetrics"] = {
+            "growthRate": convert_metric_structure(startup_metrics_structure.growth_rate),
+            "organicVsPaidGrowth": convert_metric_structure(startup_metrics_structure.organic_vs_paid_growth),
+            "virality": convert_metric_structure(startup_metrics_structure.virality),
+            "networkEffect": convert_metric_structure(startup_metrics_structure.network_effect),
+            "customerAcquisitionCost": convert_metric_structure(startup_metrics_structure.customer_acquisition_cost),
+            "unitEconomics": convert_metric_structure(startup_metrics_structure.unit_economics),
+            "retentionRate": convert_metric_structure(startup_metrics_structure.retention_rate),
+            "magicMoment": convert_metric_structure(startup_metrics_structure.magic_moment),
+            "netPromoterScore": convert_metric_structure(startup_metrics_structure.net_promoter_score),
+            "customerLifetimeValue": convert_metric_structure(startup_metrics_structure.customer_lifetime_value),
+            "paybackPeriod": convert_metric_structure(startup_metrics_structure.payback_period),
+            "revenueGrowth": convert_metric_structure(startup_metrics_structure.revenue_growth),
+            "churnRate": convert_metric_structure(startup_metrics_structure.churn_rate),
+        }
+
+    elif field == RepopulatableFields.STARTUP_SUMMARY.value:
+        print("Repopulating startup summary...")
+        project_info_in_s3["startupSummary"] = get_startup_summary(
+            project_info_in_s3.get("contentOfCrowdfundingUrl", "") +
+            project_info_in_s3.get("contentOfWebsiteUrl", "")
+        )
+
+    elif field == RepopulatableFields.SEC_INFO.value:
+        print("Repopulating SEC info...")
+        sec_filing_url = project_file_contents.get("projectInfoInput", {}).get("secFilingUrl", "").strip()
+        project_info_in_s3["secInfo"] = get_sec_info(sec_filing_url)
+
+    elif field == RepopulatableFields.CROWDFUNDING_CONTENT.value:
+        print("Repopulating crowdfunding content...")
+        project_input = project_file_contents.get("projectInfoInput", {})
+        project_info_in_s3["contentOfCrowdfundingUrl"] = scrape_and_clean_content_with_same_details(
+            project_input.get("crowdFundingUrl")
+        )
+
+    elif field == RepopulatableFields.WEBSITE_CONTENT.value:
+        print("Repopulating website content...")
+        project_input = project_file_contents.get("projectInfoInput", {})
+        project_info_in_s3["contentOfWebsiteUrl"] = scrape_and_clean_content_with_same_details(
+            project_input.get("websiteUrl")
+        )
+
+    # Save back to S3
+    project_file_contents["processedProjectInfo"] = project_info_in_s3
+    upload_to_s3(json.dumps(project_file_contents, indent=4), f"{project_id}/agent-status.json", "application/json")
+
+    print(f"Repopulated '{field}' uploaded to S3 for project {project_id}.")
 
 def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
     """
@@ -411,15 +549,7 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
     """
     # ----------------------- 1) Download agent-status.json -----------------------
     agent_status_file_path = get_project_status_file_path(project_id)
-
-    try:
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=f"crowd-fund-analysis/{agent_status_file_path}")
-        project_file_contents: ProjectStatusFileSchema = json.loads(response['Body'].read().decode('utf-8'))
-    except s3_client.exceptions.NoSuchKey:
-        print(traceback.format_exc())
-        raise FileNotFoundError(
-            f"agent-status.json not found in S3 at path: s3://{BUCKET_NAME}/crowd-fund-analysis/{agent_status_file_path}"
-        )
+    project_file_contents = get_agent_status_file_content(agent_status_file_path)
 
     # ----------------------- 2) Gather the current URLs -------------------------
     project_input: ProjectInfoInputSchema = project_file_contents.get("projectInfoInput", {})
@@ -487,16 +617,24 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
         "contentOfWebsiteUrl")
     combined_text = crowd_funding_and_website_content + project_info_in_s3.get("secInfo").get("secMarkdownContent")
     if project_info_in_s3.get("industryDetails") is None or project_info_in_s3.get("industryDetails").get(
-            "industryDetailsAndForecast") is None:
+            "sectorDetails") is None:
         print("Industry Details are missing. Scraping Industry Details.")
         industry_and_forecast_structure = get_project_industry_and_forecasts_info(
             combined_text
         )
+        sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sector_details),
+        sub_sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sub_sector_details),
+        total_addressable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.total_addressable_market)
+        serviceable_addressable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.serviceable_addressable_market)
+        serviceable_obtainable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.serviceable_obtainable_market)
+        profit_margins: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.profit_margins)
         project_info_in_s3["industryDetails"] = {
-            "industryDetailsAndForecast": industry_and_forecast_structure.industry_details_and_forecast,
-            "totalAddressableMarket": industry_and_forecast_structure.total_addressable_market,
-            "serviceableAddressableMarket": industry_and_forecast_structure.serviceable_addressable_market,
-            "serviceableObtainableMarket": industry_and_forecast_structure.serviceable_obtainable_market,
+            "sectorDetails": sector_details,
+            "subSectorDetails": sub_sector_details,
+            "totalAddressableMarket": total_addressable_market,
+            "serviceableAddressableMarket": serviceable_addressable_market,
+            "serviceableObtainableMarket": serviceable_obtainable_market,
+            "profitMargins": profit_margins
         }
 
     # or check any of the fields in none
