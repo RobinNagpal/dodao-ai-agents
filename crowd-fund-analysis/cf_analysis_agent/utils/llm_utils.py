@@ -85,7 +85,6 @@ def scrape_and_clean_content_with_same_details(url: str) -> str:
 
     scrapped_content = scrape_url(url)
     prompt = f"""Remove the duplicates from the below content, but don't remove any information.
-        Be as detailed as possible. Don't remove any information at all. 
         Write the content in well structured markdown format and make sure images are not given width more than 300px
         Be as detailed as possible. Don't remove any information at all. 
         
@@ -94,3 +93,15 @@ def scrape_and_clean_content_with_same_details(url: str) -> str:
     cleaned_up_contents = structured_llm_response(MINI_4_0_CONFIG, "scrape_and_clean_content_with_same_details", prompt)
 
     return cleaned_up_contents
+
+def get_startup_summary(projectInfo: str) -> str:
+    """
+    Generate startup summary from the project info (crowd funding and website scrapped content)
+    """
+    prompt = f"""Provide a summary of the startup in 3-4 sentenctes and in next paragraph provide the amount of money that 
+        they are raising in the current crowdfunding round and the valuation, using the below content:
+        
+        {projectInfo}
+    """
+    startup_summary = structured_llm_response(MINI_4_0_CONFIG, "generate_startup_sumamry", prompt)
+    return startup_summary

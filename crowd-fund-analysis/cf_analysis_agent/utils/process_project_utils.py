@@ -9,7 +9,7 @@ from cf_analysis_agent.agent_state import ProcessingStatus, ProcessedProjectInfo
 from cf_analysis_agent.structures.form_c_structures import StructuredFormCResponse
 from cf_analysis_agent.structures.startup_metrics import StartupMetricsStructure, IndustryDetailsAndForecastStructure, \
     MetricStructure
-from cf_analysis_agent.utils.llm_utils import structured_llm_response, MINI_4_0_CONFIG, \
+from cf_analysis_agent.utils.llm_utils import get_startup_summary, structured_llm_response, MINI_4_0_CONFIG, \
     scrape_and_clean_content_with_same_details, get_llm, NORMAL_4_0_CONFIG
 from cf_analysis_agent.utils.project_utils import scrape_urls
 from cf_analysis_agent.utils.report_utils import get_project_status_file_path, ProcessedProjectInfoSchema, \
@@ -452,6 +452,7 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
                         or project_info_in_s3.get("secInfo") is None
                         or project_info_in_s3.get("industryDetails") is None
                         or project_info_in_s3.get("startupMetrics") is None
+                        or project_info_in_s3.get("startupSummary") is None
                         )
 
     print(f"Project Info Needs Processing: {needs_processing}")
@@ -468,12 +469,12 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
 
     if project_info_in_s3.get("contentOfCrowdfundingUrl") is None or project_info_in_s3.get(
             "contentOfCrowdfundingUrl") == "":
-        print("SEC Raw Content is missing. Scraping SEC Filing URL.")
+        print("Crowd Funding Website Content is missing. Scraping Crowd Funding URL.")
         project_info_in_s3["contentOfCrowdfundingUrl"] = scrape_and_clean_content_with_same_details(
             project_input.get("crowdFundingUrl"))
 
     if project_info_in_s3.get("contentOfWebsiteUrl") is None or project_info_in_s3.get("contentOfWebsiteUrl") == "":
-        print("SEC Raw Content is missing. Scraping SEC Filing URL.")
+        print("Website Content is missing. Scraping Website URL.")
         project_info_in_s3["contentOfWebsiteUrl"] = scrape_and_clean_content_with_same_details(
             project_input.get("websiteUrl"))
 
@@ -482,8 +483,9 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
         print("SEC Info is missing. Scraping SEC Filing URL.")
         project_info_in_s3["secInfo"] = get_sec_info(sec_filing_url)
 
-    combined_text = project_info_in_s3.get("contentOfCrowdfundingUrl") + project_info_in_s3.get(
-        "contentOfWebsiteUrl") + project_info_in_s3.get("secInfo").get("secMarkdownContent")
+    crowd_funding_and_website_content = project_info_in_s3.get("contentOfCrowdfundingUrl") + project_info_in_s3.get(
+        "contentOfWebsiteUrl")
+    combined_text = crowd_funding_and_website_content + project_info_in_s3.get("secInfo").get("secMarkdownContent")
     if project_info_in_s3.get("industryDetails") is None or project_info_in_s3.get("industryDetails").get(
             "industryDetailsAndForecast") is None:
         print("Industry Details are missing. Scraping Industry Details.")
@@ -536,9 +538,12 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
             "revenueGrowth": revenue_growth,
             "churnRate": churn_rate,
         }
+        
+    if project_info_in_s3.get("startupSummary") is None or project_info_in_s3.get("startupSummary") == "":
+        print("Startup Summary is missing. Generating Startup Summary.")
+        project_info_in_s3["startupSummary"] = get_startup_summary(crowd_funding_and_website_content)
 
     project_file_contents["processedProjectInfo"] = project_info_in_s3
-
     upload_to_s3(
         content=json.dumps(project_file_contents, indent=4),
         s3_key=f"{project_id}/agent-status.json",
