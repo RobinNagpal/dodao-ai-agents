@@ -6,3 +6,4 @@
 - [Architecture](./003_architecture.md)
 - [Technical Details](./004_technical_details.md)
 - [Tasks](./005_tasks.md)
+  - [Crowd Funding](./005_z01_crowd_fundin_tasks.md)
