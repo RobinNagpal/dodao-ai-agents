@@ -51,7 +51,7 @@ def route_single_or_all(state: AgentState) -> Sequence[str]:
     Routes execution to either a single report node or all nodes.
     """
     if state["report_input"] == "all":
-        return "generate_all_reports_serially"  # Convert dict_keys to list
+        return AgentNodes.GENERATE_ALL_REPORTS_SERIALLY
     elif state["report_input"] == 'finalReport':
         return 'create_final_report_test'
     else:
@@ -62,11 +62,12 @@ def generate_all_reports_serially(state: AgentState):
     """
     Generates all reports serially.
     """
-    create_general_info_report(state)
-    create_relevant_links_report(state)
     create_founder_and_team_report(state)
+    create_traction_report(state)
+    create_execution_and_speed_report(state)
+    create_market_opportunity_report(state)
+    create_valuation_report(state)
     create_financial_health_report(state)
-    create_final_report(state)
 
 
 builder = StateGraph(AgentState)

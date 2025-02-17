@@ -106,6 +106,7 @@ class ProcessedProjectInfoSchema(TypedDict):
     Stores combined text results after scraping the various
     URLs for this project, plus a timestamp for when it was last updated.
     """
+    startupSummary: str
     additionalUrlsUsed: List[str]
     contentOfAdditionalUrls: str
     contentOfCrowdfundingUrl: str
@@ -331,7 +332,8 @@ def update_project_file(project_id: str, project_file_contents: ProjectStatusFil
                 "serviceableObtainableMarket": industry_details.get("serviceableObtainableMarket")
             },
             "lastUpdated": project_file_contents["processedProjectInfo"].get("lastUpdated"),
-            "status": project_file_contents["processedProjectInfo"].get("status")
+            "status": project_file_contents["processedProjectInfo"].get("status"),
+            "startupSummary": project_file_contents["processedProjectInfo"].get("startupSummary")
         },
         "reports": new_reports
     }
