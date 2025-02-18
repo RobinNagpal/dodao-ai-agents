@@ -13,50 +13,52 @@ def generate_market_opportunity_report(state: AgentState) -> StructuredReportRes
     Uses the LLM to critically evaluate market opportunity including TAM, SAM, SOM analysis
     """
     combined_content = get_combined_content(state)
+    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
+    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+
+    tam = state.get("processed_project_info").get('industry_details').get('total_addressable_market').get('details')
+    sam = state.get("processed_project_info").get('industry_details').get('serviceable_addressable_market').get('details')
+    som = state.get("processed_project_info").get('industry_details').get('serviceable_obtainable_market').get('details')
+    pm = state.get("processed_project_info").get('industry_details').get('total_addressable_market').get('details')
 
     prompt = f"""
-    You are an expert market analyst evaluating a startup's market opportunity. Analyze this information:
+    You are an expert startup investor. Analyze that the market opportunity that can be captured by this startup:
     
-
-    **Task**:
-    1. Conduct a critical analysis of the market opportunity focusing SPECIFICALLY on the startup's target sector. Dont user
-    the provided numbers. Use you own knowledge and research to provide a realistic assessment of the market opportunity.:
-       a) Total Addressable Market (TAM): 
-          - Calculate realistic and not optimistic TAM using bottom-up approach
-          - Detail assumptions: Geographic limits, customer demographics, pricing constraints
-          - Compare with startup's claimed TAM (if any)
-          
-       b) Serviceable Available Market (SAM):
-          - Identify realistically obtainable market share considering competition
-          - Factor in regulatory constraints and market entry barriers
-          - Compare with startup's SAM claims
-          
-       c) Serviceable Obtainable Market (SOM):
-          - Estimate achievable market share in 3-5 years
-          - Consider startup's resources, competition, and go-to-market strategy
-          - Compare with startup's projections
-
-    2. For each metric (TAM/SAM/SOM):
-       - Explain your calculation methodology
-       - Highlight sector-specific risks and opportunities
-       - State whether the startup's claims are realistic (Support with evidence)
-       - Provide realistic and not optimistic estimates with detailed rationale
-
-    3. Critical evaluation requirements:
-       - Challenge assumptions in the provided content
-       - Identify gaps between claims and market reality
-       - Flag any optimistic biases in the startup's numbers
-       - Consider substitute products and market saturation risks
-
-    4. Final assessment:
-       - Overall realism of market opportunity claims
-       - Key risks and validation needs
-       - Recommended realistic and not optimistic adjustments
-
-    Present your analysis with clear section headings and logical flow. Maintain rigorous skepticism while being fair.
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
     
-    {create_prompt_for_checklist('Market Opportunity Analysis')}
-        
+    Then rate the market opportunity on the following parameters and also explain:
+    1. Total Addressable Market (TAM), Serviceable Available Market (SAM) applicable to this startup specifically. 
+       Make sure to include numerical data to support your analysis.
+    2. Serviceable Obtainable Market (SOM) and Unique value proposition applicable to this startup specifically. Make sure to consider the 
+       sales done in the past by the startup to calculate this. Consider the real sales done so far to calculate this. 
+       Make sure to include numerical data to support your analysis.
+    3. Competition in the sector and how the startup is positioned in the sector. How many other startups are there. How 
+       much money is needed etc. If there are multiple 200M+ startups in the sector, then the competition is high. Make sure 
+       to include numerical data to support your analysis. Make sure to consider the amount of money needed to compete in the
+       sector.
+    4. Profit margins of the startup and other startups in this sector. Make sure to include numerical data to support your analysis.
+    5. The growth rate of the startup in terms of users, customers, and revenue. Make sure to consider for this sector and not take the 
+       sector's growth rate as such. Consider the real sales done so far to calculate this. We should calculate this conservatively. Make sure 
+       to include numerical data to support your analysis.
+    
+    Make sure to evaluate on these criteria and to use as much numerical data as possible to make your analysis more accurate.
+    
+    Make sure to include numerical data for each of the points support your analysis.
+
+    For sector based TAM, SAM, SOM, and profit margins consider the following:
+    - TAM: {tam}
+    - SAM: {sam}
+    - SOM: {som}
+    - Profit Margins: {pm} 
+    Make sure you evaluate the TAM, SAM, SOM, and profit margins based this sector and explain how this startup compares to the sector. We just dont
+    want to take the same numbers as the sector but we want to evaluate the startup based on specific things applicable to the startup.
+    
+    {create_prompt_for_checklist('Market opportunity of the startup')}
+
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
+    
+    Here is the information you have about the startup:
+    
     {combined_content}
     """
 

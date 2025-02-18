@@ -19,66 +19,50 @@ def generate_execution_and_speed_report(state: AgentState) -> StructuredReportRe
     """
     combined_content = get_combined_content(state)
 
+    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
+    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+
+    # Prompt to instruct the LLM to focus only on traction
     prompt = f"""
-    You are an operations analyst specializing in startup execution velocity assessment. Analyze the company's 
-    execution speed and milestone achievement based on their reports and industry benchmarks:
-
-    **Execution & Speed Report Requirements**:
-
-    1. **Execution Timeline Overview**:
-       - Key milestones achieved with dates (product launches, funding rounds, partnerships)
-       - Time between major milestones compared to initial projections
-       - Critical path analysis for core objectives
-       - Pivot frequency and adaptation speed
-
-    2. **Development Velocity**:
-       - Feature rollout rate and update frequency
-       - Product iteration cycle time analysis
-       - Technical debt management impact on speed
-       - Team output metrics (e.g., story points completed, PR velocity)
-
-    3. **Time Efficiency Metrics**:
-       - Average time per milestone category (development, regulatory, partnerships)
-       - Bottleneck identification in execution processes
-       - Acceleration patterns before/after funding rounds
-       - Downtime/Setback analysis between milestones
-
-    4. **Resource Utilization**:
-       - Team size vs output efficiency ratio
-       - Tooling/process effectiveness assessment
-       - Outsourcing impact on execution speed
-       - Meeting/communication overhead analysis
-
-    5. **Industry Comparison**:
-       - Sector-specific pace benchmarks (feature development, market entry)
-       - Competitor milestone achievement timelines
-       - Funding-to-execution efficiency ratios
-       - Regulatory/compliance speed comparisons
-
-    **Required Analysis**:
-    - Identify execution accelerators and impediments
-    - Highlight velocity trends over time
-    - Compare actual vs projected timelines
-    - Assess team responsiveness to market changes
-    - Evaluate technical and operational scalability
-    - Analyze risk management impact on pace
-
-    **Format Requirements**:
-    - Use markdown formatting with clear section headers
-    - Present industry comparisons in table format
-    - Highlight critical path dependencies in bold
-    - Maintain analytical tone with actionable insights
-    - Include both quantitative metrics and qualitative assessments
-
-    Return complete execution velocity analysis only.
+    You are an expert startup valuation and assessment analyst. Analyze that the speed and progress claimed by the startup is good or not:
     
-    {create_prompt_for_checklist('Execution and Speed of Team')}
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
+
+    Then rate the execution and speed, and also explain if the speed is bad, okay or great:
+    1. Evidence of market validation (pilots, LOIs, testimonials) and number of overall reach of users or customers done so far. Make sure to 
+       include numerical data to support your analysis.
+    2. Amount of real paid order or customers that the startup has achieved so far(in the past), and in how much time. Make sure to include numerical data to support your analysis.   
+    3. Number of iterations and the progress done on the product or service done so far. Make sure to include numerical data to support your analysis. 
+    4. Speed of growth of the startup in terms of overall progress, customers, and revenue. When did the startup start, and from the time it started to now how much progress it has made. 
+       Make sure to include numerical data to support your analysis.
+    5. How does the progress compare to other incumbents in the industry? Based on the current progress can the startup compete with the incumbents in in the next 1, 3, and 5 years.
+       This should be based on the progress startup has made so far. Make sure to include numerical data to support your analysis.
+    
+    Make sure to evaluate on these criteria and to use as much numerical data as possible to make your analysis more accurate.
+    
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
+    
+    Make sure to include numerical data for each of the points support your analysis.
+
+    Here is some information related to the sector of such a startup:
+    {sector_info}
+    
+    Here is some information related to the sector of such a startup:
+    {sub_sector_info}
+
+    
+    {create_prompt_for_checklist('Execution and Speed of the startup')}
     
     Here is the information you have about the startup:
     
     {combined_content}
-
     """
+
+    return structured_report_response(
+        state.get("config"),
+        "detailed_traction_report",
+        prompt
+    )
 
     return structured_report_response(
         state.get("config"),

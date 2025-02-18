@@ -7,3 +7,8 @@ run-image:
 	docker rm cf-analysis-container || true
 	docker run -it -p 9500:5000 --name cf-analysis-container 729763663166.dkr.ecr.us-east-1.amazonaws.com/crowd-fund-analysis:latest env
 
+activate-venv:
+	.venv/bin/activate
+
+run-project:
+	poetry run python cf_analysis_agent/app.py

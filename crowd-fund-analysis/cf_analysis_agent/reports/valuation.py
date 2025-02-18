@@ -29,38 +29,32 @@ def generate_valuation_report(state: AgentState) -> StructuredReportResponse:
     prompt = f"""
     You are an expert startup valuation analyst. Analyze that the valuation set by the company for the crowdfunding round is fair or not:
     
+    Then rate the valuation set by the company for the crowdfunding round on the following criteria and also explain 
+    if the valuation is justified, undervalued or overvalued:
+    1. Valuation based on the type of industry, sector, and the market size (TAM, SAM, and SOM). Make sure to include numerical data to support your analysis.
+    2. Valuation based on the traction and progress of the startup i.e. the traction the startup has achieved so far. Make sure to include numerical data to support your analysis.
+    3. Valuation based on the past sales the startup has achieved so far. Make to find and consider only the sales done so far. Make sure to include numerical data to support your analysis.
+    4. Valuation based on the realistic revenue in next 1, 3, and 5 years. This should be realistic and conservative. Make sure to include numerical data to support your analysis.
+    5. Valuation based on the realistic profit margins and profits which can be generated in the next 1, 3, and 5 years. This should be realistic and conservative. Make sure to include numerical data to support your analysis.
+
+    Make sure to evaluate on these criteria and to use as much numerical data as possible to make your analysis more accurate.
+    
+    Make sure to include numerical data for each of the points support your analysis.
+
     Here is some information related to the sector of such a startup:
     {sector_info}
     
     Here is some information related to the sector of such a startup:
     {sub_sector_info}
     
-    When considering the valuation consider 
-    1. Total Addressable Market (TAM) and here is the TAM info for the sector: {tam}
-    2. Serviceable Available Market (SAM) and here is the SAM info for the sector: {sam}
-    3. Serviceable Obtainable Market (SOM) and here is the SOM info for the sector: {som}
-    
-    Based on the information available, calculate 
-    1. Yearly revenue based valuation using realistic revenue projections. Do it next 1, 3, and 5 years.
-    2. Calculate the profit margins and the profits which can be generated in the next 1, 3, and 5 years. Here is some info
-    on profit margins for the sector: {pm}
-    
-    Then based on this information calculate the valuation.
-    
-    Then rate the valuation set by the company for the crowdfunding round on the following criteria and also explain 
-    if the valuation is justified, undervalued or overvalued:
-    1. Valuation based on the type of industry, sector, and the market size (TAM, SAM, and SOM).
-    2. Valuation based on the traction and progress of the startup.
-    3. Valuation based on the past sales the startup has achieved so far.
-    4. Valuation based on the realistic revenue in next 1, 3, and 5 years.
-    5. Valuation based on the realistic profit margins and profits which can be generated in the next 1, 3, and 5 years
-
-    Make sure to use as much numerical data as possible to make your analysis more accurate.
-    
-    Return final valuation analysis only.
-    
     {create_prompt_for_checklist('Company Valuation')}
-    
+
+    for TAM, SAM, SOM, and profit margins consider the following:
+    - TAM: {tam}
+    - SAM: {sam}
+    - SOM: {som}
+    - Profit Margins: {pm} 
+
     Here is the information you have about the startup:
     {combined_content}
     
