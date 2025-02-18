@@ -385,8 +385,8 @@ def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoS
     industry_details_in_s3: ProcessedIndustryAndForecastsSchema = project_info_in_s3.get("industryDetails")
 
     industry_details: IndustryDetailsAndForecast = {
-        "sector_details": convert_s3_sector_points(industry_details_in_s3.get("sectorDetails")),
-        "sub_sector_details": convert_s3_sector_points(industry_details_in_s3.get("subSectorDetails")),
+        "sector_details": convert_s3_sector_points(industry_details_in_s3.get("sectorDetails", [{}])[0]),
+        "sub_sector_details": convert_s3_sector_points(industry_details_in_s3.get("subSectorDetails", [{}])[0]),
         "total_addressable_market": convert_s3_market_points(industry_details_in_s3.get("totalAddressableMarket")),
         "serviceable_addressable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableAddressableMarket")),
         "serviceable_obtainable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableObtainableMarket")),
