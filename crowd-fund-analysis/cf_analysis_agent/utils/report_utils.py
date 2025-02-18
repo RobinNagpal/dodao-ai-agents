@@ -346,10 +346,12 @@ def update_project_file(project_id: str, project_file_contents: ProjectStatusFil
 
             },
             "industryDetails": {
-                "industryDetailsAndForecast": industry_details.get("industryDetailsAndForecast"),
+                "sectorDetails": industry_details.get('sectorDetails'),
+                "subSectorDetails": industry_details.get('subSectorDetails'),
                 "totalAddressableMarket": industry_details.get("totalAddressableMarket"),
                 "serviceableAddressableMarket": industry_details.get("serviceableAddressableMarket"),
-                "serviceableObtainableMarket": industry_details.get("serviceableObtainableMarket")
+                "serviceableObtainableMarket": industry_details.get("serviceableObtainableMarket"),
+                "profitMargins": industry_details.get('profitMargins')
             },
             "lastUpdated": project_file_contents["processedProjectInfo"].get("lastUpdated"),
             "status": project_file_contents["processedProjectInfo"].get("status"),
