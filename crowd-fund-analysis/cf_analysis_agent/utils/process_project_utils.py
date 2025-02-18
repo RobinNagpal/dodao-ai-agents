@@ -385,8 +385,8 @@ def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoS
     industry_details_in_s3: ProcessedIndustryAndForecastsSchema = project_info_in_s3.get("industryDetails")
 
     industry_details: IndustryDetailsAndForecast = {
-        "sector_details": convert_s3_sector_points(industry_details_in_s3.get("sectorDetails", [{}])[0]),
-        "sub_sector_details": convert_s3_sector_points(industry_details_in_s3.get("subSectorDetails", [{}])[0]),
+        "sector_details": convert_s3_sector_points(industry_details_in_s3.get("sectorDetails")),
+        "sub_sector_details": convert_s3_sector_points(industry_details_in_s3.get("subSectorDetails")),
         "total_addressable_market": convert_s3_market_points(industry_details_in_s3.get("totalAddressableMarket")),
         "serviceable_addressable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableAddressableMarket")),
         "serviceable_obtainable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableObtainableMarket")),
@@ -621,8 +621,8 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
         industry_and_forecast_structure = get_project_industry_and_forecasts_info(
             combined_text
         )
-        sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sector_details),
-        sub_sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sub_sector_details),
+        sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sector_details)
+        sub_sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sub_sector_details)
         total_addressable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.total_addressable_market)
         serviceable_addressable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.serviceable_addressable_market)
         serviceable_obtainable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.serviceable_obtainable_market)
