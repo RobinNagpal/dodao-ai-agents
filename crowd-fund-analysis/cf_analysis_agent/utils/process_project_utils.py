@@ -621,8 +621,8 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
         industry_and_forecast_structure = get_project_industry_and_forecasts_info(
             combined_text
         )
-        sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sector_details),
-        sub_sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sub_sector_details),
+        sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sector_details)
+        sub_sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sub_sector_details)
         total_addressable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.total_addressable_market)
         serviceable_addressable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.serviceable_addressable_market)
         serviceable_obtainable_market: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.serviceable_obtainable_market)
