@@ -180,7 +180,7 @@ def get_project_industry_and_forecasts_info(project_text: str) -> IndustryDetail
     
     Dont reply on the information shared in the project details. You have to provide the information based on your own knowledge.
     
-    output the information in a structured format  and in the following JSON format: 
+    Output the information in a structured format and in the following JSON format: 
     { 
       "sector_details": {
         "basic_info": "Your detailed analysis of the sector/industry.",
