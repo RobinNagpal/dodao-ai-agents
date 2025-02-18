@@ -110,7 +110,23 @@ class AgentState(TypedDict):
     config: Config
     final_report: FinalReport | None
 
-
+def get_combined_content_for_valuation(state: AgentState) -> str:
+    processes_project_info: ProcessedProjectInfo = state.get("processed_project_info")
+    content_of_additional_urls = processes_project_info.get("content_of_additional_urls")
+    content_of_crowdfunding_url = processes_project_info.get("content_of_crowdfunding_url")
+    content_of_website_url = processes_project_info.get("content_of_website_url")
+    
+    combined_content = f"""
+    {content_of_crowdfunding_url}
+    
+    
+    {content_of_website_url}
+    
+    
+    {content_of_additional_urls}  
+    """
+    return combined_content
+    
 def get_combined_content(state: AgentState) -> str:
     """
     Combines all the content from different reports into a single report.

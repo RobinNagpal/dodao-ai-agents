@@ -191,20 +191,20 @@ def get_project_industry_and_forecasts_info(project_text: str) -> IndustryDetail
         "growth_rate": "Growth rate of the sub-sector"
       },
       "total_addressable_market": {
-        "details": "Total addressable market",
-        "calculation_logic": "How Calculation of the total addressable market was done"
+        "details": "Total addressable market. Make sure to include the numerical figures.",
+        "calculation_logic": "How calculation of the total addressable market was done"
       },
       "serviceable_addressable_market": {
-        "details": "Serviceable addressable market",
-        "calculation_logic": "How Calculation of the serviceable addressable market was done"
+        "details": "Serviceable addressable market. Make sure to include the numerical figures.",
+        "calculation_logic": "How calculation of the serviceable addressable market was done"
       },
       "serviceable_obtainable_market": {
-        "details": "Serviceable obtainable market",
-        "calculation_logic": "How Calculation of the serviceable obtainable market was done"
+        "details": "Serviceable obtainable market. Make sure to include the numerical figures.",
+        "calculation_logic": "How calculation of the serviceable obtainable market was done"
       },
       "profit_margins": {
-        "details": "Profitability of the sector/industry",
-        "calculation_logic": "How Calculation of the profit margins was done"
+        "details": "Profitability of the sector/industry. Make sure to include the numerical figures.",
+        "calculation_logic": "How calculation of the profit margins was done"
       }
     }
     
@@ -616,8 +616,7 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
     crowd_funding_and_website_content = project_info_in_s3.get("contentOfCrowdfundingUrl") + project_info_in_s3.get(
         "contentOfWebsiteUrl")
     combined_text = crowd_funding_and_website_content + project_info_in_s3.get("secInfo").get("secMarkdownContent")
-    if project_info_in_s3.get("industryDetails") is None or project_info_in_s3.get("industryDetails").get(
-            "sectorDetails") is None:
+    if project_info_in_s3.get("industryDetails") is None:
         print("Industry Details are missing. Scraping Industry Details.")
         industry_and_forecast_structure = get_project_industry_and_forecasts_info(
             combined_text

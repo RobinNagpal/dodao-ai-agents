@@ -6,3 +6,6 @@ install:
 
 run-test:
 	source .venv/bin/activate && pytest -v ./test
+
+run-test-windows: 
+	source .venv/Scripts/activate && pytest -v ./test

@@ -70,5 +70,7 @@ agent-tools/cdk/node_modules
 agent-tools/cdk/dist
 agent-tools/cdk/cdk.out
 agent-tools/cdk/.env
-
-
+agent-tools/sec-edgar/src/__pycache__/
+agent-tools/sec-edgar/test/__pycache__/
+agent-tools/cdk/package-lock.json
+agent-tools/cdk/yarn.lock
