@@ -231,6 +231,61 @@ def regenerate_specific_report(projectId, report_type):
             "message": f"An error occurred: {str(e)}"
         }), 500
         
+@app.route('/api/projects/reports/<report_type>/regenerate', methods=['POST'])
+def regenerate_specific_report_for_multiple_projects(report_type):
+    """
+    Regenerates a specific report for multiple projects sequentially.
+    """
+    try:
+        # Get admin name from request
+        admin_name, error_response = get_admin_name_from_request()
+        if error_response:
+            return error_response  # If there's an error, return it
+        
+        data = request.get_json(silent=True) or {}  # Handle case if no body was sent
+        project_ids = data.get("projectIds", [])  # List of project IDs
+        model = data.get("model", OPEN_AI_DEFAULT_MODEL)  
+
+        if not isinstance(project_ids, list) or not project_ids:
+            return jsonify({
+                "status": "error",
+                "message": "Invalid or missing 'projectIds'. It should be a non-empty list."
+            }), 400
+
+        # Process each project ID sequentially
+        for project_id in project_ids:
+            try:
+                # Update report status
+                update_report_status_in_progress(project_id=project_id, report_type=report_type, triggered_by=admin_name)
+
+                # Prepare the command to start processing
+                command = prepare_processing_command(project_id, model)
+
+                # Add the report_type to the command
+                command.extend(["--report_type", report_type])
+
+                # Run the process sequentially (blocking execution)
+                subprocess.run(command, check=True)
+
+                print(f"Successfully regenerated {report_type} report for {project_id}")
+
+            except Exception as e:
+                print(f"Failed to regenerate {report_type} report for {project_id}: {str(e)}")
+                continue  # Continue with the next project even if one fails
+
+        return jsonify({
+            "status": "success",
+            "message": f"Regeneration of {report_type} report for multiple projects has completed."
+        }), 200
+
+    except Exception as e:
+        print(traceback.format_exc())
+        return jsonify({
+            "status": "error",
+            "message": f"An error occurred: {str(e)}"
+        }), 500
+
+        
 @app.route('/api/authenticate', methods=['POST'])
 def authenticate():
     data = request.get_json()

@@ -18,25 +18,34 @@ def generate_traction_report(state: AgentState) -> StructuredReportResponse:
     """
     combined_content = get_combined_content(state)
 
+    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
+    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+
     # Prompt to instruct the LLM to focus only on traction
     prompt = f"""
-    You are an expert startup evaluator. You have the following information about a startup:
+    You are an expert startup valuation analyst. Analyze that the traction claimed by the startup is good or not:
 
-    **Task**:
-    1. Determine if the startup has any traction (e.g., paying customers, active users, growth metrics, etc.).
-    2. If there is no traction, explicitly state: "There is no traction."
-    3. If there is traction:
-       - Discuss how good or strong the traction is, taking into account the industry and sector in which this startup operates.
-       - Provide a brief explanation of how these conclusions were derived from the content above.
-    4. When assess its strength as Strong/Moderate/Weak relative to typical industry benchmarks for their sector. Consider:
-         * User/customer growth rate
-         * Revenue/profit trends
-         * Key partnerships or distribution channels secured
-         * Product development stage (MVP, beta, launched)
-         * Evidence of market validation (pilots, LOIs, testimonials)
-    5. The report should be detailed and focus *only* on traction. Do not include information unrelated to traction.
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
 
-    Return your final traction analysis *only*.
+    Then rate the traction and also explain if the traction is bad, okay or great:
+    1. Evidence of market validation (pilots, LOIs, testimonials) and number of overall reach of users or customers done so far. Make sure to include numerical data to support your analysis.
+    2. Number of paying users or customers that the startup has achieved so far. Make sure to include numerical data to support your analysis.
+    3. The revenue generated so far by the startup. Make sure to include numerical data to support your analysis.
+    4. The growth rate of the startup in terms of users, customers, and revenue. Make sure to include numerical data to support your analysis.
+    5. The partnerships and collaborations the startup has achieved so far. Make sure to include numerical data to support your analysis.
+    
+    Make sure to evaluate on these criteria and to use as much numerical data as possible to make your analysis more accurate.
+    
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
+    
+    Make sure to include numerical data for each of the points support your analysis.
+
+    Here is some information related to the sector of such a startup:
+    {sector_info}
+    
+    Here is some information related to the sector of such a startup:
+    {sub_sector_info}
+
     
     {create_prompt_for_checklist('Traction of the startup')}
     

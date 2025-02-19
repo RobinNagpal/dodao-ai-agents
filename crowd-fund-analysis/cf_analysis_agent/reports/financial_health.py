@@ -19,6 +19,40 @@ def generate_financial_health_report(state: AgentState) -> StructuredReportRespo
     """
     combined_content = get_combined_content(state)
 
+    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
+    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+    
+    prompt = f"""
+    You are an expert startup valuation analyst. Analyze that the financial health claimed by the startup is good or not:
+
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
+
+    Then rate the financial health and also explain if the financial health is bad, okay or great:
+    1. Evidence of market validation (pilots, LOIs, testimonials) and number of overall reach of users or customers done so far. Make sure to include numerical data to support your analysis.
+    2. Number of paying users or customers that the startup has achieved so far. Make sure to include numerical data to support your analysis.
+    3. The revenue generated so far by the startup. Make sure to include numerical data to support your analysis.
+    4. The growth rate of the startup in terms of users, customers, and revenue. Make sure to include numerical data to support your analysis.
+    5. The partnerships and collaborations the startup has achieved so far. Make sure to include numerical data to support your analysis.
+    
+    Make sure to evaluate on these criteria and to use as much numerical data as possible to make your analysis more accurate.
+    
+    Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
+    
+    Make sure to include numerical data for each of the points support your analysis.
+
+    Here is some information related to the sector of such a startup:
+    {sector_info}
+    
+    Here is some information related to the sector of such a startup:
+    {sub_sector_info}
+
+    
+    {create_prompt_for_checklist('Financial Health of the startup')}
+    
+    Here is the information you have about the startup:
+    
+    {combined_content}
+    """
     prompt = f"""
     You are a financial analyst specializing in startup financial health assessment. Analyze the company's financial 
     position based on their SEC Form C filings and industry benchmarks:
