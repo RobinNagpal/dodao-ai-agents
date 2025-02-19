@@ -5,18 +5,6 @@ use_local_storage()
 
 set_identity("your_email@example.com")
 
-def make_json_serializable(obj):
-    if isinstance(obj, pd.DataFrame):
-        return obj.to_dict(orient="records")
-    elif isinstance(obj, pd.Series):
-        return obj.to_list()
-    elif isinstance(obj, dict):
-        return {k: make_json_serializable(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [make_json_serializable(x) for x in obj]
-    else:
-        return obj
-
 search_map = {
     "balance_sheet": [
         "balance sheet"
@@ -85,14 +73,11 @@ def get_xbrl_financials(ticker):
 
     fin = tenq.financials
 
-    def safe_get_base(obj):
-        return obj.get_base_items() if obj else None
-
-    balance_sheet = safe_get_base(fin.balance_sheet)
-    income_stmt   = safe_get_base(fin.income)
-    cash_flow     = safe_get_base(fin.cashflow)
-    equity        = safe_get_base(fin.equity)
-    comp_income   = safe_get_base(fin.comprehensive_income)
+    balance_sheet = str(fin.balance_sheet.get_base_items) if fin.balance_sheet else None
+    income_stmt   = str(fin.income.get_base_items) if fin.income else None
+    cash_flow     = str(fin.cashflow.get_base_items) if fin.cashflow else None
+    equity        = str(fin.equity.get_base_items) if fin.equity else None
+    comp_income   = str(fin.comprehensive_income.get_base_items) if fin.comprehensive_income else None
 
     financials_data = {
         "balance_sheet": balance_sheet,
@@ -102,7 +87,7 @@ def get_xbrl_financials(ticker):
         "comprehensive_income": comp_income
     }
 
-    financials_data = make_json_serializable(financials_data)
+    print(financials_data)
 
     return financials_data, None
 

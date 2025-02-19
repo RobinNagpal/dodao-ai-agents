@@ -19,7 +19,7 @@ def test_search_route():
     url = base_lambda_url + "/search"
     payload = {
         "ticker": "AMT",
-        "report_type": "income_statement",  
+        "report_type": "balance_sheet",  
     }
     response = requests.post(url, json=payload)
     print("=== /search Route ===")
@@ -44,7 +44,6 @@ def test_financials_route():
         print("JSON response:", response.json())
     except ValueError:
         print("Raw text response:", response.text)
-
 
 if __name__ == "__main__":
     test_search_route()
