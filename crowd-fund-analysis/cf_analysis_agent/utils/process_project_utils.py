@@ -357,13 +357,18 @@ def convert_s3_metrics(metrics_in_s3: MetricSchema) -> Metric:
 
     return metric
 
-def convert_s3_sector_points(sector_points_in_s3: SectorDetailSchema) -> SectorDetailPoints:
-    sector: SectorDetailPoints = {
-        "basic_info": sector_points_in_s3.get('basicInfo'),
-        "growth_rate": sector_points_in_s3.get('growthRate'),
-    }
+def convert_s3_sector(sector_points_in_s3: SectorDetailSchema) -> SectorDetailPoints:
+    print(f"sector_points_in_s3: {sector_points_in_s3}")
+    # check sector_points_in_s3 is of type dict
+    if sector_points_in_s3 and isinstance(sector_points_in_s3, dict):
+        sector: SectorDetailPoints = {
+            "basic_info": sector_points_in_s3.get('basicInfo'),
+            "growth_rate": sector_points_in_s3.get('growthRate'),
+        }
 
-    return sector
+        return sector
+    else:
+        return None
 
 def convert_s3_market_points(market_points_in_s3: MarketDetailSchema) -> MarketDetailPoints:
     market: MarketDetailPoints = {
@@ -385,8 +390,8 @@ def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoS
     industry_details_in_s3: ProcessedIndustryAndForecastsSchema = project_info_in_s3.get("industryDetails")
 
     industry_details: IndustryDetailsAndForecast = {
-        "sector_details": convert_s3_sector_points(industry_details_in_s3.get("sectorDetails")),
-        "sub_sector_details": convert_s3_sector_points(industry_details_in_s3.get("subSectorDetails")),
+        "sector_details": convert_s3_sector(industry_details_in_s3.get("sectorDetails")),
+        "sub_sector_details": convert_s3_sector(industry_details_in_s3.get("subSectorDetails")),
         "total_addressable_market": convert_s3_market_points(industry_details_in_s3.get("totalAddressableMarket")),
         "serviceable_addressable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableAddressableMarket")),
         "serviceable_obtainable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableObtainableMarket")),
@@ -538,7 +543,7 @@ def repopulate_project_field(project_id: str, field: RepopulatableFields):
 
     print(f"Repopulated '{field}' uploaded to S3 for project {project_id}.")
 
-def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
+def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -> ProcessedProjectInfo:
     """
     Ensures that 'processed_project_info' is present in agent-status.json in S3.
     This function checks if the URLs have changed. If they haven't and 'processed_project_info'
@@ -580,7 +585,7 @@ def ensure_processed_project_info(project_id: str) -> ProcessedProjectInfo:
                         or project_info_in_s3.get("contentOfCrowdfundingUrl") is None
                         or project_info_in_s3.get("contentOfCrowdfundingUrl") == ""
                         or project_info_in_s3.get("secInfo") is None
-                        or project_info_in_s3.get("industryDetails") is None
+                        or project_info_in_s3.get("industryDetails") is None or True
                         or project_info_in_s3.get("startupMetrics") is None
                         or project_info_in_s3.get("startupSummary") is None
                         )
