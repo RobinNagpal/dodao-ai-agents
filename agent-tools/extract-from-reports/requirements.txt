@@ -1,0 +1,4 @@
+# Dependencies specific to the SEC Edgar tool
+boto3
+edgartools
+pytest

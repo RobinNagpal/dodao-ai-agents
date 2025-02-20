@@ -1,3 +1,24 @@
+# Vision
+We are building a platform that will provide raw data, quantitative and qualitative information on each of the
+factor that can affect the performance and valuation of a company. The platform will also keep track of 
+current events, and trends in the industry. Along with this the platform will keep track of sentiment analysis
+of various topics, keywords, products, sectors, and companies.
+
+This information will be created using low level AI tools which will be targeted towards extracting specific information.
+The extracted information will be highly accurate, and will be completely fact and data based. This will include
+both quantitative and qualitative information.
+
+On top of this information, we will build AI agents that will consolidate all this information and provide a reports
+based on the investment style, and investment horizon of the business, analyst, or investor.
+
+For each of the different styles, and different sectors, different agents need to be build to generate accurate reports.
+This definitely looks like a huge effort, but many of these type of reports are not available in the market right now,
+and creating such reports reports using conventional methods will have exorbitant costs.
+
+It is very important that all financial decisions are based on data, and not on gut feeling. This platform will
+help make it easier for the investors to make decisions based on data.
+
+
 # Problem Statement
 There are a few problem statements we are working towards. We right now don't know what will be our first target
 use case or market. May be we will get clarity after we create
