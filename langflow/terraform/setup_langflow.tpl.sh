@@ -6,32 +6,25 @@ export DEBIAN_FRONTEND=noninteractive
 mkdir -p /home/ubuntu/scripts /home/ubuntu/logs
 chown ubuntu:ubuntu /home/ubuntu/logs
 
-# Create the setup script with logging
-cat <<SCRIPT_EOF > /home/ubuntu/scripts/setup_langflow.sh
+cat <<'SCRIPT_EOF' > /home/ubuntu/scripts/setup_langflow.sh
 #!/bin/bash
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
-# Redirect all output to a log file with a timestamp
+# Redirect output to log file
 LOG_FILE="/home/ubuntu/logs/setup.log"
-exec > >(tee -a "\$LOG_FILE") 2>&1
-echo -e "\n[\$(date)] Starting Langflow setup"
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo -e "\n[$(date)] Starting Langflow Docker setup"
 
-# Update and install dependencies (run as root)
+# Update OS and install required packages (including Docker and AWS CLI)
 apt-get update -y
-apt-get install -y python3 python3-pip python3-venv git nginx certbot python3-certbot-nginx
+apt-get install -y docker.io awscli nginx certbot python3-certbot-nginx
 
-# Clone the dodao-ui repository (if not already present)
-if [ ! -d "/home/ubuntu/dodao-ui" ]; then
-  git clone https://github.com/RobinNagpal/dodao-ui.git /home/ubuntu/dodao-ui
-fi
+# Start and enable Docker service
+systemctl start docker
+systemctl enable docker
 
-# Ensure required directories for Langflow flows and components exist
-mkdir -p /home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/flows
-mkdir -p /home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/components
-chown -R ubuntu:ubuntu /home/ubuntu/dodao-ui
-
-# Configure initial Nginx (HTTP only)
+# Configure Nginx as reverse proxy (HTTP configuration)
 rm -f /etc/nginx/sites-enabled/*
 cat <<NGINX_EOF > /etc/nginx/sites-available/langflow
 server {
@@ -39,10 +32,10 @@ server {
   server_name ${langflow_domain};
   location / {
     proxy_pass http://127.0.0.1:7860;
-    proxy_set_header Host $$host;
-    proxy_set_header X-Real-IP $$remote_addr;
-    proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $$scheme;
+    proxy_set_header Host \$host;
+    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto \$scheme;
   }
 }
 NGINX_EOF
@@ -53,55 +46,41 @@ systemctl restart nginx
 # Obtain SSL certificate with retries
 max_retries=5
 retry_count=0
-until [ \$retry_count -ge \$max_retries ]; do
+until [ $retry_count -ge $max_retries ]; do
   certbot --nginx --non-interactive --agree-tos --redirect -m ${certbot_email} -d ${langflow_domain} && break
   retry_count=$((retry_count + 1))
   sleep 60
 done
 
-# Setup Python virtual environment
-python3 -m venv /home/ubuntu/langflow-env
-chown -R ubuntu:ubuntu /home/ubuntu/langflow-env
+# Log in to AWS ECR and pull the Langflow Docker image
+REGION="${aws_region}"
+DOCKER_REGISTRY="${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com"
+IMAGE_TAG="${image_tag}"
+aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
 
-# Install Langflow (run as ubuntu user)
-sudo -u ubuntu bash -c "\
-  source /home/ubuntu/langflow-env/bin/activate && \
-  pip install --upgrade pip && \
-  pip install langflow"
+echo "Pulling Docker image ${DOCKER_REGISTRY}/langflow:${IMAGE_TAG}"
+docker pull $${DOCKER_REGISTRY}/langflow:$${IMAGE_TAG}
 
-# Configure systemd service for Langflow
-cat <<EOF_SERVICE > /etc/systemd/system/langflow.service
-[Unit]
-Description=Langflow Service
-After=network.target
+# Stop and remove any existing container named 'langflow'
+if docker ps -a --format '{{.Names}}' | grep -Eq "^langflow\$"; then
+  docker stop langflow
+  docker rm langflow
+fi
 
-[Service]
-User=ubuntu
-Environment="LANGFLOW_AUTO_LOGIN=False"
-Environment="LANGFLOW_SUPERUSER=${langflow_superuser}"
-Environment="LANGFLOW_SUPERUSER_PASSWORD=${langflow_superuser_password}"
-Environment="LANGFLOW_SECRET_KEY=${langflow_secret_key}"
-Environment="LANGFLOW_DATABASE_URL=${postgres_url}"
-Environment="OPENAI_API_KEY=${openai_api_key}"
-Environment="LANGFLOW_LOAD_FLOWS_PATH=/home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/flows"
-Environment="LANGFLOW_COMPONENTS_PATH=/home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/components"
-ExecStart=/home/ubuntu/langflow-env/bin/langflow run --host 127.0.0.1 --port 7860
-Restart=always
-RestartSec=10
-WorkingDirectory=/home/ubuntu
+# Run the Docker container
+docker run -d --name langflow -p 7860:7860 \
+  -e LANGFLOW_SUPERUSER=${langflow_superuser} \
+  -e LANGFLOW_SUPERUSER_PASSWORD=${langflow_superuser_password} \
+  -e LANGFLOW_SECRET_KEY=${langflow_secret_key} \
+  -e LANGFLOW_DATABASE_URL=${postgres_url} \
+  -e OPENAI_API_KEY=${openai_api_key} \
+  -e LANGFLOW_LOAD_FLOWS_PATH=/home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/flows \
+  -e LANGFLOW_COMPONENTS_PATH=/home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/components \
+  $${DOCKER_REGISTRY}/langflow:$${IMAGE_TAG}
 
-[Install]
-WantedBy=multi-user.target
-EOF_SERVICE
-
-# Enable and start the Langflow service
-systemctl daemon-reload
-systemctl enable langflow.service
-systemctl start langflow.service
-
-echo -e "[\$(date)] Setup completed successfully"
+echo "[$(date)] Langflow Docker container started successfully"
 SCRIPT_EOF
 
-# Make the setup script executable and run it (as root)
+# Make the setup script executable and run it
 chmod +x /home/ubuntu/scripts/setup_langflow.sh
 /home/ubuntu/scripts/setup_langflow.sh
