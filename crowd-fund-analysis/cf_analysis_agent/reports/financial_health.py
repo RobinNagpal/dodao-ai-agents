@@ -28,20 +28,16 @@ def generate_financial_health_report(state: AgentState) -> StructuredReportRespo
     Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
 
     Then rate the financial health and also explain if the financial health is bad, okay or great:
-    1. Evidence of market validation (pilots, LOIs, testimonials) and number of overall reach of users or customers done so far. Make sure to include numerical data to support your analysis.
-    2. Number of paying users or customers that the startup has achieved so far. Make sure to include numerical data to support your analysis.
-    3. The revenue generated so far by the startup. Make sure to include numerical data to support your analysis.
-    4. The growth rate of the startup in terms of users, customers, and revenue. Make sure to include numerical data to support your analysis.
-    5. The partnerships and collaborations the startup has achieved so far. Make sure to include numerical data to support your analysis.
-    
+    1. Yearly revenue of the startup and the growth rate of the revenue. Make sure to include numerical data to support your analysis.
+    2. The burn rate of the startup and the runway of the startup. Compare it with the industry benchmarks. Make sure to include numerical data to support your analysis.
+    3. The fund utilization efficiency of the startup. Do historical spending analysis and compare with industry benchmarks. Make sure to include numerical data to support your analysis.
+    4  The clarity of the new funds allocation. Make sure to include numerical data to support your analysis.
+    5. Runway of the startup. Make sure to include numerical data to support your analysis.    
     Make sure to evaluate on these criteria and to use as much numerical data as possible to make your analysis more accurate.
     
     Make sure to be conservative based on the sales and the progress the startup has done so far. Make sure to include numerical data to support your analysis.
     
     Make sure to include numerical data for each of the points support your analysis.
-
-    Here is some information related to the sector of such a startup:
-    {sector_info}
     
     Here is some information related to the sector of such a startup:
     {sub_sector_info}
@@ -51,62 +47,6 @@ def generate_financial_health_report(state: AgentState) -> StructuredReportRespo
     
     Here is the information you have about the startup:
     
-    {combined_content}
-    """
-    prompt = f"""
-    You are a financial analyst specializing in startup financial health assessment. Analyze the company's financial 
-    position based on their SEC Form C filings and industry benchmarks:
-
-    **Financial Health Report Requirements**:
-
-    1. **Financial Health Overview**:
-       - Current cash position and liquidity analysis
-       - Burn rate calculation (monthly/yearly)
-       - Runway projection based on current financials
-       - Debt-to-equity ratio analysis (if applicable)
-
-    2. **Spending Analysis**:
-       - Historical spending breakdown (past 3 years)
-       - Current expense allocation (R&D, marketing, operations, etc.)
-       - Comparison with industry averages for their sector
-       - Notable spending patterns/red flags
-
-    3. **Fund Utilization Efficiency**:
-       - Capital efficiency analysis ($ spent per unit of traction)
-       - Output generated vs funds consumed (product development, user growth, revenue)
-       - Comparison of spend-to-results ratio with industry peers
-       - Assessment of ROI on previous funding rounds
-
-    4. **New Funds Allocation**:
-       - Clear identification of proposed use of funds from filing
-       - Analysis of allocation percentages to different categories
-       - Assessment of whether planned spending addresses key challenges
-       - Comparison with typical fund allocation patterns in their industry
-
-    5. **Industry Comparison**:
-       - Key financial metrics comparison (burn rate, CAC, LTV, etc.)
-       - Sector-specific financial health benchmarks
-       - Analysis of financial position relative to growth stage
-
-    **Required Analysis**:
-    - Identify any significant deviations from industry norms
-    - Highlight both strengths and weaknesses in financial management
-    - Assess sustainability of current financial trajectory
-    - Evaluate clarity and specificity of new fund allocation plans
-    - Provide recommendations for improving financial health
-
-    **Format Requirements**:
-    - Use markdown formatting with clear section headers
-    - Include both quantitative analysis and qualitative insights
-    - Present industry comparison data in table format
-    - Highlight critical findings in bold
-    - Maintain professional tone with actionable insights
-
-    Return complete financial health analysis only.
-        
-    {create_prompt_for_checklist('Financial Health')}
-
-    Here is the information you have about the startup:
     {combined_content}
     """
 

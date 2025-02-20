@@ -1,8 +1,28 @@
-# Langflow on AWS Lightsail Instance
+# Updating Deployment
+Rightnow we deploy langflow to AWS Lightsail instance. Below you will see all the instructions to deploy langflow to AWS Lightsail instance.
+
+We now want to update the deployment and use docker within the AWS Lightsail instance. So the langflow image will 
+be built and pushed to AWS ECR and then pulled and installed in the AWS Lightsail instance.
+
+This means `setup_langflow.sh` script will be updated to 
+1. Install docker on instance
+2. Pull the docker image from AWS ECR 
+3. Run the container.
+
+As long as the docker image that runs langflow on your local, you can trust that the same image will run on the AWS Lightsail instance. 
+
+Tasks 
+1. Create docker image on your local that runs langflow 
+2. This links explain how to setup langflow from code - https://docs.langflow.org/contributing-how-to-contribute
+3. So try setting up langflow from code on a docker container on your local
+4. All these instruction should be done inside Dockerfile
+5. Then when we build the docker image, it will have all the necessary setup to run langflow
+
+# Deployment of Langflow on AWS Lightsail Instance
 
 This guide explains how the Lightsail instance is configured to run Langflow using Terraform and a startup script. It also covers the main commands used for service management, debugging, and viewing logs.
 
-## Overview
+### Overview
 
 - **Infrastructure:**  
   A Lightsail instance is created using Terraform. The instance is provisioned with Ubuntu (using a blueprint such as `ubuntu_24_04`) and assigned public ports (SSH: 22, HTTP: 80, HTTPS: 443). A Route 53 A-record is set up to map your domain (e.g., `langflow-ai.dodao.io`) to the instance’s public IP.
@@ -15,7 +35,7 @@ This guide explains how the Lightsail instance is configured to run Langflow usi
     - Sets up a Python virtual environment and installs Langflow.
     - Configures and enables a systemd service for Langflow.
 
-## Deployment Flow
+### Deployment Flow
 
 1. **Terraform Configuration:**
     - The Terraform code provisions the Lightsail instance with the correct blueprint, bundle, key pair, and public port settings.
@@ -29,16 +49,16 @@ This guide explains how the Lightsail instance is configured to run Langflow usi
     - The Langflow service is defined via a systemd unit (`/etc/systemd/system/langflow.service`).
     - The service is enabled and started automatically.
 
-## Service Management and Debugging Commands
+### Service Management and Debugging Commands
 
-### During Initial Setup
+##### During Initial Setup
 you can monitor the logs to check the progress of the setup script:
 
 ```bash
 tail -f /home/ubuntu/logs/setup.log
 ```
 
-### Post-Deployment
+##### Post-Deployment
 After deployment, you can manage and debug the Langflow service using the following commands:
 
 - **Start the Service:**
@@ -73,7 +93,7 @@ After deployment, you can manage and debug the Langflow service using the follow
 
   This command is a shortcut to quickly view the Langflow service logs.
 
-## Terraform Variables
+### Terraform Variables
 
 The Terraform configuration makes use of several variables for customization. Some key variables include:
 
@@ -87,6 +107,6 @@ The Terraform configuration makes use of several variables for customization. So
 - `aws_availability_zone`: The AWS zone (e.g., `us-east-1a`).
 - `langflow_domain`: Domain name used in the Nginx configuration and Certbot setup.
 
-## Summary
+### Summary
 
 This setup deploys Langflow on an AWS Lightsail instance with automated SSL provisioning, Nginx reverse proxy configuration, and a dedicated systemd service. Use the commands listed above to start, stop, or debug the service as needed.
