@@ -7,25 +7,54 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
 from cf_analysis_agent.utils.env_variables import BUCKET_NAME, OPEN_AI_DEFAULT_MODEL, REGION, ADMIN_CODES
 from cf_analysis_agent.utils.agent_utils import generate_hashed_key, get_admin_name_from_request
-
-# # Add the parent directory of app.py to the Python path this maybe temporary we can change it later for that we will have to change docker file as well
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from cf_analysis_agent.utils.report_utils import RepopulatableFields, update_status_to_not_started_for_all_reports, \
-    initialize_project_in_s3, update_report_status_in_progress
+from cf_analysis_agent.utils.report_utils import (
+    RepopulatableFields,
+    update_status_to_not_started_for_all_reports,
+    initialize_project_in_s3,
+    update_report_status_in_progress,
+)
 from cf_analysis_agent.controller import prepare_processing_command
 from cf_analysis_agent.utils.process_project_utils import repopulate_project_field
 
+# Add the parent directory of app.py to the Python path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 app = Flask(__name__)
-CORS(app)  # This will allow all origins by default
+CORS(app)  # Allow all origins by default
+
+
+def build_processing_command(project_id, project_name, crowdfunding_link, website_url, latest_sec_filing_link, additional_links, model=OPEN_AI_DEFAULT_MODEL):
+    """Helper to build the processing command."""
+    command = [
+        "poetry", "run", "python", "cf_analysis_agent/controller.py",
+        project_id,
+        project_name,
+        crowdfunding_link,
+        website_url,
+        latest_sec_filing_link,
+    ]
+    if additional_links:
+        command.extend(["--additional_links", ",".join(additional_links)])
+    command.extend(["--model", model])
+    return command
+
+
+def handle_exception(e):
+    """Helper to handle exceptions uniformly."""
+    print(traceback.format_exc())
+    if isinstance(e, FileNotFoundError):
+        return jsonify({"status": "error", "message": str(e)}), 404
+    elif isinstance(e, ValueError):
+        return jsonify({"status": "error", "message": str(e)}), 400
+    else:
+        return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
 
 
 @app.route("/")
 def index():
-    """
-    Renders the home page with the form.
-    """
+    """Renders the home page with the form."""
     return render_template("form.html")
+
 
 @app.route("/submit", methods=["POST"])
 def submit():
@@ -40,31 +69,19 @@ def submit():
     latest_sec_filing_link = request.form.get("latest_sec_filing_link").strip()
     additional_links = request.form.getlist("additional_links")  # Collect additional links
 
-    project_details={
-        "project_id":project_id,
-        "project_name":project_name,
-        "crowdfunding_link":crowdfunding_link,
-        "website_url":website_url,
-        "latest_sec_filing_link":latest_sec_filing_link,
-        "additional_links":additional_links
+    project_details = {
+        "project_id": project_id,
+        "project_name": project_name,
+        "crowdfunding_link": crowdfunding_link,
+        "website_url": website_url,
+        "latest_sec_filing_link": latest_sec_filing_link,
+        "additional_links": additional_links,
     }
-    # Prepare the command to start processing
+    # Initialize project in S3
     initialize_project_in_s3(project_id=project_id, project_details=project_details)
-    command = [
-        "poetry", "run", "python", "cf_analysis_agent/controller.py",
-        project_id,
-        project_name,
-        crowdfunding_link,
-        website_url,
-        latest_sec_filing_link,
-    ]
-    if additional_links:
-        command.extend(["--additional_links", ",".join(additional_links)])
 
-    # Append the selected model as an argument
-    command.extend(["--model", OPEN_AI_DEFAULT_MODEL])
-
-    # Run the command asynchronously
+    # Build and run the processing command asynchronously
+    command = build_processing_command(project_id, project_name, crowdfunding_link, website_url, latest_sec_filing_link, additional_links)
     subprocess.Popen(command)
 
     # Redirect to the status page with the project ID
@@ -76,16 +93,14 @@ def api_submit():
     """
     Handles JSON-based form submission, starts processing, and returns a JSON response.
     """
-    # Get admin name from request
     admin_name, error_response = get_admin_name_from_request()
     if error_response:
-        return error_response  # If there's an error, return it
-        
+        return error_response  # Return error if any
+
     if not request.is_json:
         return jsonify({"error": "Invalid request. JSON expected."}), 400
 
     data = request.get_json()
-    print(data)
     # Retrieve data safely
     project_id = data.get("projectId", "").strip()
     project_name = data.get("projectName", "").strip()
@@ -107,31 +122,15 @@ def api_submit():
         "latest_sec_filing_link": latest_sec_filing_link,
         "additional_links": additional_links,
     }
-
     # Initialize project (store in S3 or DB)
     initialize_project_in_s3(project_id=project_id, project_details=project_details, triggered_by=admin_name)
-    
-    # Prepare command to run Python script asynchronously
-    command = [
-        "poetry", "run", "python", "cf_analysis_agent/controller.py",
-        project_id,
-        project_name,
-        crowdfunding_link,
-        website_url,
-        latest_sec_filing_link,
-    ]
-    
-    if additional_links:
-        command.extend(["--additional_links", ",".join(additional_links)])
 
-    # Append the selected model as an argument
-    command.extend(["--model", OPEN_AI_DEFAULT_MODEL])
-
-    # Run the command asynchronously
+    # Build and run the processing command asynchronously
+    command = build_processing_command(project_id, project_name, crowdfunding_link, website_url, latest_sec_filing_link, additional_links)
     subprocess.Popen(command)
 
-    # Return success response with project ID
-    return jsonify({"status": "success", "project_id": project_id, "message":"Project processing started"}), 200
+    return jsonify({"status": "success", "project_id": project_id, "message": "Project processing started"}), 200
+
 
 @app.route("/status/<project_id>")
 def status(project_id):
@@ -159,40 +158,31 @@ def commit_info():
         commit_message = "Unavailable"
     return render_template("commit_info.html", commit_hash=commit_hash, commit_message=commit_message)
 
+
 @app.route('/api/projects/<projectId>/reports/regenerate', methods=['POST'])
 def regenerate_reports(projectId):
     """
     Regenerates reports for a given project using values from agent-status.json in S3.
     """
     try:
-        # Get admin name from request
         admin_name, error_response = get_admin_name_from_request()
         if error_response:
-            return error_response  # If there's an error, return it
-        
-        data = request.get_json(silent=True) or {} # Handle case if no body was sent
-        model = data.get("model", OPEN_AI_DEFAULT_MODEL) 
-        
+            return error_response
+
+        data = request.get_json(silent=True) or {}
+        model = data.get("model", OPEN_AI_DEFAULT_MODEL)
+
         update_status_to_not_started_for_all_reports(project_id=projectId, triggered_by=admin_name)
         command = prepare_processing_command(projectId, model)
-
-        # Start the subprocess
         subprocess.Popen(command)
 
         return jsonify({
-                    "status": "success",
-                    "message": f"Regeneration of reports for {projectId} has started successfully."
-                }), 200
-        
-    except FileNotFoundError as e:
-        print(traceback.format_exc())
-        return jsonify({"status": "error", "message": str(e)}), 404
-    except ValueError as e:
-        print(traceback.format_exc())
-        return jsonify({"status": "error", "message": str(e)}), 400
+            "status": "success",
+            "message": f"Regeneration of reports for {projectId} has started successfully."
+        }), 200
+
     except Exception as e:
-        print(traceback.format_exc())
-        return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
+        return handle_exception(e)
 
 
 @app.route('/api/projects/<projectId>/reports/<report_type>/regenerate', methods=['POST'])
@@ -201,50 +191,40 @@ def regenerate_specific_report(projectId, report_type):
     Regenerates a specific report for a given project.
     """
     try:
-        # Get admin name from request
         admin_name, error_response = get_admin_name_from_request()
         if error_response:
-            return error_response  # If there's an error, return it
-        
-        data = request.get_json(silent=True) or {} # Handle case if no body was sent
-        model = data.get("model", OPEN_AI_DEFAULT_MODEL) 
-        
-        # Prepare the command to start processing
+            return error_response
+
+        data = request.get_json(silent=True) or {}
+        model = data.get("model", OPEN_AI_DEFAULT_MODEL)
+
         update_report_status_in_progress(project_id=projectId, report_type=report_type, triggered_by=admin_name)
         command = prepare_processing_command(projectId, model)
-
-        # Add the report_type to the command
         command.extend(["--report_type", report_type])
-
-        # Start the subprocess
         subprocess.Popen(command)
+
         return jsonify({
-                    "status": "success",
-                    "message": f"Regeneration of {report_type} report for {projectId} has started successfully."
-                }), 200
-        
+            "status": "success",
+            "message": f"Regeneration of {report_type} report for {projectId} has started successfully."
+        }), 200
+
     except Exception as e:
-        print(traceback.format_exc())
-        # Handle any errors
-        return jsonify({
-            "status": "error",
-            "message": f"An error occurred: {str(e)}"
-        }), 500
-        
+        return handle_exception(e)
+
+
 @app.route('/api/projects/reports/<report_type>/regenerate', methods=['POST'])
 def regenerate_specific_report_for_multiple_projects(report_type):
     """
     Regenerates a specific report for multiple projects sequentially.
     """
     try:
-        # Get admin name from request
         admin_name, error_response = get_admin_name_from_request()
         if error_response:
-            return error_response  # If there's an error, return it
-        
-        data = request.get_json(silent=True) or {}  # Handle case if no body was sent
-        project_ids = data.get("projectIds", [])  # List of project IDs
-        model = data.get("model", OPEN_AI_DEFAULT_MODEL)  
+            return error_response
+
+        data = request.get_json(silent=True) or {}
+        project_ids = data.get("projectIds", [])
+        model = data.get("model", OPEN_AI_DEFAULT_MODEL)
 
         if not isinstance(project_ids, list) or not project_ids:
             return jsonify({
@@ -252,26 +232,16 @@ def regenerate_specific_report_for_multiple_projects(report_type):
                 "message": "Invalid or missing 'projectIds'. It should be a non-empty list."
             }), 400
 
-        # Process each project ID sequentially
         for project_id in project_ids:
             try:
-                # Update report status
                 update_report_status_in_progress(project_id=project_id, report_type=report_type, triggered_by=admin_name)
-
-                # Prepare the command to start processing
                 command = prepare_processing_command(project_id, model)
-
-                # Add the report_type to the command
                 command.extend(["--report_type", report_type])
-
-                # Run the process sequentially (blocking execution)
                 subprocess.run(command, check=True)
-
                 print(f"Successfully regenerated {report_type} report for {project_id}")
-
             except Exception as e:
                 print(f"Failed to regenerate {report_type} report for {project_id}: {str(e)}")
-                continue  # Continue with the next project even if one fails
+                continue
 
         return jsonify({
             "status": "success",
@@ -279,13 +249,9 @@ def regenerate_specific_report_for_multiple_projects(report_type):
         }), 200
 
     except Exception as e:
-        print(traceback.format_exc())
-        return jsonify({
-            "status": "error",
-            "message": f"An error occurred: {str(e)}"
-        }), 500
+        return handle_exception(e)
 
-        
+
 @app.route('/api/authenticate', methods=['POST'])
 def authenticate():
     data = request.get_json()
@@ -297,21 +263,21 @@ def authenticate():
     if code in ADMIN_CODES:
         hashed_key = generate_hashed_key(code)
         return jsonify({
-                    "status": "success",
-                    "message": "Authenticated successfully.",
-                    "key": hashed_key
-                }), 200
+            "status": "success",
+            "message": "Authenticated successfully.",
+            "key": hashed_key
+        }), 200
 
     return jsonify({"status": "error", "message": "Invalid code"}), 401
+
 
 @app.route('/api/projects/<projectId>/repopulate/<projectField>', methods=['POST'])
 def populate_project_info_field(projectId, projectField):
     try:
-        # Get admin name from request
         admin_name, error_response = get_admin_name_from_request()
         if error_response:
-            return error_response  # If there's an error, return it
-        
+            return error_response
+
         if projectField not in RepopulatableFields.list():
             return jsonify({
                 "status": "error",
@@ -319,21 +285,14 @@ def populate_project_info_field(projectId, projectField):
             }), 400
 
         repopulate_project_field(projectId, projectField)
-
         return jsonify({
             "status": "success",
             "message": f"Repopulation of '{projectField}' for project {projectId} has started successfully."
         }), 200
-        
-    except FileNotFoundError as e:
-        print(traceback.format_exc())
-        return jsonify({"status": "error", "message": str(e)}), 404
-    except ValueError as e:
-        print(traceback.format_exc())
-        return jsonify({"status": "error", "message": str(e)}), 400
+
     except Exception as e:
-        print(traceback.format_exc())
-        return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
+        return handle_exception(e)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
