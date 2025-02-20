@@ -50,26 +50,6 @@ class ProcessedSecInfo(TypedDict):
     sec_markdown_content: str
     sec_raw_content: str
 
-class Metric(TypedDict):
-    explanation: str
-    opinion: str
-    information_status: InformationStatus
-
-class StartupMetrics(TypedDict):
-    growth_rate: Metric
-    organic_vs_paid_growth: Metric
-    virality: Metric
-    network_effect: Metric
-    customer_acquisition_cost: Metric
-    unit_economics: Metric
-    retention_rate: Metric
-    magic_moment: Metric
-    net_promoter_score: Metric
-    customer_lifetime_value: Metric
-    payback_period: Metric
-    revenue_growth: Metric
-    churn_rate: Metric
-    
 class SectorDetailPoints(TypedDict):
     basic_info: str
     growth_rate: str
@@ -93,7 +73,6 @@ class ProcessedProjectInfo(TypedDict, total=False):
     content_of_website_url: str
     sec_info: ProcessedSecInfo
     industry_details: IndustryDetailsAndForecast
-    startup_metrics: StartupMetrics
     last_updated: str
     status: ProcessingStatus
 
@@ -139,8 +118,6 @@ def get_combined_content(state: AgentState) -> str:
     sec_markdown_content = processes_project_info.get("sec_info").get("sec_markdown_content")
 
     industry_details_and_forecast: IndustryDetailsAndForecast = processes_project_info.get("industry_details")
-
-    # startup_metrics = processes_project_info.get("startup_metrics")
 
     combined_content = f"""
     {content_of_crowdfunding_url}
