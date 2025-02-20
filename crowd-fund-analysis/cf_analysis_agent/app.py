@@ -14,7 +14,7 @@ from cf_analysis_agent.utils.report_utils import (
     update_report_status_in_progress,
 )
 from cf_analysis_agent.controller import prepare_processing_command
-from cf_analysis_agent.utils.process_project_utils import repopulate_project_field
+from cf_analysis_agent.utils.process_project_utils import repopulate_project_field, ensure_processed_project_info
 
 # Add the parent directory of app.py to the Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -288,6 +288,23 @@ def populate_project_info_field(projectId, projectField):
         return jsonify({
             "status": "success",
             "message": f"Repopulation of '{projectField}' for project {projectId} has started successfully."
+        }), 200
+
+    except Exception as e:
+        return handle_exception(e)
+
+@app.route('/api/projects/<projectId>/repopulate-project-info', methods=['POST'])
+def re_populate_project_info(projectId):
+    try:
+        admin_name, error_response = get_admin_name_from_request()
+        if error_response:
+            return error_response
+
+        ensure_processed_project_info(projectId, True)
+
+        return jsonify({
+            "status": "success",
+            "message": f"Repopulation of project-info for project {projectId} has started successfully."
         }), 200
 
     except Exception as e:
