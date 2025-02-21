@@ -26,6 +26,8 @@ def get_analysis(content: str, keywords: list, section: str) -> dict:
     In case of rent - Rental Income of REIT, above and below market rents etc, and shares quantitave or qualitative data for it,
                     Rental Income Growth Over Time, Occupancy Rates, Lease Terms, Rental Reversion, Tenant Concentration
     In case of debt - Debt obligations, Mortgage Loans Payable, Lines of Credit and Term Loan, Schedule of Debt
+    In case of fixed and variable cost - Property-Related Fixed Costs, Mortgage Payments & Debt Servicing, Property Taxes, Depreciation & Amortization,
+                    Operational Variable Costs, Utilities & Maintenance, Marketing & Leasing Expenses
     
     ### **Importance of Precision**
     - We are collecting only **highly relevant** sections, as they will later be analyzed for financial ratios and investment insights.
