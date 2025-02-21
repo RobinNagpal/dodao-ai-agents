@@ -1,46 +1,84 @@
-# Use Python 3.11 slim image as the base for a lightweight environment.
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1
+################################
+# BUILDER STAGE
+################################
+# Use the uv pre-installed Python 3.12 image (bookworm-slim) as our builder.
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
 
-# Set environment variables:
-# - PYTHONDONTWRITEBYTECODE: Avoids writing .pyc files to disk.
-# - PYTHONUNBUFFERED: Sends logs straight to the terminal.
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Update package lists and install essential tools:
-# - curl: To download installation scripts (e.g., for Node.js).
-# - build-essential: Provides compilers and build tools.
-# - git: Needed to clone the Langflow repository.
-RUN apt-get update && apt-get install -y \
-    curl \
-    build-essential \
-    git
-
-# Install Node.js (v18.x) by fetching and running the NodeSource setup script.
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs
-
-# Install the 'uv' package via pip (required to run Langflow with uv).
-RUN pip install uv
-
-# Set the working directory to /app.
+# Set the working directory for building the project.
 WORKDIR /app
 
-# Clone the Langflow repository from GitHub into the working directory.
-RUN git clone https://github.com/langflow-ai/langflow.git .
+# Enable bytecode compilation and set uv's linking mode.
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
 
-RUN git checkout -b dev-dodao v1.1.4.dev13
-# Prepare the development environment by installing backend and frontend dependencies,
-# and building the frontend static files. This mimics "make init" without starting the server.
+# Update packages and install build tools, git, npm, and gcc.
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y \
+        build-essential \
+        git \
+        npm \
+        gcc && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+# Clone the official Langflow repository and check out the desired branch/version.
+RUN git clone https://github.com/langflow-ai/langflow.git . && \
+    git checkout -b dev-dodao v1.1.4.dev13
+
+# Install Python dependencies using uv.
+# (Since the repository already contains pyproject.toml and uv.lock, we use them directly.)
+RUN uv sync --frozen --no-install-project --no-editable
+
 # Increase Node.js heap size to 8GB (adjust if needed)
-ENV NODE_OPTIONS=--max-old-space-size=8192
+ENV NODE_OPTIONS=--max-old-space-size=16384
 
-RUN make install_backend
-RUN make install_frontend
-RUN make build_frontend
+# Build the frontend assets:
+# Change to the frontend directory, install npm dependencies, build the assets,
+# and copy the build output to the backend’s static folder.
+WORKDIR /app/src/frontend
+RUN npm ci && npm run build && \
+    cp -r build /app/src/backend/langflow/frontend
 
-# Expose port 7860 (the default port on which Langflow runs).
+# Return to the project root and sync the environment again.
+WORKDIR /app
+RUN uv sync --frozen --no-install-project --no-editable
+
+################################
+# RUNTIME STAGE
+################################
+# Use a slim Python 3.12.3 image for the runtime.
+FROM python:3.12.3-slim AS runtime
+
+# Update packages, install git, and create a non‑root user.
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y git && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    useradd user -u 1000 -g 0 --no-create-home --home-dir /app/data
+
+# Copy the virtual environment from the builder stage.
+COPY --from=builder --chown=1000 /app/.venv /app/.venv
+
+# Prepend the virtual environment's bin directory to the PATH.
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Set image metadata.
+LABEL org.opencontainers.image.title="langflow" \
+      org.opencontainers.image.authors="Langflow" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.url="https://github.com/langflow-ai/langflow" \
+      org.opencontainers.image.source="https://github.com/langflow-ai/langflow"
+
+# Switch to the non‑root user.
+USER user
+
+# Set the working directory and environment variables for Langflow.
+WORKDIR /app
+ENV LANGFLOW_HOST=0.0.0.0
+ENV LANGFLOW_PORT=7860
+
+# Expose port 7860.
 EXPOSE 7860
 
-# Start Langflow using uv when the container runs.
-CMD ["uv", "run", "langflow", "run"]
+# Start Langflow using the provided command.
+CMD ["langflow", "run"]
