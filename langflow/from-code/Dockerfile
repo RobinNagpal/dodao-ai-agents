@@ -5,6 +5,7 @@ FROM python:3.10-slim
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 ENV DO_NOT_TRACK=true
+ENV LANGFLOW_COMPONENTS_PATH=/app/custom_components
 
 # Set working directory
 WORKDIR /app
@@ -28,7 +29,10 @@ RUN pip install uv
 # Clone Langflow repository into the working directory
 RUN git clone https://github.com/langflow-ai/langflow.git .
 
-# run the individual build commands.
+# Checkout the custom branch for dodao
+RUN git checkout -b dev-dodao v1.1.4.dev13
+
+# Run the individual build commands (without starting the server)
 RUN make install_backend && \
     make install_frontend && \
     make build_frontend
@@ -36,5 +40,5 @@ RUN make install_backend && \
 # Expose Langflow's default port
 EXPOSE 7860
 
-# Set the container's entrypoint to run the server
+# Set the container's entrypoint to run the server binding to all interfaces
 CMD ["uv", "run", "langflow", "run", "--host", "0.0.0.0"]
