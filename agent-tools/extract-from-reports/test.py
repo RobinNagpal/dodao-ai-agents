@@ -5,9 +5,7 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from edgar import *
-os.environ["OPENAI_API_KEY"] = 
-
-
+os.environ["OPENAI_API_KEY"] = ""
 
 # Define structured response model for LLM
 class StructuredLLMResponse(BaseModel):
