@@ -4,17 +4,18 @@ from typing import List
 
 from langchain_core.messages import HumanMessage
 
-from cf_analysis_agent.agent_state import MarketDetailPoints, ProcessingStatus, ProcessedProjectInfo, ProcessedSecInfo, Metric, SectorDetailPoints, \
-    StartupMetrics, IndustryDetailsAndForecast
+from cf_analysis_agent.agent_state import MarketDetailPoints, ProcessingStatus, ProcessedProjectInfo, ProcessedSecInfo, \
+    SectorDetailPoints, \
+    IndustryDetailsAndForecast
 from cf_analysis_agent.structures.form_c_structures import StructuredFormCResponse
-from cf_analysis_agent.structures.startup_metrics import MarketDetailStructure, SectorDetailStructure, StartupMetricsStructure, IndustryDetailsAndForecastStructure, \
-    MetricStructure
+from cf_analysis_agent.structures.industry_details import MarketDetailStructure, SectorDetailStructure, \
+    IndustryDetailsAndForecastStructure
 from cf_analysis_agent.utils.llm_utils import get_startup_summary, structured_llm_response, MINI_4_0_CONFIG, \
     scrape_and_clean_content_with_same_details, get_llm, NORMAL_4_0_CONFIG
 from cf_analysis_agent.utils.project_utils import scrape_urls
-from cf_analysis_agent.utils.report_utils import MarketDetailSchema, RepopulatableFields, SectorDetailSchema, get_project_status_file_path, ProcessedProjectInfoSchema, \
-    ProjectStatusFileSchema, ProjectInfoInputSchema, ProcessedSecInfoSchema, ProcessedIndustryAndForecastsSchema, \
-    ProcessesStartupMetricsSchema, MetricSchema
+from cf_analysis_agent.utils.report_utils import MarketDetailSchema, RepopulatableFields, SectorDetailSchema, \
+    get_project_status_file_path, ProcessedProjectInfoSchema, \
+    ProjectStatusFileSchema, ProjectInfoInputSchema, ProcessedSecInfoSchema, ProcessedIndustryAndForecastsSchema
 from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
 
@@ -216,106 +217,6 @@ def get_project_industry_and_forecasts_info(project_text: str) -> IndustryDetail
     print(response.model_dump_json(indent=4))
     return response
 
-
-def get_startup_metrics_info(project_text: str) -> StartupMetricsStructure:
-    print("Getting startup metrics info")
-    prompt = """
-    You are the expert in investing in startups and have been asked to provide a detailed analysis of the startup metrics
-    for the following project. Some of these metrics might be mentioned in the project details, while others might need
-    be derived from the information provided.
-    
-    If information is available mark the information_status as extracted. If you have derived then mark it as derived.
-    
-    It might be that some of the metrics are not applicable to the project, in which case you can mark them as 'not_applicable'.
-    
-    It might also be that there is no information available to be able to calculate them. In such cases, you can mark the information_status as 'missing'.
-    
-    Explain in detail how you have derived or calculated the metrics in the explanation field.
-    
-    Then as a startup evaluation expert, provide your opinion on the metrics whether they are good, okay, or bad compared to industry benchmarks.
-    
-    Explain in detail how industry benchmarks are calculated and what are the industry standards for these metrics. When
-    considering the benchmarks, consider the sub-sector that matches the project.
-    
-    output the information in a structured format  and in the following JSON format:
-    {
-      growth_rate: {
-        explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-        opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-        information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      organic_vs_paid_growth: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      virality: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      network_effect: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      customer_acquisition_cost: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      unit_economics: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      retention_rate: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      magic_moment: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      net_promoter_score: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      customer_lifetime_value: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      payback_period: {
-          explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-          opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-          information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      revenue_growth: {
-        explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-        opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-        information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      },
-      churn_rate: {
-        explanation: "Description of the metric, including the KPI and the startup's achieved number. If the information is extracted, derived, or missing explain detail how it was determined.",
-        opinion: "Assessment of whether the number is good, okay, or bad compared to industry benchmarks, with detailed industry standards.",
-        information_status: "Status indicating whether the information is missing, derived, or extracted or not_applicable."
-      }
-    }
-
-    Startup Information:
-    """ + project_text
-
-    structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(StartupMetricsStructure)
-
-    response = structured_llm.invoke([HumanMessage(content=prompt)])
-    print(response.model_dump_json(indent=4))
-    return response
-
-
 def get_markdown_content_from_json(json_content: str) -> str:
     prompt = f"""Convert the following JSON content into a tables in markdown format. 
     
@@ -328,14 +229,6 @@ def get_markdown_content_from_json(json_content: str) -> str:
     response = llm.invoke([HumanMessage(content=prompt)])
     return response.content.strip()
 
-
-def convert_metric_structure(metric: MetricStructure) -> MetricSchema:
-    return {
-        "explanation": metric.explanation,
-        "opinion": metric.opinion,
-        "informationStatus": metric.information_status
-    }
-
 def convert_sector_structure(sector: SectorDetailStructure) -> SectorDetailSchema:
     return {
         "basicInfo": sector.basic_info,
@@ -347,15 +240,6 @@ def convert_market_structure(market: MarketDetailStructure) -> MarketDetailSchem
         "details": market.details,
         "calculationLogic": market.calculation_logic,
     }
-    
-def convert_s3_metrics(metrics_in_s3: MetricSchema) -> Metric:
-    metric: Metric = {
-        "explanation": metrics_in_s3.get("explanation"),
-        "opinion": metrics_in_s3.get("opinion"),
-        "information_status": metrics_in_s3.get("informationStatus"),
-    }
-
-    return metric
 
 def convert_s3_sector(sector_points_in_s3: SectorDetailSchema) -> SectorDetailPoints:
     print(f"sector_points_in_s3: {sector_points_in_s3}")
@@ -396,24 +280,6 @@ def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoS
         "serviceable_addressable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableAddressableMarket")),
         "serviceable_obtainable_market": convert_s3_market_points(industry_details_in_s3.get("serviceableObtainableMarket")),
         "profit_margins": convert_s3_market_points(industry_details_in_s3.get("profitMargins")),
-    }
-
-    startup_metrics_in_s3: ProcessesStartupMetricsSchema = project_info_in_s3.get("startupMetrics")
-
-    startup_metrics: StartupMetrics = {
-        "growth_rate": convert_s3_metrics(startup_metrics_in_s3.get("growthRate")),
-        "organic_vs_paid_growth": convert_s3_metrics(startup_metrics_in_s3.get("organicVsPaidGrowth")),
-        "virality": convert_s3_metrics(startup_metrics_in_s3.get("virality")),
-        "network_effect": convert_s3_metrics(startup_metrics_in_s3.get("networkEffect")),
-        "customer_acquisition_cost": convert_s3_metrics(startup_metrics_in_s3.get("customerAcquisitionCost")),
-        "unit_economics": convert_s3_metrics(startup_metrics_in_s3.get("unitEconomics")),
-        "retention_rate": convert_s3_metrics(startup_metrics_in_s3.get("retentionRate")),
-        "magic_moment": convert_s3_metrics(startup_metrics_in_s3.get("magicMoment")),
-        "net_promoter_score": convert_s3_metrics(startup_metrics_in_s3.get("netPromoterScore")),
-        "customer_lifetime_value": convert_s3_metrics(startup_metrics_in_s3.get("customerLifetimeValue")),
-        "payback_period": convert_s3_metrics(startup_metrics_in_s3.get("paybackPeriod")),
-        "revenue_growth": convert_s3_metrics(startup_metrics_in_s3.get("revenueGrowth")),
-        "churn_rate": convert_s3_metrics(startup_metrics_in_s3.get("churnRate")),
     }
 
     processed_info: ProcessedProjectInfo = {
@@ -492,25 +358,6 @@ def repopulate_project_field(project_id: str, field: RepopulatableFields):
             "profitMargins": convert_market_structure(industry_and_forecast_structure.profit_margins)
         }
 
-    elif field == RepopulatableFields.STARTUP_METRICS.value:
-        print("Repopulating startup metrics...")
-        startup_metrics_structure = get_startup_metrics_info(combined_text)
-        project_info_in_s3["startupMetrics"] = {
-            "growthRate": convert_metric_structure(startup_metrics_structure.growth_rate),
-            "organicVsPaidGrowth": convert_metric_structure(startup_metrics_structure.organic_vs_paid_growth),
-            "virality": convert_metric_structure(startup_metrics_structure.virality),
-            "networkEffect": convert_metric_structure(startup_metrics_structure.network_effect),
-            "customerAcquisitionCost": convert_metric_structure(startup_metrics_structure.customer_acquisition_cost),
-            "unitEconomics": convert_metric_structure(startup_metrics_structure.unit_economics),
-            "retentionRate": convert_metric_structure(startup_metrics_structure.retention_rate),
-            "magicMoment": convert_metric_structure(startup_metrics_structure.magic_moment),
-            "netPromoterScore": convert_metric_structure(startup_metrics_structure.net_promoter_score),
-            "customerLifetimeValue": convert_metric_structure(startup_metrics_structure.customer_lifetime_value),
-            "paybackPeriod": convert_metric_structure(startup_metrics_structure.payback_period),
-            "revenueGrowth": convert_metric_structure(startup_metrics_structure.revenue_growth),
-            "churnRate": convert_metric_structure(startup_metrics_structure.churn_rate),
-        }
-
     elif field == RepopulatableFields.STARTUP_SUMMARY.value:
         print("Repopulating startup summary...")
         project_info_in_s3["startupSummary"] = get_startup_summary(
@@ -577,7 +424,8 @@ def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -
 
     urls_changed = (current_urls_sorted != previous_urls_sorted)
     print(f"URLs Changed: {urls_changed}")
-    needs_processing = (project_info_in_s3 is None
+    needs_processing = (generate_all or
+                        project_info_in_s3 is None
                         or urls_changed
                         or project_info_in_s3.get("status") != ProcessingStatus.COMPLETED
                         or project_info_in_s3.get("contentOfAdditionalUrls") is None
@@ -586,34 +434,33 @@ def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -
                         or project_info_in_s3.get("contentOfCrowdfundingUrl") == ""
                         or project_info_in_s3.get("secInfo") is None
                         or project_info_in_s3.get("industryDetails") is None or True
-                        or project_info_in_s3.get("startupMetrics") is None
                         or project_info_in_s3.get("startupSummary") is None
                         )
 
     print(f"Project Info Needs Processing: {needs_processing}")
-    if not needs_processing:
+    if generate_all or not needs_processing:
         print("Project Info is up-to-date. No need to re-scrape project URLs.")
         return convert_s3_processed_info_to_state(project_info_in_s3)
 
-    if (urls_changed
+    if generate_all or (urls_changed
             or project_info_in_s3.get("status") != ProcessingStatus.COMPLETED
             or project_info_in_s3.get("contentOfAdditionalUrls") is None
             or project_info_in_s3.get("contentOfAdditionalUrls") == ""):
         print("URLs have changed or 'processed_project_info' is incomplete. Re-scraping URLs.")
         project_info_in_s3 = scrape_additional_links_and_update_project_info(project_info_in_s3)
 
-    if project_info_in_s3.get("contentOfCrowdfundingUrl") is None or project_info_in_s3.get(
-            "contentOfCrowdfundingUrl") == "":
+    if generate_all or (project_info_in_s3.get("contentOfCrowdfundingUrl") is None or project_info_in_s3.get(
+            "contentOfCrowdfundingUrl") == ""):
         print("Crowd Funding Website Content is missing. Scraping Crowd Funding URL.")
         project_info_in_s3["contentOfCrowdfundingUrl"] = scrape_and_clean_content_with_same_details(
             project_input.get("crowdFundingUrl"))
 
-    if project_info_in_s3.get("contentOfWebsiteUrl") is None or project_info_in_s3.get("contentOfWebsiteUrl") == "":
+    if generate_all or project_info_in_s3.get("contentOfWebsiteUrl") is None or project_info_in_s3.get("contentOfWebsiteUrl") == "":
         print("Website Content is missing. Scraping Website URL.")
         project_info_in_s3["contentOfWebsiteUrl"] = scrape_and_clean_content_with_same_details(
             project_input.get("websiteUrl"))
 
-    if project_info_in_s3.get("secInfo") is None or project_info_in_s3.get("secInfo").get(
+    if generate_all or project_info_in_s3.get("secInfo") is None or project_info_in_s3.get("secInfo").get(
             "secMarkdownContent") is None or project_info_in_s3.get("secInfo").get("secMarkdownContent") == "":
         print("SEC Info is missing. Scraping SEC Filing URL.")
         project_info_in_s3["secInfo"] = get_sec_info(sec_filing_url)
@@ -621,7 +468,9 @@ def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -
     crowd_funding_and_website_content = project_info_in_s3.get("contentOfCrowdfundingUrl") + project_info_in_s3.get(
         "contentOfWebsiteUrl")
     combined_text = crowd_funding_and_website_content + project_info_in_s3.get("secInfo").get("secMarkdownContent")
-    if project_info_in_s3.get("industryDetails") is None:
+
+
+    if generate_all or project_info_in_s3.get("industryDetails") is None:
         print("Industry Details are missing. Scraping Industry Details.")
         industry_and_forecast_structure = get_project_industry_and_forecasts_info(
             combined_text
@@ -642,46 +491,7 @@ def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -
         }
 
     # or check any of the fields in none
-    if project_info_in_s3.get("startupMetrics") is None or project_info_in_s3.get("startupMetrics").get(
-            "growthRate") is None:
-        print("Startup Metrics are missing. Scraping Startup Metrics.")
-        startup_metrics_structure = get_startup_metrics_info(
-            combined_text
-        )
-        growth_rate: MetricSchema = convert_metric_structure(startup_metrics_structure.growth_rate)
-        organic_vs_paid_growth: MetricSchema = convert_metric_structure(
-            startup_metrics_structure.organic_vs_paid_growth)
-        virality: MetricSchema = convert_metric_structure(startup_metrics_structure.virality)
-        network_effect: MetricSchema = convert_metric_structure(startup_metrics_structure.network_effect)
-        customer_acquisition_cost: MetricSchema = convert_metric_structure(
-            startup_metrics_structure.customer_acquisition_cost)
-        unit_economics: MetricSchema = convert_metric_structure(startup_metrics_structure.unit_economics)
-        retention_rate: MetricSchema = convert_metric_structure(startup_metrics_structure.retention_rate)
-        magic_moment: MetricSchema = convert_metric_structure(startup_metrics_structure.magic_moment)
-        net_promoter_score: MetricSchema = convert_metric_structure(startup_metrics_structure.net_promoter_score)
-        customer_lifetime_value: MetricSchema = convert_metric_structure(
-            startup_metrics_structure.customer_lifetime_value)
-        payback_period: MetricSchema = convert_metric_structure(startup_metrics_structure.payback_period)
-        revenue_growth: MetricSchema = convert_metric_structure(startup_metrics_structure.revenue_growth)
-        churn_rate: MetricSchema = convert_metric_structure(startup_metrics_structure.churn_rate)
-
-        project_info_in_s3["startupMetrics"] = {
-            "growthRate": growth_rate,
-            "organicVsPaidGrowth": organic_vs_paid_growth,
-            "virality": virality,
-            "networkEffect": network_effect,
-            "customerAcquisitionCost": customer_acquisition_cost,
-            "unitEconomics": unit_economics,
-            "retentionRate": retention_rate,
-            "magicMoment": magic_moment,
-            "netPromoterScore": net_promoter_score,
-            "customerLifetimeValue": customer_lifetime_value,
-            "paybackPeriod": payback_period,
-            "revenueGrowth": revenue_growth,
-            "churnRate": churn_rate,
-        }
-        
-    if project_info_in_s3.get("startupSummary") is None or project_info_in_s3.get("startupSummary") == "":
+    if generate_all or (project_info_in_s3.get("startupSummary") is None or project_info_in_s3.get("startupSummary") == ""):
         print("Startup Summary is missing. Generating Startup Summary.")
         project_info_in_s3["startupSummary"] = get_startup_summary(crowd_funding_and_website_content)
 

@@ -8,7 +8,6 @@ from typing_extensions import TypedDict, NotRequired
 from enum import Enum
 from cf_analysis_agent.agent_state import ProjectInfo, ProcessingStatus, ReportType
 from cf_analysis_agent.structures.report_structures import StructuredReportResponse
-from cf_analysis_agent.structures.startup_metrics import InformationStatus
 from cf_analysis_agent.utils.env_variables import REGION
 from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
@@ -22,7 +21,6 @@ load_dotenv()
 
 class RepopulatableFields(str, Enum):
     INDUSTRY_DETAILS = "industryDetails"
-    STARTUP_METRICS = "startupMetrics"
     STARTUP_SUMMARY = "startupSummary"
     SEC_INFO = "secInfo"
     CROWDFUNDING_CONTENT = "contentOfCrowdfundingUrl"
@@ -85,26 +83,6 @@ class ProcessedSecInfoSchema(TypedDict):
     secMarkdownContent: str
     secRawContent: str
 
-class MetricSchema(TypedDict):
-    explanation: str
-    opinion: str
-    informationStatus: InformationStatus
-
-class ProcessesStartupMetricsSchema(TypedDict, total=False):
-    growthRate: MetricSchema
-    organicVsPaidGrowth: MetricSchema
-    virality: MetricSchema
-    networkEffect: MetricSchema
-    customerAcquisitionCost: MetricSchema
-    unitEconomics: MetricSchema
-    retentionRate: MetricSchema
-    magicMoment: MetricSchema
-    netPromoterScore: MetricSchema
-    customerLifetimeValue: MetricSchema
-    paybackPeriod: MetricSchema
-    revenueGrowth: MetricSchema
-    churnRate: MetricSchema
-    
 class SectorDetailSchema(TypedDict):
     basicInfo: str
     growthRate: str
@@ -133,7 +111,6 @@ class ProcessedProjectInfoSchema(TypedDict):
     contentOfWebsiteUrl: str
     industryDetails: ProcessedIndustryAndForecastsSchema
     secInfo: ProcessedSecInfoSchema
-    startupMetrics: ProcessesStartupMetricsSchema
     lastUpdated: str
     status: ProcessingStatus
 
@@ -303,7 +280,6 @@ def update_project_file(project_id: str, project_file_contents: ProjectStatusFil
         new_reports[report_type] = new_report
 
     sec_info = project_file_contents["processedProjectInfo"].get("secInfo") or {}
-    startup_metrics = project_file_contents["processedProjectInfo"].get("startupMetrics") or {}
     industry_details = project_file_contents["processedProjectInfo"].get("industryDetails") or {}
 
     new_project_file_contents: ProjectStatusFileSchema = {
@@ -328,22 +304,6 @@ def update_project_file(project_id: str, project_file_contents: ProjectStatusFil
                "secJsonContent": sec_info.get("secJsonContent"),
                 "secMarkdownContent": sec_info.get("secMarkdownContent"),
                 "secRawContent": sec_info.get("secRawContent")
-            },
-            "startupMetrics": {
-               "growthRate": startup_metrics.get("growthRate"),
-                "organicVsPaidGrowth": startup_metrics.get("organicVsPaidGrowth"),
-                "virality": startup_metrics.get("virality"),
-                "networkEffect": startup_metrics.get("networkEffect"),
-                "customerAcquisitionCost": startup_metrics.get("customerAcquisitionCost"),
-                "unitEconomics": startup_metrics.get("unitEconomics"),
-                "retentionRate": startup_metrics.get("retentionRate"),
-                "magicMoment": startup_metrics.get("magicMoment"),
-                "netPromoterScore": startup_metrics.get("netPromoterScore"),
-                "customerLifetimeValue": startup_metrics.get("customerLifetimeValue"),
-                "paybackPeriod": startup_metrics.get("paybackPeriod"),
-                "revenueGrowth": startup_metrics.get("revenueGrowth"),
-                "churnRate": startup_metrics.get("churnRate"),
-
             },
             "industryDetails": {
                 "sectorDetails": industry_details.get('sectorDetails'),
