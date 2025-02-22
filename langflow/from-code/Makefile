@@ -1,6 +1,7 @@
-# Define variables for the Docker image name and the port number.
+# Define variables for the Docker image name, repository, and port number.
 IMAGE_NAME = langflow
 PORT = 7860
+REPO = 729763663166.dkr.ecr.us-east-1.amazonaws.com/langflow
 
 # The 'build' target builds the Docker image using the Dockerfile.
 build:
@@ -21,3 +22,23 @@ rebuild:
 stop:
 	@echo "Stopping the running Docker container(s) for '$(IMAGE_NAME)'..."
 	docker stop $$(docker ps -q --filter "ancestor=$(IMAGE_NAME)")
+
+# The 'push' target tags and pushes the Docker image to the ECR repository.
+push: build
+	@echo "Tagging the Docker image with the ECR repository '$(REPO)'..."
+	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 729763663166.dkr.ecr.us-east-1.amazonaws.com
+	docker tag $(IMAGE_NAME) $(REPO)
+	@echo "Pushing the Docker image to the ECR repository..."
+	docker push $(REPO)
+
+push-to-docker:
+	@echo "Pushing the Docker image to Docker Hub..."
+	docker login
+	docker tag $(IMAGE_NAME) robinnagpal/$(IMAGE_NAME)
+	docker push robinnagpal/$(IMAGE_NAME)
+
+push-to-ecr:
+	@echo "Pushing the Docker image to ECR..."
+	aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/p7g4h0z9
+	docker tag $(IMAGE_NAME) public.ecr.aws/p7g4h0z9/langflow-public:latest
+	docker push public.ecr.aws/p7g4h0z9/langflow-public:latest
