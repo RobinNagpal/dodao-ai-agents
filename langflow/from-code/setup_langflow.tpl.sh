@@ -27,8 +27,8 @@ apt-get update -y
 apt-get install -y docker-ce docker-ce-cli containerd.io
 usermod -aG docker ubuntu
 
-# Install Nginx and Certbot
-apt-get install -y nginx certbot python3-certbot-nginx
+# Install Nginx (without Certbot)
+apt-get install -y nginx
 
 # Clone the dodao-ui repository
 if [ ! -d "/home/ubuntu/dodao-ui" ]; then
@@ -55,12 +55,40 @@ docker run -d --name langflow \\
   -p 127.0.0.1:7860:7860 \\
   public.ecr.aws/p7g4h0z9/langflow-public:latest
 
-# Configure Nginx
+# Create SSL certificate directories
+mkdir -p /etc/letsencrypt/live/${langflow_domain}
+cat <<CERT_EOF > /etc/letsencrypt/live/${langflow_domain}/cert.pem
+${cert_pem}
+CERT_EOF
+
+cat <<CHAIN_EOF > /etc/letsencrypt/live/${langflow_domain}/chain.pem
+${chain_pem}
+CHAIN_EOF
+
+cat <<FULLCHAIN_EOF > /etc/letsencrypt/live/${langflow_domain}/fullchain.pem
+${fullchain_pem}
+FULLCHAIN_EOF
+
+cat <<PRIVKEY_EOF > /etc/letsencrypt/live/${langflow_domain}/privkey.pem
+${privkey_pem}
+PRIVKEY_EOF
+
+# Configure Nginx for HTTPS
 rm -f /etc/nginx/sites-enabled/*
 cat <<NGINX_EOF > /etc/nginx/sites-available/langflow
 server {
   listen 80;
   server_name ${langflow_domain};
+  return 301 https://\\\$host\\\$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  server_name ${langflow_domain};
+
+  ssl_certificate /etc/letsencrypt/live/${langflow_domain}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/${langflow_domain}/privkey.pem;
+
   location / {
     proxy_pass http://127.0.0.1:7860;
     proxy_set_header Host $$host;
@@ -72,17 +100,8 @@ server {
 NGINX_EOF
 
 ln -s /etc/nginx/sites-available/langflow /etc/nginx/sites-enabled/
+nginx -t
 systemctl restart nginx
-
-# Obtain SSL certificate
-max_retries=5
-retry_count=0
-until [ \$retry_count -ge \$max_retries ]; do
-  certbot --nginx --non-interactive --agree-tos --redirect -m ${certbot_email} -d ${langflow_domain} && break
-  retry_count=\$((retry_count + 1))
-  sleep 60
-done
-
 
 echo -e "[\$(date)] Docker setup completed successfully"
 SCRIPT_EOF

@@ -1,16 +1,18 @@
 data "template_file" "setup_langflow" {
   template = file("setup_langflow.tpl.sh")
   vars = {
-    certbot_email             = var.certbot_email
     langflow_superuser        = var.langflow_superuser
     langflow_superuser_password = var.langflow_superuser_password
     langflow_secret_key       = var.langflow_secret_key
     postgres_url              = var.postgres_url
     openai_api_key            = var.openai_api_key
-    langflow_domain           = "langflow.dodao.io"  # Updated domain
+    langflow_domain           = "langflow.dodao.io"
+    cert_pem                  = file("./langflow.dodao.io/cert1.pem")
+    chain_pem                 = file("./langflow.dodao.io/chain1.pem")
+    fullchain_pem             = file("./langflow.dodao.io/fullchain1.pem")
+    privkey_pem               = file("./langflow.dodao.io/privkey1.pem")
   }
 }
-
 resource "aws_lightsail_instance" "langflow_docker_instance" {  # Changed resource name
   name              = "langflow-docker-instance"  # Changed instance name
   availability_zone = var.aws_availability_zone
@@ -45,15 +47,6 @@ resource "aws_lightsail_instance_public_ports" "langflow_docker_ports" {  # Chan
     to_port   = 443
     protocol  = "tcp"
   }
-}
-
-# Updated Route53 record
-resource "aws_route53_record" "langflow_dns" {
-  zone_id = data.aws_route53_zone.primary.zone_id
-  name    = "langflow"  # Changed to match new domain
-  type    = "A"
-  ttl     = 300
-  records = [aws_lightsail_instance.langflow_docker_instance.public_ip_address]  # Updated reference
 }
 
 ##########################################################
