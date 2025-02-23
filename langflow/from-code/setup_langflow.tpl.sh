@@ -105,7 +105,30 @@ systemctl restart nginx
 
 echo -e "[\$(date)] Docker setup completed successfully"
 SCRIPT_EOF
-
 # Make the setup script executable and run it
 chmod +x /home/ubuntu/scripts/setup_langflow.sh
+
+# Create the update script for pulling the latest repo and restarting the container
+cat <<UPDATE_EOF > /home/ubuntu/scripts/update_langflow.sh
+#!/bin/bash
+set -e
+export DEBIAN_FRONTEND=noninteractive
+
+LOG_FILE="/home/ubuntu/logs/update.log"
+exec > >(tee -a "\$LOG_FILE") 2>&1
+
+echo -e "\n[\$(date)] Starting update: pulling latest Git changes..."
+cd /home/ubuntu/dodao-ai-agents
+git pull
+
+echo -e "\n[\$(date)] Restarting the Langflow container..."
+docker restart langflow
+
+echo -e "\n[\$(date)] Update completed successfully."
+UPDATE_EOF
+
+# Make the update script executable
+chmod +x /home/ubuntu/scripts/update_langflow.sh
+
+# Run the setup script
 /home/ubuntu/scripts/setup_langflow.sh

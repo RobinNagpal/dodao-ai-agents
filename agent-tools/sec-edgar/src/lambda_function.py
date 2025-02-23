@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 from edgar import *
+
 use_local_storage()
 
 set_identity("your_email@example.com")

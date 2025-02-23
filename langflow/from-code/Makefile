@@ -42,3 +42,7 @@ push-to-ecr:
 	aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/p7g4h0z9
 	docker tag $(IMAGE_NAME) public.ecr.aws/p7g4h0z9/langflow-public:latest
 	docker push public.ecr.aws/p7g4h0z9/langflow-public:latest
+
+restart-docker:
+	chmod 600 ./LightsailDefaultKey-us-east-1.pem
+	ssh -i ./LightsailDefaultKey-us-east-1.pem ubuntu@<lightsail-instance-public-ip> "/home/ubuntu/scripts/update_langflow.sh"
