@@ -3,35 +3,57 @@
 This page has list of all the tasks
 
 ---
+## Push/Pull agent-status.json to s3 using tool - `Hussain` - `Parked`
 
-## V0 - Crowdfunding
+Note - `May be this can be called SubmitReport?`
 
-1. Fixing and testing all the reports
-2. Fixing the UX
-    - Image can be set and cover type etc to make sure aspect ratio is correct
-    -
+
+### Open Items
+- Right now we dont know how the generic agent status file will look like.
+
+See [005_z01_push_pull_agent_status_fom_s3.md](./005_z01_push_pull_agent_status_fom_s3.md)
+
+---
+## Extracting Information from Latest 10Q - `Dawood` - `In Progress`
+We want this for analyzing REITs. 
+
+See [005_z05_extracting_info_from_latest_10q.md](./005_z05_extracting_info_from_latest_10q.md)
+
 
 ---
 
-## V1 - REITs
+## Structured LLM Prompt Editor
 
-1. Extracting Information from Long Text
-2. Analyze all the python libraries for extracting information from SEC. There are many libraries that can be used to
-   extract information from SEC.
-   We wan to make sure we have analyzed all of them and have chosen the best one.
+This can be a Typescript app which allows for adding a `StructuredLLMCall`.
+- Input type and schema
+- Output type and schema
+- Prompt
+- Default Model
 
-| Library                       | Link                                             | Description                                                                                                                                                                                   | Notes |
-|-------------------------------|--------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| Arelle                        | https://github.com/Arelle/EDGAR                  | Arelle is an open source XBRL platform that supports the creation, review and analysis of financial information provided by companies.                                                        |       |
-| lukerosiak/pysec              | https://github.com/lukerosiak/pysec              | compiles a list of all SEC filings from EDGAR into SQL. Allows you to easily extract arbitrary XBRL terms while it handles the contexts, etc. appropriately.                                  |       |
-| lefterisloukas/edgar-crawler  | https://github.com/lefterisloukas/edgar-crawler  | downloads raw and unstructured financial SEC filings from EDGAR and converts them into structured JSON files in order to bootstrap financial NLP experiments.                                 |       |
-| edgarminers/python-edgar      | https://github.com/edgarminers/python-edgar      | easily rebuild a master index of all filings since 1993 by stitching quarterly index files together. The master index file can be then feed to a database, a pandas dataframe, stata, etc...  |       |
-| py-edgar                      | https://github.com/joeyism/py-edgar              | A small library to access files from SEC's edgar.                                                                                                                                             |       |
-| alphanome-ai/sec-parser       | https://github.com/alphanome-ai/sec-parser       | The sec-parser project simplifies extracting meaningful information from SEC EDGAR HTML documents by organizing them into semantic elements and a tree structure. Beneficial for AI, ML, LLMs |       |
-| alphanome-ai/sec-ai           | https://github.com/alphanome-ai/sec-ai           | The sec-parser project simplifies extracting meaningful information from SEC EDGAR HTML documents by organizing them into semantic elements and a tree structure. Beneficial for AI, ML, LLMs |       |
-| jadchaar/sec-edgar-api        | https://github.com/jadchaar/sec-edgar-api        | sec-edgar-api is a lightweight, unofficial Python API wrapper for the SEC EDGAR REST API.                                                                                                     |       |
+Then it gives a slug based url which can be called with the input, and the model type.
 
-3. Learn from https://github.com/janlukasschroeder/sec-api-python on how can we structure the data from SEC
+We can also save all the invocations, making it easier to debug.
+
+See [005_z02_structured_llm_prompt_editor.md](./005_z02_structured_llm_prompt_editor.md)
+
+---
+
+## Spider Charts Criterion for all the tickers
+- For spider charts we need to evaluate an equity based on 6 or 8 criterion. 
+- We need to have a way to get the criterion for all the tickers.
+- Which means we can get criterion for sectors and sub-sectors and then we can get criterion applicable to 
+an equity based on the sector and sub-sector.
+
+See [005_z03_generic_spider_chart_criterion.md](./005_z03_generic_spider_chart_criterion.md)
+
+
+---
+
+## Pull SEC EDGAR Filings Information
+Analyze all the python libraries for extracting information from SEC. There are many libraries that can be used to
+extract information from SEC.
+
+See [005_z04_compare_sec_filing_libs.md](./005_z04_compare_sec_filing_libs.md)
 
 ---
 

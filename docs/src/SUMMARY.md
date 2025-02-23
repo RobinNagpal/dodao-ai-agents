@@ -12,5 +12,9 @@
   - [Extracting Information from Long Text](./004_z01_collecting_info_from_pdf.md)
   - [Processing Long SEC Filings](./004_z02_processing_long_sec_filings.md)
 - [Tasks](./005_tasks.md)
-  - [Crowd Funding](./005_z01_crowd_fundin_tasks.md)
+  - [Push/Pull agent-status.json to s3 using tool](./005_z01_push_pull_agent_status_fom_s3.md)
+  - [Extracting Information from Latest 10Q](./005_z05_extracting_info_from_latest_10q.md)
+  - [Structured LLM Prompt Editor](./005_z02_structured_llm_prompt_editor.md)
+  - [Spider Charts Criterion for all the tickers](./005_z03_generic_spider_chart_criterion.md)
+  - [Compare SEC Filing Libraries](./005_z04_compare_sec_filing_libs.md)
   

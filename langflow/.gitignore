@@ -13,6 +13,13 @@ terraform/terraform.tfvars
 terraform/terraform-provider-*
 terraform/.terraform*
 
+from-code/.terraform
+from-code/terraform.tfstate
+from-code/terraform.tfstate.backup
+from-code/terraform.tfvars
+from-code/terraform-provider-*
+from-code/.terraform*
+
 
 
 docker/.env

@@ -17,15 +17,15 @@
 
 #### RAW Reports  - Using Large Language Models
 - Raw basic financial reports(balance sheet, income statement, cash flow statement)
-- Quantitative information specific to each parameter specific to industry
-- Qualitative information specific to each parameter specific to industry
+- Quantitative information specific to each criterion specific to industry
+- Qualitative information specific to each criterion specific to industry
 - Sentiment analysis reports
 - Industry performance and projections - Past, Present, Future
 
 #### Consolidated Reports - Using Purpose Built AI Agents
 - Spider chat reports consolidating all aspects of the company
 - Comparison reports with industry and competitors
-- Detailed easy to understand reports for each parameter specific to industry
+- Detailed easy to understand reports for each criterion specific to industry
 - Reports specific to investment style (Value, Growth, Dividend, etc.)
 - Reports specific to investment horizon (Short, Medium, Long)
 - Custom reports based on needs of the business
