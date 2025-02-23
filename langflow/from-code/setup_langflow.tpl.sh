@@ -30,14 +30,14 @@ usermod -aG docker ubuntu
 # Install Nginx (without Certbot)
 apt-get install -y nginx
 
-# Clone the dodao-ui repository
-if [ ! -d "/home/ubuntu/dodao-ui" ]; then
-  git clone https://github.com/RobinNagpal/dodao-ui.git /home/ubuntu/dodao-ui
+# Clone the dodao-ai-agents repository
+if [ ! -d "/home/ubuntu/dodao-ai-agents" ]; then
+  git clone https://github.com/RobinNagpal/dodao-ai-agents.git /home/ubuntu/dodao-ai-agents
 fi
 
 # Create required directories
-mkdir -p /home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/{flows,components}
-chown -R ubuntu:ubuntu /home/ubuntu/dodao-ui
+mkdir -p /home/ubuntu/dodao-ai-agents/langflow-bundles/{flows,components}
+chown -R ubuntu:ubuntu /home/ubuntu/dodao-ai-agents
 
 # Create Docker container
 docker run -d --name langflow \\
@@ -48,10 +48,10 @@ docker run -d --name langflow \\
   -e LANGFLOW_SECRET_KEY="${langflow_secret_key}" \\
   -e LANGFLOW_DATABASE_URL="${postgres_url}" \\
   -e OPENAI_API_KEY="${openai_api_key}" \\
-  -e LANGFLOW_LOAD_FLOWS_PATH=/app/flows \\
-  -e LANGFLOW_COMPONENTS_PATH=/app/components \\
-  -v /home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/flows:/app/flows \\
-  -v /home/ubuntu/dodao-ui/ai-agents/langflow-flows/langflow-bundles/components:/app/components \\
+  -e LANGFLOW_LOAD_FLOWS_PATH=/app/custom_flows \\
+  -e LANGFLOW_COMPONENTS_PATH=/app/custom_components \\
+  -v /home/ubuntu/dodao-ai-agents/langflow-bundles/custom_flows:/app/custom_flows \\
+  -v /home/ubuntu/dodao-ai-agents/langflow-bundles/custom_components:/app/custom_components \\
   -p 127.0.0.1:7860:7860 \\
   public.ecr.aws/p7g4h0z9/langflow-public:latest
 
