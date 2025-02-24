@@ -155,15 +155,15 @@ def get_criteria_from_llm(subsector: str, subsubsector: str, subsubsector_id: st
     llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=OPENAI_API_KEY).with_structured_output(StructuredResponse)
     
     prompt = (
-        f"You are analyzing the **{subsubsector}** industry, which is a part of the **{subsector}** subsector.\n"
-        f"Generate evaluation criteria for the **{subsubsector}**.\n"
-        f"Their must be 8 criterion for evaluating the **{subsubsector}** industry.\n"
-        f"Provide a structured JSON output with the following fields for each criterion: "
-        f"name, description, importance_rank, reason, examples, data_points (list of name, description, source), "
-        f"normalized_data_points (list of name, formula, unit), benchmarks (list of metric, ideal_value, range), "
-        f"public companies working same {subsubsector} industry (list of name, ticker, market_cap, revenue), "
-        f"Five most important points to consider while analyzing the criterion, "
-        f"and type of charts that can be used to represent the information for the criterion. Explain the chart type and why it is useful charts (list of type, usage)."
+        f"""You are analyzing the **{subsubsector}** industry, which is a part of the **{subsector}** subsector.\n
+            Generate evaluation criteria for the **{subsubsector}**.\n
+            Their must be 8 criterion for evaluating the **{subsubsector}** industry.\n
+            Provide a structured JSON output with the following fields for each criterion: 
+            name, description, importance_rank, reason, examples, data_points (list of name, description, source), 
+            normalized_data_points (list of name, formula, unit), benchmarks (list of metric, ideal_value, range), 
+            public companies working same {subsubsector} industry (list of name, ticker, market_cap, revenue), 
+            Five most important points to consider while analyzing the criterion, 
+            and type of charts that can be used to represent the information for the criterion. Explain the chart type and why it is useful charts (list of type, usage)."""
     )
 
     response = llm.invoke([HumanMessage(content=prompt)])
