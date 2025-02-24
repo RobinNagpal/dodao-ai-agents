@@ -152,7 +152,7 @@ def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:
 
 
 def get_sec_info(sec_url: str) -> ProcessedSecInfoSchema:
-    raw_content = scrape_and_clean_content_with_same_details(sec_url)
+    raw_content = scrape_and_clean_content_with_same_details(sec_url, NORMAL_4_0_CONFIG)
     json_data = get_sec_structured_response(raw_content)
     markdown_content = get_markdown_content_from_json(json_data.model_dump_json(indent=4))
     return {

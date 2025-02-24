@@ -7,11 +7,11 @@ from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_core.messages import HumanMessage
 from typing_extensions import TypedDict
 
-from cf_analysis_agent.agent_state import AgentState, Config, ReportType
-from cf_analysis_agent.structures.report_structures import StartupAndTeamInfoStructure
+from cf_analysis_agent.agent_state import AgentState, Config, ReportType, get_combined_content, ProcessedProjectInfo
+from cf_analysis_agent.structures.report_structures import StartupAndTeamInfoStructure, StructuredReportResponse
 from cf_analysis_agent.utils.linkedin_utls import scrape_linkedin_with_proxycurl, TeamMemberLinkedinUrl, \
     RawLinkedinProfile
-from cf_analysis_agent.utils.llm_utils import get_llm, structured_report_response
+from cf_analysis_agent.utils.llm_utils import get_llm, structured_report_response, structured_llm_response
 from cf_analysis_agent.utils.prompt_utils import create_prompt_for_checklist
 from cf_analysis_agent.utils.report_utils import update_report_status_failed, \
     update_report_status_in_progress, update_report_with_structured_output
@@ -231,7 +231,6 @@ def evaluate_profiles(config: Config, raw_profiles: list[RawLinkedinProfile], st
                 "relevantWorkExperience": ""
             })
 
-    checklist_prompt = create_prompt_for_checklist("Founder and Team")
     table_prompt = f"""Based on the below JSON array of analyzed team profiles, convert this JSON data into a well-formatted markdown content
         with a table for each team member. The rows of the table should be fields (id, name, title, info, academicCredentials,
         qualityOfAcademicCredentials, workExperience, depthOfWorkExperience, relevantWorkExperience) and Field Name and Value should 
@@ -241,13 +240,53 @@ def evaluate_profiles(config: Config, raw_profiles: list[RawLinkedinProfile], st
         
         {json.dumps(analyzed_profiles, indent=2)}
         
-        Also {checklist_prompt}
         ."""
-    return structured_report_response(
+    return structured_llm_response(
         config,
-        "evaluate_profiles",
+        "create_profiles_table",
         table_prompt
     )
+
+def generate_team_performance_report(state: AgentState, profile_information: str) -> StructuredReportResponse:
+    processes_project_info: ProcessedProjectInfo = state.get("processed_project_info")
+    crowdFundingPageContent = processes_project_info.get("content_of_crowdfunding_url")
+    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
+    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+
+    prompt = f"""
+    You are an expert startup investor. Analyze that the team woking in the startup is exceptional or just good enough.:
+    
+    Make sure to be conservative based on the profile information of the team members. Make sure to quote the information from the profiles of the team members.
+    
+    Then rate the founder or founders and the core team on the following parameters and also explain:
+    1. General Profile Information: This includes the credentials, quality of the previous companies the member has worked at.
+    2. Past Experience: This includes the past experience of the team member and how it is relevant to the startup.
+    3. Previous Startup Experience: Has the member worked as a core member in a startup before.
+    4. Length of involvement: How long has the member been involved in the startup. Is it from the beginning or has the member joined recently.
+    5. Any Exceptional Achievements: Any exceptional achievements of the team member. 
+   
+    {create_prompt_for_checklist('Founder and Team')}
+
+    Make sure to be conservative. Make sure to quote informaiton from linkedin profile
+    
+    LinkedIn Profiles
+    {profile_information}
+    
+    Here is the information you have about the startup:
+    
+    {crowdFundingPageContent}
+    
+    Sector Info
+    {sector_info}
+    
+    {sub_sector_info}
+    """
+    return structured_report_response(
+        state.get("config"),
+        "detailed_market_opportunity_report",
+        prompt
+    )
+
 
 def create_founder_and_team_report(state: AgentState) -> None:
     """
@@ -262,7 +301,8 @@ def create_founder_and_team_report(state: AgentState) -> None:
         linkedin_urls = find_linkedin_urls(startup_info)
         raw_profiles = scrape_linkedin_with_proxycurl(linkedin_urls)
         team_info_report = evaluate_profiles(state.get("config"), raw_profiles, startup_info)
-        update_report_with_structured_output(project_id, ReportType.FOUNDER_AND_TEAM, team_info_report)
+        founder_and_team_report = generate_team_performance_report(state, team_info_report)
+        update_report_with_structured_output(project_id, ReportType.FOUNDER_AND_TEAM, founder_and_team_report, team_info_report)
     except Exception as e:
         # Capture full stack trace
         print(traceback.format_exc())

@@ -351,12 +351,12 @@ def update_report_status_in_progress(project_id: str, report_type: ReportType, t
     update_project_file(project_id, project_file_contents)
     print(f"Updated status of report '{report_type}' to 'in_progress'.")
 
-def update_report_with_structured_output(project_id: str, report_type: ReportType, structured_output: StructuredReportResponse):
+def update_report_with_structured_output(project_id: str, report_type: ReportType, structured_output: StructuredReportResponse, addition_data: str = ""):
     report_file_path = f"{project_id}/{report_type.value}.md"
 
     output_string = generate_markdown_report(structured_output)
 
-    upload_to_s3(output_string, report_file_path)
+    upload_to_s3(f"{addition_data}\n\n{output_string}", report_file_path)
     # Update status file to "completed"
     markdown_link = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/crowd-fund-analysis/{report_file_path}"
     project_file_contents = get_project_file(project_id)

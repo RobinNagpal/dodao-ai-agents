@@ -30,7 +30,13 @@ def get_llm(config: Config) -> BaseChatModel:
     if model in _llm_cache:
         return _llm_cache[model]
     else:
-        if model == "gpt-4o-mini" or model == "o3-mini" or model == "gpt-4o":
+        if model == "gpt-4o-mini":
+            _llm_cache[model] = ChatOpenAI(model=model, temperature=0, max_tokens=16384)
+            return _llm_cache[model]
+        elif model == "gpt-4o":
+            _llm_cache[model] = ChatOpenAI(model=model, temperature=0, max_tokens=4000)
+            return _llm_cache[model]
+        elif model == "o3-mini":
             _llm_cache[model] = ChatOpenAI(model=model, temperature=0, max_tokens=4000)
             return _llm_cache[model]
         elif model == "deepseek-r1-distill-llama-70b":
@@ -78,7 +84,7 @@ def structured_report_response(config: Config, operation_name: str, prompt: str)
     return validate_report_output(operation_name, response)
 
 
-def scrape_and_clean_content_with_same_details(url: str) -> str:
+def scrape_and_clean_content_with_same_details(url: str, config: Config = MINI_4_0_CONFIG) -> str:
     """
     Clean the content by removing duplicate information.
     """
