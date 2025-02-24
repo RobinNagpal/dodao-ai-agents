@@ -2,12 +2,13 @@
 name = "langflow-tools"
 version = "0.1.0"
 description = ""
-authors = ["HussainKhanSherwani <ghulamhussainsherwani@gmail.com>"]
+authors = ["DoDAO"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-langchain-community = "^0.3.17"
+python = ">=3.10,<3.13"
+langflow = "1.1.4.post1"
 
 
 [build-system]

@@ -2,7 +2,6 @@ import sys
 import os
 import json
 from typing import Any, Dict
-
 import pytest
 
 # Ensure the root folder is in sys.path
@@ -27,28 +26,66 @@ class DummyLambdaContext:
 def context() -> DummyLambdaContext:
     return DummyLambdaContext()
 
-def test_lambda_handler_success(context: DummyLambdaContext):
+def test_single_report_type(context: DummyLambdaContext):
     # Set the required environment variable for the EDGAR tool.
     os.environ["EDGAR_LOCAL_DATA_DIR"] = "/tmp/edgar_data_test"
 
+    # Create a simulated API Gateway event
     event: Dict[str, Any] = {
-        "ticker": "AAPL",
-        "report_type": "balance_sheet"
+        "httpMethod": "POST",
+        "path": "/search",
+        "queryStringParameters": {},
+        "body": json.dumps({
+            "ticker": "AAPL",
+            "report_type": "balance_sheet"
+        }),
+        "isBase64Encoded": False
     }
     response = lambda_handler(event, context)
 
-    # Check the response structure
+    # Check the response structure (awsgi returns a dict with statusCode and body)
     assert "statusCode" in response
-    assert "message" in response
+    assert "body" in response
 
-    message = response["message"]
-    print("Response message:", message)
-    assert response["statusCode"] == 200
+    response_body = json.loads(response["body"])
+    print("Response body:", response_body)
+    assert response["statusCode"] == '200'
+
+def test_all_financial_reports(context: DummyLambdaContext):
+    # Set the required environment variable for the EDGAR tool.
+    os.environ["EDGAR_LOCAL_DATA_DIR"] = "/tmp/edgar_data_test"
+
+    # Create a simulated API Gateway event
+    event: Dict[str, Any] = {
+        "httpMethod": "POST",
+        "path": "/financials",
+        "queryStringParameters": {},
+        "body": json.dumps({
+            "ticker": "FVR"
+        }),
+        "isBase64Encoded": False
+    }
+    response = lambda_handler(event, context)
+
+    # Check the response structure (awsgi returns a dict with statusCode and body)
+    assert "statusCode" in response
+    assert "body" in response
+
+    response_body = json.loads(response["body"])
+    print("Response body:", response_body)
+    assert response["statusCode"] == '200'
 
 def test_lambda_handler_invalid_report_type(context: DummyLambdaContext):
     event: Dict[str, Any] = {
-        "ticker": "AAPL",
-        "report_type": "invalid_report"
+        "httpMethod": "POST",
+        "path": "/search",
+        "queryStringParameters": {},
+        "body": json.dumps({
+            "ticker": "AAPL",
+            "report_type": "invalid_report"
+        }),
+        "isBase64Encoded": False
     }
     response = lambda_handler(event, context)
-    assert response["statusCode"] == 404
+    response_body = json.loads(response["body"])
+    assert response["statusCode"] == '404'
