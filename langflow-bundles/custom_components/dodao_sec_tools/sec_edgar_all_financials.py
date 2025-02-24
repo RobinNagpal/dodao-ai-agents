@@ -33,7 +33,7 @@ class SecEdgarFinancialsComponent(Component):
         """
         # Example: If your base is https://xyz123.lambda-url.us-east-1.on.aws
         # then we append /financials
-        lambda_url = "https://mob4uein6xutxmhajtqswwz3vu0plhtu.lambda-url.us-east-1.on.aws/financials"
+        lambda_url = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/financials"
 
         payload = {
             "ticker": self.ticker,

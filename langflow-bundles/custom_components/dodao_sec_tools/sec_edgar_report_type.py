@@ -41,7 +41,7 @@ class SecEdgarComponent(Component):
         and return the text from the 10-Q if available.
         """
         # The Lambda Function URL you got after deployment
-        lambda_url = "https://mob4uein6xutxmhajtqswwz3vu0plhtu.lambda-url.us-east-1.on.aws/search"
+        lambda_url = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/search"
         
         # Build the request payload
         payload = {

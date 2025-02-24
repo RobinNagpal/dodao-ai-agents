@@ -19,6 +19,11 @@ if (!process.env.SCRAPINGANT_API_KEY) {
   throw new Error("SCRAPINGANT_API_KEY environment variable is not set.");
 }
 
+// Check if all the environment variables are set
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("OPENAI_API_KEY environment variable is not set.");
+}
+
 export class AgentToolsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: AgentToolsStackProps) {
     super(scope, id, props);
@@ -69,13 +74,18 @@ export class AgentToolsStack extends cdk.Stack {
       });
 
       // Create a Lambda function that uses the container image.
+      const timeout = tool === "sec-edgar" ? cdk.Duration.seconds(300): cdk.Duration.seconds(30);
+      const memorySize = tool === "sec-edgar" ? 1024: 512;
+
+      console.log(`Creating Lambda function for ${tool} with timeout ${timeout.toSeconds()}s and memory ${memorySize}MB`);
       const lambdaFunction = new lambda.DockerImageFunction(this, `${tool}Function`, {
         functionName: tool,
         code: lambda.DockerImageCode.fromImageAsset(toolDir),
-        timeout: cdk.Duration.seconds(30),
-        memorySize: 512,
+        timeout: timeout,
+        memorySize: memorySize,
         environment: {
           SCRAPINGANT_API_KEY: process.env.SCRAPINGANT_API_KEY || "",
+          OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
           EDGAR_LOCAL_DATA_DIR: "/tmp/edgar_data",
 
         },

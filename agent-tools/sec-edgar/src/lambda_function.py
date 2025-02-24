@@ -2,7 +2,7 @@ import json
 
 from edgar import Company, use_local_storage, set_identity
 from typing import Any, Dict, Optional, Tuple
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from dotenv import load_dotenv
 
