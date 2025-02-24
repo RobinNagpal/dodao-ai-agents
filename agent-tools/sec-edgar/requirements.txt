@@ -2,3 +2,8 @@
 boto3
 edgartools
 pytest
+Flask
+aws-wsgi
+requests
+langchain-core
+langchain-openai
