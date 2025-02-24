@@ -1,8 +1,7 @@
+import json
+
 from edgar import Company, use_local_storage, set_identity
-from flask import Flask, request, jsonify
 from typing import Any, Dict, Optional, Tuple
-from awsgi import response
-from langchain_openai import ChatOpenAI
 
 # Initialize edgar settings
 use_local_storage()
@@ -138,44 +137,65 @@ def get_xbrl_financials_new(ticker: str) -> str:
     return "\n\n".join(matched_texts)
 
 
-# Create the Flask application
-app = Flask(__name__)
-
-
-@app.route("/search", methods=["POST"])
-def search_endpoint() -> Any:
+def lambda_handler(event, context):
     """
-    Flask endpoint to search for a specific report in the 10-Q filing.
-    """
-    body: Dict[str, Any] = request.get_json(force=True)
-    ticker: str = body.get("ticker", "AAPL")
-    report_type: str = body.get("report_type", "balance_sheet")
-    result_text, error = get_raw_10q_text(ticker, report_type)
-    if error:
-        return jsonify({"status": 404, "message": error}), 404
-    return jsonify({"status": 200, "data": result_text}), 200
+    We'll parse the path from the Lambda Function URL or API Gateway event.
+    Then branch logic:
+      - /search     => calls get_raw_10q_text
+      - /financials => calls get_xbrl_financials
 
+    We return consistent JSON: { "status": <code>, "data" or "message": ... }
+    plus 'statusCode' and 'headers' for the HTTP response.
+    """
 
-@app.route("/financials", methods=["POST"])
-def financials_endpoint() -> Any:
-    """
-    Flask endpoint to retrieve XBRL-based financial data from the 10-Q filing.
-    """
-    body: Dict[str, Any] = request.get_json(force=True)
-    ticker: str = body.get("ticker", "AAPL")
     try:
-        data = get_xbrl_financials_new(ticker)
-        return jsonify({"status": 200, "data": data}), 200
+        # event["rawPath"] is for Lambda Function URLs and new HTTP API Gateway
+        # Or event["path"] if you're using REST API Gateway
+        path = event.get("rawPath") or event.get("path") or ""
+        method = event.get("requestContext", {}).get("http", {}).get("method", "POST")
+
+        # parse JSON body
+        body = {}
+        if "body" in event and event["body"]:
+            body = json.loads(event["body"])
+
+        ticker = body.get("ticker", "AAPL")
+
+        # Simple routing logic:
+        if path == "/search":  # route 1
+            report_type = body.get("report_type", "balance_sheet")
+            result_text, error = get_raw_10q_text(ticker, report_type)
+            if error:
+                return json_response(404, {"status": 404, "message": error})
+            return json_response(200, {"status": 200, "data": result_text})
+
+        elif path == "/financials":  # route 2
+            try:
+                data = get_xbrl_financials_new(ticker)
+                return json_response(200, {"status": 200, "data": data})
+            except Exception as e:
+                return json_response(500, {"status": 500, "message": str(e)})
+
+        else:
+            # If path not recognized, return 404
+            return json_response(404, {
+                "status": 404,
+                "message": f"No route found for path={path}"
+            })
+
     except Exception as e:
-        return jsonify({"status": 400, "message": str(e)}), 400
+        # If something goes really wrong, return 500
+        return json_response(500, {
+            "status": 500,
+            "message": f"Internal server error: {str(e)}"
+        })
 
-
-def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+def json_response(http_status, payload):
     """
-    AWS Lambda entry point that adapts API Gateway events to the Flask WSGI app.
+    Helper to format a Lambda Function URL / API Gateway response consistently.
     """
-    return response(app, event, context)
-
-if __name__ == "__main__":
-    # You can specify any port you want; 5000 is common.
-    app.run(debug=True, port=5000)
+    return {
+        "statusCode": http_status,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps(payload)
+    }

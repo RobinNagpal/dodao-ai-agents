@@ -26,6 +26,7 @@ cdk-synth:  ## Synthesize the CDK CloudFormation template
 	cd cdk && npm run build && npx cdk synth
 
 cdk-deploy:  ## Deploy the CDK stack (all tools or single if tool parameter is set)
+	aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 	@if [ -n "$(tool)" ]; then \
 	  echo "Deploying tool $(tool)..."; \
 	  cd cdk && npm run build && npx cdk deploy --context tool=$(tool) --require-approval never; \
