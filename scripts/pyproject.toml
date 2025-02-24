@@ -10,7 +10,7 @@ package-mode = false
 python = ">=3.11,<3.13"
 langchain-core = "0.3.34"
 langchain-openai = "0.3.4"
-
+dotenv = "^0.9.9"
 
 
 [build-system]

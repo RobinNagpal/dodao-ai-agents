@@ -1,0 +1,481 @@
+{
+    "subsubsector": "Health Care Equipment",
+    "subsector": "Health Care Equipment & Services",
+    "id": "health-care-health-care-equipment-services-health-care-equipment",
+    "criteria": [
+        {
+            "name": "Market Penetration Rate",
+            "description": "The percentage of the target market that uses specific health care equipment.",
+            "importance_rank": "High",
+            "reason": "Understanding market penetration helps identify growth opportunities and competition dynamics.",
+            "examples": [
+                "Percentage of hospitals using MRI machines",
+                "Market share of leading equipment manufacturers"
+            ],
+            "data_points": [
+                {
+                    "name": "Current Users",
+                    "description": "Total number of current users of equipment",
+                    "source": "Industry Reports"
+                },
+                {
+                    "name": "Total Addressable Market",
+                    "description": "Estimated total number of potential users",
+                    "source": "Market Analysis Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Penetration Rate",
+                    "formula": "Current Users / Total Addressable Market",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Ideal Market Penetration",
+                    "ideal_value": "75%",
+                    "range": "50% - 90%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Medtronic",
+                    "ticker": "MDT",
+                    "market_cap": "$145.5B",
+                    "revenue": "$30.1B"
+                },
+                {
+                    "name": "Boston Scientific",
+                    "ticker": "BSX",
+                    "market_cap": "$59.7B",
+                    "revenue": "$12.5B"
+                }
+            ],
+            "key_points": [
+                "Identify leading players in the market",
+                "Assess trends in user adoption",
+                "Understand barriers to entry",
+                "Evaluate potential for market growth",
+                "Monitor changes in regulatory landscape"
+            ],
+            "charts": [
+                {
+                    "type": "Bar Chart",
+                    "usage": "Bar charts effectively display the market penetration of different equipment types, making it easy to compare between them."
+                },
+                {
+                    "type": "Line Chart",
+                    "usage": "Line charts can show the trend of market penetration over time, helping to visualize growth patterns."
+                }
+            ]
+        },
+        {
+            "name": "Regulatory Compliance",
+            "description": "Adherence to health care regulations and standards set by authorities.",
+            "importance_rank": "Critical",
+            "reason": "Failure to comply can lead to fines, recalls, or market exclusion.",
+            "examples": [
+                "FDA approvals",
+                "ISO certifications"
+            ],
+            "data_points": [
+                {
+                    "name": "Number of Compliance Violations",
+                    "description": "Count of compliance failures in the last year",
+                    "source": "Regulatory Bodies"
+                },
+                {
+                    "name": "Approval Rate",
+                    "description": "Percentage of equipment that received necessary approvals",
+                    "source": "FDA Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Compliance Ratio",
+                    "formula": "Total Approvals / Total Applications",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Industry Compliance Rate",
+                    "ideal_value": "95%",
+                    "range": "90% - 100%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Philips Healthcare",
+                    "ticker": "PHG",
+                    "market_cap": "$43.6B",
+                    "revenue": "$19.5B"
+                },
+                {
+                    "name": "Siemens Healthineers",
+                    "ticker": "SHL",
+                    "market_cap": "$40.3B",
+                    "revenue": "$17.2B"
+                }
+            ],
+            "key_points": [
+                "Understand the regulatory landscape",
+                "Monitor compliance status and violations",
+                "Evaluate the impact of regulations on innovation",
+                "Identify additional certifications that enhance credibility",
+                "Be aware of global compliance differences"
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "Pie charts illustrate the proportion of compliant versus non-compliant equipment, providing a clear overview."
+                },
+                {
+                    "type": "Stacked Bar Chart",
+                    "usage": "Stacked bar charts can show compliance rates over multiple years, highlighting improvements or declines."
+                }
+            ]
+        },
+        {
+            "name": "Innovation Rate",
+            "description": "The frequency of new products launched within the industry.",
+            "importance_rank": "High",
+            "reason": "Innovation is key to maintaining competitive advantage and meeting consumer demands.",
+            "examples": [
+                "New medical devices released annually",
+                "R&D investment as a percentage of revenue"
+            ],
+            "data_points": [
+                {
+                    "name": "Number of New Products Launched",
+                    "description": "Count of new products introduced to market",
+                    "source": "Company Press Releases"
+                },
+                {
+                    "name": "R&D Spend",
+                    "description": "Annual budget allocated to research and development",
+                    "source": "Financial Statements"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Innovation Index",
+                    "formula": "New Products Launched / R&D Spend",
+                    "unit": "Products per $Million"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Average Innovation Rate",
+                    "ideal_value": "5%",
+                    "range": "2% - 10%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Abbott Laboratories",
+                    "ticker": "ABT",
+                    "market_cap": "$185.0B",
+                    "revenue": "$39.3B"
+                },
+                {
+                    "name": "Johnson & Johnson",
+                    "ticker": "JNJ",
+                    "market_cap": "$440.0B",
+                    "revenue": "$93.8B"
+                }
+            ],
+            "key_points": [
+                "Analyze R&D effectiveness",
+                "Track recent mergers and acquisitions",
+                "Evaluate consumer feedback on new products",
+                "Check patent filings for innovation trends",
+                "Monitor overall industry innovation trends"
+            ],
+            "charts": [
+                {
+                    "type": "Column Chart",
+                    "usage": "Column charts can display the number of new products launched by each company, allowing for easy comparisons."
+                },
+                {
+                    "type": "Scatter Plot",
+                    "usage": "Scatter plots can show the correlation between R&D spend and new products launched, revealing effectiveness."
+                }
+            ]
+        },
+        {
+            "name": "Market Share",
+            "description": "Percentage of sales in the market attributable to a company or product.",
+            "importance_rank": "Medium",
+            "reason": "Market share gives insight into a company's competitive position.",
+            "examples": [
+                "Sales revenue compared to total market",
+                "Top manufacturers' market share"
+            ],
+            "data_points": [
+                {
+                    "name": "Total Sales of Company",
+                    "description": "Annual sales generated by the company",
+                    "source": "Financial Statements"
+                },
+                {
+                    "name": "Total Market Sales",
+                    "description": "Total sales of all companies in the industry",
+                    "source": "Market Research Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Market Share Ratio",
+                    "formula": "Company Sales / Total Market Sales",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Top Competitor Market Share",
+                    "ideal_value": "30%",
+                    "range": "20% - 40%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "GE Healthcare",
+                    "ticker": "GE",
+                    "market_cap": "$120.0B",
+                    "revenue": "$20.0B"
+                },
+                {
+                    "name": "Thermo Fisher Scientific",
+                    "ticker": "TMO",
+                    "market_cap": "$202.0B",
+                    "revenue": "$34.4B"
+                }
+            ],
+            "key_points": [
+                "Identify leading players in market share",
+                "Evaluate strategies used by top companies",
+                "Look for acquisition opportunities",
+                "Assess market consolidation impact",
+                "Monitor changes in customer preferences"
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "Pie charts provide a visual representation of market shares held by different companies, highlighting the leader."
+                },
+                {
+                    "type": "Area Chart",
+                    "usage": "Area charts depict the growth of market shares over time, showcasing trends effectively."
+                }
+            ]
+        },
+        {
+            "name": "Customer Satisfaction Score",
+            "description": "A measure of how products meet customer expectations.",
+            "importance_rank": "Medium",
+            "reason": "High customer satisfaction is linked to repeat business and brand loyalty.",
+            "examples": [
+                "Net Promoter Score (NPS)",
+                "Customer Satisfaction Surveys"
+            ],
+            "data_points": [
+                {
+                    "name": "NPS Score",
+                    "description": "Numerical score from customer surveys",
+                    "source": "Customer Feedback Reports"
+                },
+                {
+                    "name": "Satisfaction Index",
+                    "description": "Overall satisfaction scored from service/product use",
+                    "source": "Market Research"
+                },
+                {
+                    "name": "Return Rate",
+                    "description": "Percentage of products returned due to dissatisfaction",
+                    "source": "Sales Data"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Average Satisfaction Score",
+                    "formula": "(NPS + Satisfaction Index)/2",
+                    "unit": "Score (1-10)"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Industry Average Satisfaction",
+                    "ideal_value": "8",
+                    "range": "7 - 9"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Baxter International",
+                    "ticker": "BAX",
+                    "market_cap": "$41.0B",
+                    "revenue": "$13.5B"
+                },
+                {
+                    "name": "Stryker Corporation",
+                    "ticker": "SYK",
+                    "market_cap": "$103.0B",
+                    "revenue": "$17.3B"
+                }
+            ],
+            "key_points": [
+                "Analyze survey results for actionable insights",
+                "Benchmark against industry leaders",
+                "Implement feedback for product improvements",
+                "Monitor customer complaints and feedback",
+                "Evaluate impact of customer service quality"
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "Line charts can track changes in customer satisfaction scores over time to identify trends."
+                },
+                {
+                    "type": "Bar Chart",
+                    "usage": "Bar charts help compare scores across different products or services to identify strengths and weaknesses."
+                }
+            ]
+        },
+        {
+            "name": "Cost Efficiency",
+            "description": "Analysis of the operational costs involved in manufacturing health care equipment.",
+            "importance_rank": "High",
+            "reason": "Lowering costs can improve margins and enable competitive pricing.",
+            "examples": [
+                "Manufacturing cost per unit",
+                "Cost reduction initiatives"
+            ],
+            "data_points": [
+                {
+                    "name": "Manufacturing Cost",
+                    "description": "Cost to produce each unit of equipment",
+                    "source": "Financial Reports"
+                },
+                {
+                    "name": "Total Operational Expenses",
+                    "description": "Overall expenses incurred in production",
+                    "source": "Company Budgets"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Cost Efficiency Ratio",
+                    "formula": "Total Expenses/Total Units Sold",
+                    "unit": "$ per Unit"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Ideal Cost Efficiency Ratio",
+                    "ideal_value": "$500",
+                    "range": "$400 - $600"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cardinal Health",
+                    "ticker": "CAH",
+                    "market_cap": "$19.06B",
+                    "revenue": "$23.2B"
+                },
+                {
+                    "name": "Baxter International",
+                    "ticker": "BAX",
+                    "market_cap": "$41.0B",
+                    "revenue": "$13.5B"
+                }
+            ],
+            "key_points": [
+                "Identify cost-saving opportunities",
+                "Monitor cost trends annually",
+                "Evaluate operational efficiency",
+                "Compare costs with industry benchmarks",
+                "Assess implications of costs on pricing strategy"
+            ],
+            "charts": [
+                {
+                    "type": "Histogram",
+                    "usage": "Histograms display the distribution of manufacturing costs and help identify patterns."
+                },
+                {
+                    "type": "Waterfall Chart",
+                    "usage": "Waterfall charts visualize the flow of costs leading to overall profitability, indicating where improvements can be made."
+                }
+            ]
+        },
+        {
+            "name": "Supply Chain Efficiency",
+            "description": "Assessment of the logistics and supply chain management effectiveness.",
+            "importance_rank": "Critical",
+            "reason": "Efficient supply chains are crucial for ensuring timely delivery and reducing costs.",
+            "examples": [
+                "Lead time for equipment delivery",
+                "Supplier reliability ratings"
+            ],
+            "data_points": [
+                {
+                    "name": "Average Lead Time",
+                    "description": "Average duration for product delivery",
+                    "source": "Logistics Reports"
+                },
+                {
+                    "name": "Supplier Reliability Index",
+                    "description": "Rating of suppliers based on past performance",
+                    "source": "Supplier Performance Metrics"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Supply Chain Efficiency Score",
+                    "formula": "1 - (Lead Time / Ideal Lead Time)",
+                    "unit": "Score (0-1)"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Ideal Lead Time",
+                    "ideal_value": "2 weeks",
+                    "range": "1-3 weeks"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Owens & Minor",
+                    "ticker": "OMI",
+                    "market_cap": "$3.29B",
+                    "revenue": "$9.26B"
+                },
+                {
+                    "name": "McKesson Corporation",
+                    "ticker": "MCK",
+                    "market_cap": "$39.43B",
+                    "revenue": "$263.6B"
+                }
+            ],
+            "key_points": [
+                "Assess logistics capabilities",
+                "Monitor supplier relationship quality",
+                "Evaluate the risks in the supply chain",
+                "Identify cost drivers in logistics",
+                "Optimize inventory management processes"
+            ],
+            "charts": [
+                {
+                    "type": "Gantt Chart",
+                    "usage": "Gantt charts visualize the timelines and lead times for supply processes, helping identify bottlenecks."
+                },
+                {
+                    "type": "Line Graph",
+                    "usage": "Line graphs can demonstrate changes in lead times over periods, revealing trends and improvements."
+                }
+            ]
+        }
+    ]
+}

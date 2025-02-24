@@ -1,0 +1,645 @@
+{
+    "subsubsector": "Communications Equipment",
+    "subsector": "Technology Hardware & Equipment",
+    "id": "information-technology-it-technology-hardware-equipment-communications-equipment",
+    "criteria": [
+        {
+            "name": "Market Share",
+            "description": "The percentage of total sales within the communications equipment industry held by a company.",
+            "importance_rank": "Critical",
+            "reason": "Market share indicates competitiveness and business success in the industry.",
+            "examples": [
+                "Cisco Systems",
+                "Huawei Technologies",
+                "Nokia"
+            ],
+            "data_points": [
+                {
+                    "name": "Total Sales Volume",
+                    "description": "Overall sales of the company in the communications equipment sector.",
+                    "source": "Company Annual Reports"
+                },
+                {
+                    "name": "Industry Total Sales",
+                    "description": "Aggregate sales from all companies in the communications equipment sector.",
+                    "source": "Market Research Firms"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Normalized Market Share",
+                    "formula": "(Company Sales / Industry Total Sales) * 100",
+                    "unit": "%"
+                },
+                {
+                    "name": "Growth Rate",
+                    "formula": "(Current Year Sales - Previous Year Sales) / Previous Year Sales",
+                    "unit": "%"
+                },
+                {
+                    "name": "Sales Per Employee",
+                    "formula": "Total Revenue / Number of Employees",
+                    "unit": "Revenue/Employee"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Market Share",
+                    "ideal_value": "20%",
+                    "range": "10% - 25%"
+                },
+                {
+                    "metric": "Sales Growth Rate",
+                    "ideal_value": "15%",
+                    "range": "5% - 20%"
+                },
+                {
+                    "metric": "Sales Per Employee",
+                    "ideal_value": "$500,000",
+                    "range": "$300,000 - $800,000"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cisco Systems",
+                    "ticker": "CSCO",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$51.56 Billion"
+                },
+                {
+                    "name": "Nokia",
+                    "ticker": "NOK",
+                    "market_cap": "$24 Billion",
+                    "revenue": "$25.92 Billion"
+                },
+                {
+                    "name": "Huawei Technologies",
+                    "ticker": "",
+                    "market_cap": null,
+                    "revenue": "$136 Billion"
+                }
+            ],
+            "key_points": [
+                "Monitor highest market shares for potential acquisitions.",
+                "Analyze trends in market share over several years.",
+                "Compare market shares against main competitors.",
+                "Investigate factors contributing to market share gains or losses.",
+                "Look for emerging players in the communications equipment space."
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "A pie chart allows for a visual representation of market share distribution among major companies in the industry, helping to quickly identify market leaders."
+                },
+                {
+                    "type": "Bar Graph",
+                    "usage": "A bar graph is useful for depicting market share changes over time, allowing comparisons of growth rates between companies."
+                }
+            ]
+        },
+        {
+            "name": "Product Innovation",
+            "description": "The rate at which new and improved products are developed and introduced to the market.",
+            "importance_rank": "High",
+            "reason": "Innovative products drive sales and keep companies competitive in a fast-paced industry.",
+            "examples": [
+                "5G equipment",
+                "Optical networks",
+                "VoIP technology"
+            ],
+            "data_points": [
+                {
+                    "name": "Number of Patents Filed",
+                    "description": "Total patents related to communications equipment technology filed by the company.",
+                    "source": "Patent Offices"
+                },
+                {
+                    "name": "R&D Spending",
+                    "description": "Investment in research and development in relation to sales.",
+                    "source": "Company Financial Statements"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "R&D Intensity",
+                    "formula": "R&D Spending / Total Revenue",
+                    "unit": "%"
+                },
+                {
+                    "name": "Innovation Cycle Time",
+                    "formula": "Time taken from product concept to market launch",
+                    "unit": "Months"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "R&D Spending",
+                    "ideal_value": "10%",
+                    "range": "5% - 15%"
+                },
+                {
+                    "metric": "Patents Filed per Year",
+                    "ideal_value": "200",
+                    "range": "100 - 300"
+                },
+                {
+                    "metric": "Time to Market",
+                    "ideal_value": "6 months",
+                    "range": "3-12 months"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cisco Systems",
+                    "ticker": "CSCO",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$51.56 Billion"
+                },
+                {
+                    "name": "Nokia",
+                    "ticker": "NOK",
+                    "market_cap": "$24 Billion",
+                    "revenue": "$25.92 Billion"
+                },
+                {
+                    "name": "Qualcomm",
+                    "ticker": "QCOM",
+                    "market_cap": "$133 Billion",
+                    "revenue": "$31.65 Billion"
+                }
+            ],
+            "key_points": [
+                "Identify key innovations and their impact on market share.",
+                "Review historical R&D spending and its correlation with sales growth.",
+                "Examine competitor innovation strategies.",
+                "Track industry trends towards technological advancements.",
+                "Analyze customer feedback on new product features."
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "Line charts can show the trend of R&D spending and its correlation with product launches over time."
+                },
+                {
+                    "type": "Histogram",
+                    "usage": "Histograms can be employed to visualize the distribution of new patents filed across the industry, showing peaks of innovation."
+                }
+            ]
+        },
+        {
+            "name": "Regulatory Compliance",
+            "description": "Adherence to laws and regulations relating to communications technology and equipment.",
+            "importance_rank": "High",
+            "reason": "Compliance ensures the company avoids legal issues and maintains operational integrity.",
+            "examples": [
+                "FCC Regulations",
+                "EU GDPR",
+                "Telecommunications Act"
+            ],
+            "data_points": [
+                {
+                    "name": "Compliance Audits Passed",
+                    "description": "Frequency of successful compliance audits conducted.",
+                    "source": "Internal Audit Reports"
+                },
+                {
+                    "name": "Number of Regulatory Penalties",
+                    "description": "Count and cost of penalties incurred due to non-compliance.",
+                    "source": "Regulatory Bodies"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Compliance Rate",
+                    "formula": "(Audits Passed / Total Audits) * 100",
+                    "unit": "%"
+                },
+                {
+                    "name": "Penalty Amount per Revenue",
+                    "formula": "Total Penalties / Total Revenue",
+                    "unit": "%"
+                },
+                {
+                    "name": "Time to Resolve Compliance Issues",
+                    "formula": "Average days to rectify compliance discrepancies",
+                    "unit": "Days"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Compliance Rate",
+                    "ideal_value": "98%",
+                    "range": "95% - 100%"
+                },
+                {
+                    "metric": "Penalty Amount",
+                    "ideal_value": "0.5%",
+                    "range": "0% - 1%"
+                },
+                {
+                    "metric": "Resolution Time",
+                    "ideal_value": "30 days",
+                    "range": "15 - 60 days"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cisco Systems",
+                    "ticker": "CSCO",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$51.56 Billion"
+                },
+                {
+                    "name": "Nokia",
+                    "ticker": "NOK",
+                    "market_cap": "$24 Billion",
+                    "revenue": "$25.92 Billion"
+                },
+                {
+                    "name": "Huawei Technologies",
+                    "ticker": "",
+                    "market_cap": null,
+                    "revenue": "$136 Billion"
+                }
+            ],
+            "key_points": [
+                "Evaluate the impact of compliance on operational costs.",
+                "Investigate regulatory changes and their business implications.",
+                "Review penalties history and its impact on brand reputation.",
+                "Monitor compliance training initiatives for employees.",
+                "Assess risk management strategies related to compliance."
+            ],
+            "charts": [
+                {
+                    "type": "Bar Chart",
+                    "usage": "Bar charts can compare the number of compliance audits passed against the total audits dynamically."
+                },
+                {
+                    "type": "Bubble Chart",
+                    "usage": "A bubble chart can illustrate the relationship between compliance penalty amounts and company revenue."
+                }
+            ]
+        },
+        {
+            "name": "Customer Satisfaction",
+            "description": "Measurement of how products meet customer expectations and experiences.",
+            "importance_rank": "Critical",
+            "reason": "High customer satisfaction can lead to repeat business and brand loyalty.",
+            "examples": [
+                "Net Promoter Score (NPS)",
+                "Customer Effort Score (CES)",
+                "Customer Reviews"
+            ],
+            "data_points": [
+                {
+                    "name": "NPS Score",
+                    "description": "Net Promoter Score indicating likelihood of customers to recommend products.",
+                    "source": "Customer Surveys"
+                },
+                {
+                    "name": "Customer Retention Rate",
+                    "description": "Percentage of customers that continue to use the company\u2019s products.",
+                    "source": "Customer Data Analysis"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Customer Satisfaction Index",
+                    "formula": "(Satisfied Customers / Total Customers) * 100",
+                    "unit": "%"
+                },
+                {
+                    "name": "Average Support Response Time",
+                    "formula": "Total response time / Total support requests",
+                    "unit": "Minutes"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "NPS Score",
+                    "ideal_value": "50",
+                    "range": "30 - 70"
+                },
+                {
+                    "metric": "Customer Retention Rate",
+                    "ideal_value": "90%",
+                    "range": "80% - 95%"
+                },
+                {
+                    "metric": "Response Time",
+                    "ideal_value": "10 minutes",
+                    "range": "5 - 15 minutes"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cisco Systems",
+                    "ticker": "CSCO",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$51.56 Billion"
+                },
+                {
+                    "name": "Nokia",
+                    "ticker": "NOK",
+                    "market_cap": "$24 Billion",
+                    "revenue": "$25.92 Billion"
+                },
+                {
+                    "name": "Nordic Semiconductor",
+                    "ticker": "NOD",
+                    "market_cap": "$5 Billion",
+                    "revenue": "$1.8 Billion"
+                }
+            ],
+            "key_points": [
+                "Analyze NPS trends and correlate them with sales data.",
+                "Review customer feedback to identify improvement areas.",
+                "Monitor competitor customer satisfaction ratings.",
+                "Investigate customer churn reasons to enhance retention.",
+                "Consider customer surveys as tools for product improvement."
+            ],
+            "charts": [
+                {
+                    "type": "Line Graph",
+                    "usage": "Line graphs can help track NPS scores over time to visualize improvements or declines."
+                },
+                {
+                    "type": "Scatter Plot",
+                    "usage": "Scatter plots can show the correlation between customer satisfaction and sales growth, indicating potential relationships."
+                }
+            ]
+        },
+        {
+            "name": "Operational Efficiency",
+            "description": "Evaluation of the efficiency with which resources are utilized in producing output.",
+            "importance_rank": "Medium",
+            "reason": "Efficiency can lead to cost reductions and improved profitability.",
+            "examples": [
+                "Cost per unit output",
+                "Employee productivity",
+                "Asset utilization rates"
+            ],
+            "data_points": [
+                {
+                    "name": "Cost of Goods Sold (COGS)",
+                    "description": "The total direct costs of manufacturing goods sold.",
+                    "source": "Company Financial Statements"
+                },
+                {
+                    "name": "Sales per Employee",
+                    "description": "Revenue generated per employee.",
+                    "source": "Company HR Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Operational Efficiency Ratio",
+                    "formula": "COGS / Total Revenue",
+                    "unit": "%"
+                },
+                {
+                    "name": "Employee Productivity",
+                    "formula": "Total Revenue / Number of Employees",
+                    "unit": "Revenue/Employee"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Operational Efficiency Ratio",
+                    "ideal_value": "60%",
+                    "range": "50% - 70%"
+                },
+                {
+                    "metric": "Sales per Employee",
+                    "ideal_value": "$400,000",
+                    "range": "$300,000 - $500,000"
+                },
+                {
+                    "metric": "Asset Utilization",
+                    "ideal_value": "80%",
+                    "range": "70% - 90%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cisco Systems",
+                    "ticker": "CSCO",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$51.56 Billion"
+                },
+                {
+                    "name": "Nokia",
+                    "ticker": "NOK",
+                    "market_cap": "$24 Billion",
+                    "revenue": "$25.92 Billion"
+                },
+                {
+                    "name": "Ericsson",
+                    "ticker": "ERIC",
+                    "market_cap": "$30 Billion",
+                    "revenue": "$27 Billion"
+                }
+            ],
+            "key_points": [
+                "Calculate key operational metrics regularly for insights.",
+                "Benchmark efficiency ratios against industry standards.",
+                "Assess impact of automation on operational efficiency.",
+                "Review training programs for employee productivity initiatives.",
+                "Explore best practices from high-performing peers."
+            ],
+            "charts": [
+                {
+                    "type": "Radar Chart",
+                    "usage": "Radar charts can effectively show comparison between multiple operational efficiency metrics across different companies."
+                },
+                {
+                    "type": "Gantt Chart",
+                    "usage": "Gantt charts can illustrate project timelines and resource allocations for operational improvements."
+                }
+            ]
+        },
+        {
+            "name": "Supply Chain Robustness",
+            "description": "Assessment of supply chain strength and reliability in delivering products efficiently.",
+            "importance_rank": "High",
+            "reason": "A robust supply chain enhances production flexibility and reduces costs and disruptions.",
+            "examples": [
+                "Vendor reliability",
+                "Inventory turnover",
+                "Supply costs"
+            ],
+            "data_points": [
+                {
+                    "name": "Days Inventory Outstanding (DIO)",
+                    "description": "Average number of days inventory is held before sold.",
+                    "source": "Internal Inventory Reports"
+                },
+                {
+                    "name": "Vendor On-Time Delivery Rate",
+                    "description": "Percentage of products delivered by suppliers on time.",
+                    "source": "Vendor Performance Metrics"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Inventory Turnover Ratio",
+                    "formula": "Cost of Goods Sold / Average Inventory",
+                    "unit": "Ratio"
+                },
+                {
+                    "name": "On-Time Delivery Percentage",
+                    "formula": "(On-time Deliveries / Total Deliveries) * 100",
+                    "unit": "%"
+                },
+                {
+                    "name": "Supply Chain Cost as Percentage of Sales",
+                    "formula": "Total Supply Chain Costs / Total Revenue",
+                    "unit": "%"
+                },
+                {
+                    "name": "Total Lead Time",
+                    "formula": "Average time taken from order placement to delivery",
+                    "unit": "Days"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "On-Time Delivery Rate",
+                    "ideal_value": "98%",
+                    "range": "90% - 100%"
+                },
+                {
+                    "metric": "Inventory Turnover Ratio",
+                    "ideal_value": "6",
+                    "range": "4 - 8"
+                },
+                {
+                    "metric": "Lead Time",
+                    "ideal_value": "10 days",
+                    "range": "5 - 15 days"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cisco Systems",
+                    "ticker": "CSCO",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$51.56 Billion"
+                },
+                {
+                    "name": "Nokia",
+                    "ticker": "NOK",
+                    "market_cap": "$24 Billion",
+                    "revenue": "$25.92 Billion"
+                },
+                {
+                    "name": "ZTE Corporation",
+                    "ticker": "000063",
+                    "market_cap": "$18 Billion",
+                    "revenue": "$15 Billion"
+                }
+            ],
+            "key_points": [
+                "Evaluate suppliers for reliability and performance.",
+                "Analyze inventory management tactics for efficiency.",
+                "Monitor lead times and their effect on responsiveness.",
+                "Measure cost impacts from supply chain disruptions.",
+                "Consider implementing dual sourcing strategies for critical components."
+            ],
+            "charts": [
+                {
+                    "type": "Stacked Bar Chart",
+                    "usage": "Stacked bar charts can show inventory levels over time across different components to identify trends."
+                },
+                {
+                    "type": "Flow Chart",
+                    "usage": "Flow charts can visualize the supply chain process, helping to identify bottlenecks and inefficiencies."
+                }
+            ]
+        },
+        {
+            "name": "Competitive Landscape",
+            "description": "Analysis of competitors within the communications equipment industry.",
+            "importance_rank": "High",
+            "reason": "Understanding competitors allows companies to identify opportunities and threats in the market.",
+            "examples": [
+                "Market position analysis",
+                "SWOT Analysis across competitors",
+                "Competitor Pricing Strategies"
+            ],
+            "data_points": [
+                {
+                    "name": "Market Position of Competitors",
+                    "description": "Analysis of where each competitor stands in the market based on sales and innovation.",
+                    "source": "Market Research Firms"
+                },
+                {
+                    "name": "Competitor Pricing Models",
+                    "description": "Research on competitors\u2019 pricing for similar products.",
+                    "source": "Industry Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Market Share Comparison",
+                    "formula": "Market Share of Company / Market Share of Competitor",
+                    "unit": "Ratio"
+                },
+                {
+                    "name": "SWOT Comparison Score",
+                    "formula": "(Strengths - Weaknesses) / (Opportunities - Threats)",
+                    "unit": "Score"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Relative Market Position",
+                    "ideal_value": "Top 3",
+                    "range": "Top 3 - Top 5"
+                },
+                {
+                    "metric": "Competitor Pricing Variance",
+                    "ideal_value": "10%",
+                    "range": "5% - 15%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Cisco Systems",
+                    "ticker": "CSCO",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$51.56 Billion"
+                },
+                {
+                    "name": "Nokia",
+                    "ticker": "NOK",
+                    "market_cap": "$24 Billion",
+                    "revenue": "$25.92 Billion"
+                },
+                {
+                    "name": "Broadcom Inc.",
+                    "ticker": "AVGO",
+                    "market_cap": "$225 Billion",
+                    "revenue": "$27 Billion"
+                }
+            ],
+            "key_points": [
+                "Conduct regular competitor analyses to understand market shifts.",
+                "Monitor competitor product launches and marketing efforts.",
+                "Evaluate competitor strengths and weaknesses thoroughly.",
+                "Maintain an updated SWOT analysis for major competitors.",
+                "Compare pricing strategies to inform competitive pricing of own products."
+            ],
+            "charts": [
+                {
+                    "type": "Competitor Matrix",
+                    "usage": "A matrix provides a clear side-by-side comparison of key competitors based on important metrics like market share and product offerings."
+                },
+                {
+                    "type": "SWOT Analysis Chart",
+                    "usage": "A SWOT analysis chart visually represents competitors\u2019 strengths, weaknesses, opportunities, and threats, providing insight into strategic positioning."
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,413 @@
+{
+    "subsubsector": "Semiconductor Materials & Equipment",
+    "subsector": "Semiconductors & Semiconductor Equipment",
+    "id": "information-technology-it-semiconductors-semiconductor-equipment-semiconductor-materials-equipment",
+    "criteria": [
+        {
+            "name": "Market Growth Rate",
+            "description": "The annual percentage increase in the semiconductor materials and equipment market.",
+            "importance_rank": "Critical",
+            "reason": "Understanding market growth helps investors identify opportunities and risks.",
+            "examples": [
+                "CAGR of the semiconductor materials market",
+                "Year-over-year growth metrics"
+            ],
+            "data_points": [
+                {
+                    "name": "Market Growth Rate",
+                    "description": "Change in market size over a year",
+                    "source": "Market research reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Normalized Growth Rate",
+                    "formula": "(Current Year Size - Previous Year Size) / Previous Year Size",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "CAGR",
+                    "ideal_value": "5% or higher",
+                    "range": "3% - 8%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Applied Materials",
+                    "ticker": "AMAT",
+                    "market_cap": "120B",
+                    "revenue": "23B"
+                },
+                {
+                    "name": "Lam Research",
+                    "ticker": "LRCX",
+                    "market_cap": "70B",
+                    "revenue": "15B"
+                }
+            ],
+            "key_points": [
+                "Assess historical growth trends",
+                "Evaluate macroeconomic factors",
+                "Consider technological advancements",
+                "Monitor competitive landscape",
+                "Review market forecasts"
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "Track growth trajectory over time and visualize trends."
+                }
+            ]
+        },
+        {
+            "name": "Profit Margins",
+            "description": "The net profit margin percentage from the sale of semiconductor materials and equipment.",
+            "importance_rank": "High",
+            "reason": "Higher profit margins indicate better operational efficiency and pricing power.",
+            "examples": [
+                "Net profit margin for major producers",
+                "Comparison of margins within the industry"
+            ],
+            "data_points": [
+                {
+                    "name": "Net Profit Margin",
+                    "description": "The percentage of revenue that becomes profit",
+                    "source": "Financial statements"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Normalized profit margin",
+                    "formula": "(Net Income / Revenue) \u00d7 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Net Profit Margin",
+                    "ideal_value": "20%",
+                    "range": "10% - 25%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "KLA Corporation",
+                    "ticker": "KLAC",
+                    "market_cap": "50B",
+                    "revenue": "8B"
+                },
+                {
+                    "name": "ASML Holding",
+                    "ticker": "ASML",
+                    "market_cap": "250B",
+                    "revenue": "22B"
+                }
+            ],
+            "key_points": [
+                "Analyze changes in profit margins over time",
+                "Compare with industry averages",
+                "Understand cost structures",
+                "Consider external economic impacts",
+                "Evaluate pricing strategies"
+            ],
+            "charts": [
+                {
+                    "type": "Bar Chart",
+                    "usage": "Comparison of profit margins across different companies."
+                }
+            ]
+        },
+        {
+            "name": "R&D Investment",
+            "description": "Level of investment in research and development as a percentage of revenue.",
+            "importance_rank": "High",
+            "reason": "High R&D spending indicates a commitment to innovation and future growth.",
+            "examples": [
+                "R&D expenses of leading firms",
+                "Trends in R&D investment over time"
+            ],
+            "data_points": [
+                {
+                    "name": "R&D Expense",
+                    "description": "Total spending on research and development",
+                    "source": "Company financial reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "R&D Investment Ratio",
+                    "formula": "(R&D Expense / Total Revenue) \u00d7 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "R&D as % of Revenue",
+                    "ideal_value": "8%",
+                    "range": "5% - 12%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "NVIDIA Corporation",
+                    "ticker": "NVDA",
+                    "market_cap": "700B",
+                    "revenue": "26B"
+                },
+                {
+                    "name": "Intel Corporation",
+                    "ticker": "INTC",
+                    "market_cap": "200B",
+                    "revenue": "72B"
+                }
+            ],
+            "key_points": [
+                "Evaluate trends in R&D spending",
+                "Assess the impact of R&D on competitive position",
+                "Analyze the balance between R&D and profitability",
+                "Consider external funding and collaborations",
+                "Monitor emerging technologies"
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "Display the proportion of R&D spending relative to other expenses."
+                }
+            ]
+        },
+        {
+            "name": "Supply Chain Efficiency",
+            "description": "Assessment of the effectiveness and reliability of the supply chain in delivering semiconductor materials and equipment.",
+            "importance_rank": "Medium",
+            "reason": "An efficient supply chain can lead to cost savings and timely product delivery.",
+            "examples": [
+                "Lead times for equipment delivery",
+                "Supply chain disruptions"
+            ],
+            "data_points": [
+                {
+                    "name": "Supply Chain Lead Time",
+                    "description": "Average time taken from order to delivery",
+                    "source": "Supply chain management reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Efficiency Ratio",
+                    "formula": "(Total Output / Total Input)",
+                    "unit": "Ratio"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Average Lead Time",
+                    "ideal_value": "3 weeks",
+                    "range": "2 - 4 weeks"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Broadcom Inc.",
+                    "ticker": "AVGO",
+                    "market_cap": "200B",
+                    "revenue": "35B"
+                },
+                {
+                    "name": "Texas Instruments",
+                    "ticker": "TXN",
+                    "market_cap": "140B",
+                    "revenue": "16B"
+                }
+            ],
+            "key_points": [
+                "Identify bottlenecks in the supply chain",
+                "Evaluate supplier relationships",
+                "Measure customer satisfaction linked to delivery times",
+                "Consider geographic factors in the supply chain",
+                "Assess risks associated with supply chain disruptions"
+            ],
+            "charts": [
+                {
+                    "type": "Gantt Chart",
+                    "usage": "Visualize project timelines and supply chain stages."
+                }
+            ]
+        },
+        {
+            "name": "Technological Innovation Rate",
+            "description": "Measure of how frequently new technologies or products are developed and introduced to the market.",
+            "importance_rank": "High",
+            "reason": "Technological advancement is key to maintaining competitive advantage in the semiconductor sector.",
+            "examples": [
+                "Number of patents filed",
+                "New product launches per year"
+            ],
+            "data_points": [
+                {
+                    "name": "Patents Granted",
+                    "description": "Total number of patents granted in a year",
+                    "source": "Patent databases"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Innovation Rate",
+                    "formula": "(Number of Innovations / Time Period)",
+                    "unit": "Innovations per Year"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "New Products Launched",
+                    "ideal_value": "10 per year",
+                    "range": "5 - 15"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Qualcomm Incorporated",
+                    "ticker": "QCOM",
+                    "market_cap": "150B",
+                    "revenue": "24B"
+                },
+                {
+                    "name": "Microchip Technology Inc.",
+                    "ticker": "MCHP",
+                    "market_cap": "40B",
+                    "revenue": "5B"
+                }
+            ],
+            "key_points": [
+                "Analyze patent filings as indicators of innovation",
+                "Review product launch timelines",
+                "Assess R&D links to new technologies",
+                "Consider competitive innovation rates",
+                "Monitor academic collaborations and insights"
+            ],
+            "charts": [
+                {
+                    "type": "Column Chart",
+                    "usage": "Illustrate the number of innovations or patents over time."
+                }
+            ]
+        },
+        {
+            "name": "Customer Satisfaction Metrics",
+            "description": "Evaluates customer satisfaction through surveys and retention rates.",
+            "importance_rank": "Medium",
+            "reason": "High customer satisfaction can lead to repeat purchases and client loyalty.",
+            "examples": [
+                "Customer satisfaction scores",
+                "Net promoter scores"
+            ],
+            "data_points": [
+                {
+                    "name": "Satisfaction Rate",
+                    "description": "Percentage of customers satisfied with products",
+                    "source": "Customer surveys"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Normalized Satisfaction Score",
+                    "formula": "(Satisfied Customers / Total Responses) \u00d7 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Customer Satisfaction Score",
+                    "ideal_value": "90%",
+                    "range": "80% - 95%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Infineon Technologies AG",
+                    "ticker": "IFNNY",
+                    "market_cap": "30B",
+                    "revenue": "9B"
+                },
+                {
+                    "name": "Analog Devices Inc.",
+                    "ticker": "ADI",
+                    "market_cap": "50B",
+                    "revenue": "7B"
+                }
+            ],
+            "key_points": [
+                "Assess the impact of customer feedback",
+                "Analyze retention rates and loyalty metrics",
+                "Consider improvements based on customer input",
+                "Monitor trends in customer satisfaction",
+                "Evaluate competitive positions based on feedback"
+            ],
+            "charts": [
+                {
+                    "type": "Stacked Bar Chart",
+                    "usage": "Visualize satisfaction ratings across different demographics or regions."
+                }
+            ]
+        },
+        {
+            "name": "Environmental Sustainability Practices",
+            "description": "Assessment of the sustainable practices adopted in the semiconductor manufacturing processes.",
+            "importance_rank": "Medium",
+            "reason": "Sustainability practices can impact company reputation and compliance with regulations.",
+            "examples": [
+                "Carbon footprint studies",
+                "Recycling rates of materials"
+            ],
+            "data_points": [
+                {
+                    "name": "Sustainability Index",
+                    "description": "Overall measure of sustainability practices",
+                    "source": "Environmental audits"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Sustainability Score",
+                    "formula": "(Total Sustainable Practices / Total Practices) \u00d7 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Sustainability Score",
+                    "ideal_value": "75%",
+                    "range": "60% - 90%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "NexSemi Corp",
+                    "ticker": "NXSM",
+                    "market_cap": "2B",
+                    "revenue": "300M"
+                },
+                {
+                    "name": "STMicroelectronics",
+                    "ticker": "STM",
+                    "market_cap": "20B",
+                    "revenue": "10B"
+                }
+            ],
+            "key_points": [
+                "Monitor advancements in sustainability technology",
+                "Assess community impact of manufacturing facilities",
+                "Understand regulatory pressures on sustainability",
+                "Evaluate public perception and its effects",
+                "Consider cost implications of sustainable practices"
+            ],
+            "charts": [
+                {
+                    "type": "Radar Chart",
+                    "usage": "Compare sustainability metrics across different companies."
+                }
+            ]
+        }
+    ]
+}
