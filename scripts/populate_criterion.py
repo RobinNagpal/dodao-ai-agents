@@ -17,18 +17,6 @@ industry_sectors = {
                         {
                             "name": "Systems Software",
                             "id": "information-technology-it-software-services-systems-software"
-                        },
-                        {
-                            "name": "IT Consulting & Services",
-                            "id": "information-technology-it-software-services-it-consulting-services"
-                        },
-                        {
-                            "name": "Data Processing & Outsourced Services",
-                            "id": "information-technology-it-software-services-data-processing-outsourced-services"
-                        },
-                        {
-                            "name": "Internet Services & Infrastructure",
-                            "id": "information-technology-it-software-services-internet-services-infrastructure"
                         }
                     ]
                 },
@@ -43,18 +31,6 @@ industry_sectors = {
                         {
                             "name": "Technology Hardware, Storage & Peripherals",
                             "id": "information-technology-it-technology-hardware-equipment-technology-hardware-storage-peripherals"
-                        },
-                        {
-                            "name": "Electronic Components",
-                            "id": "information-technology-it-technology-hardware-equipment-electronic-components"
-                        },
-                        {
-                            "name": "Electronic Manufacturing Services",
-                            "id": "information-technology-it-technology-hardware-equipment-electronic-manufacturing-services"
-                        },
-                        {
-                            "name": "Office Electronics",
-                            "id": "information-technology-it-technology-hardware-equipment-office-electronics"
                         }
                     ]
                 },
@@ -89,14 +65,6 @@ industry_sectors = {
                         {
                             "name": "Health Care Supplies",
                             "id": "health-care-health-care-equipment-services-health-care-supplies"
-                        },
-                        {
-                            "name": "Health Care Services (Hospitals, Managed Care)",
-                            "id": "health-care-health-care-equipment-services-health-care-services-hospitals-managed-care"
-                        },
-                        {
-                            "name": "Health Care Technology",
-                            "id": "health-care-health-care-equipment-services-health-care-technology"
                         }
                     ]
                 },
@@ -111,17 +79,13 @@ industry_sectors = {
                         {
                             "name": "Biotechnology",
                             "id": "health-care-pharmaceuticals-biotechnology-life-sciences-biotechnology"
-                        },
-                        {
-                            "name": "Life Sciences Tools & Services",
-                            "id": "health-care-pharmaceuticals-biotechnology-life-sciences-life-sciences-tools-services"
                         }
                     ]
                 }
             ]
         }
     ]
-    }
+}
 
 #  1. Write structured output
 #  Call llm to return the structured output for the given input.
