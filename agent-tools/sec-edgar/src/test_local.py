@@ -57,8 +57,8 @@ def local_invoke_financials(ticker):
 if __name__ == "__main__":
     # EXAMPLES OF LOCAL CALLS:
     # 1) Search route with ticker=AMT, report_type=balance_sheet
-    local_invoke_search("AMT", "balance_sheet")
-    print()
+    # local_invoke_search("AMT", "balance_sheet")
+    # print()
 
     # 2) Financials route for ticker=AMT
-    local_invoke_financials("AMT")
+    local_invoke_financials("CCI")
