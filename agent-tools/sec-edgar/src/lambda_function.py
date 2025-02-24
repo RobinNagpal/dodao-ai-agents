@@ -2,6 +2,11 @@ import json
 
 from edgar import Company, use_local_storage, set_identity
 from typing import Any, Dict, Optional, Tuple
+from langchain_community.chat_models import ChatOpenAI
+from langchain_core.messages import HumanMessage, SystemMessage
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Initialize edgar settings
 use_local_storage()
@@ -13,14 +18,15 @@ search_map: Dict[str, list[str]] = {
     "income_statement": [
         "statements of comprehensive income",
         "statements of operations and comprehensive income",
+        "statement of operations and comprehensive income",
     ],
-    "cash_flow": ["statements of cash flows"],
+    "cash_flow": ["statements of cash flows", "statement of cash flows"],
     "operation_statement": [
         "statements of operations",
         "statements of operations and comprehensive income",
+        "statement of operations and comprehensive income"
     ]
 }
-
 
 def get_raw_10q_text(ticker: str, report_type: str) -> Tuple[Optional[str], Optional[str]]:
     """
@@ -60,45 +66,45 @@ def get_raw_10q_text(ticker: str, report_type: str) -> Tuple[Optional[str], Opti
 
     return "\n\n".join(matched_texts), None
 
-
-def get_xbrl_financials(ticker: str) -> Tuple[Optional[Dict[str, Optional[str]]], Optional[str]]:
+def refine_financial_text(raw_text: str) -> str:
     """
-    Retrieve XBRL-based financials from the latest 10-Q filing.
+    Call an LLM (e.g., GPT-4) to filter out older periods and keep only
+    the latest quarter. Preserves original formatting as much as possible.
     """
-    company = Company(ticker)
-    filings = company.get_filings(form="10-Q")
-    if not filings:
-        return None, f"No 10-Q filings found for ticker '{ticker}'."
+    llm = ChatOpenAI(
+        temperature=0,
+        model_name="gpt-4o-mini",  
+    )
 
-    latest_10q = filings.latest()
-    tenq = latest_10q.obj()
-    if not tenq or not tenq.financials:
-        return None, "No XBRL-based financials found in the latest 10-Q."
+    system_prompt = """
+    You are a financial data extraction assistant. The user has provided some
+    text from a 10-Q attachment. It may contain multiple time periods
+    (e.g. “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”).
 
-    fin = tenq.financials
-
-    financials_data: Dict[str, Optional[str]] = {
-        "balance_sheet": str(fin.balance_sheet.get_base_items) if fin.balance_sheet else None,
-        "income_statement": str(fin.income.get_base_items) if fin.income else None,
-        "cash_flow": str(fin.cashflow.get_base_items) if fin.cashflow else None,
-        "equity_changes": str(fin.equity.get_base_items) if fin.equity else None,
-        "comprehensive_income": str(fin.comprehensive_income.get_base_items) if fin.comprehensive_income else None,
-    }
-
-    return financials_data, None
-
-
-def is_financial_attachment(attachment_name: str) -> bool:
+    Your job:
+    1) Remove any older periods/columns, retaining only the latest quarter or period.
+    2) Preserve the rest of the text exactly as it is, including spacing and line breaks,
+    except for the removed columns/rows.
+    3) Do not reformat or summarize; do not alter numbers or wording.
+    4) If there is only one set of data, keep it entirely.
+    5) Preserve all headings and subheadings as lines above the table.
+    6) Return the final data in Markdown tabular format.
     """
-    Check if the report type is a valid financial report type.
+
+    user_prompt = f"""
+    Here is the raw financial statement text from one 10-Q attachment.
+    Please remove older periods but keep the latest quarter/period.
+
+    Raw text:
+    {raw_text}
     """
-    return any(k in attachment_name for k in [
-        "balance sheet",
-        "statements of comprehensive income",
-        "statements of operations and comprehensive income",
-        "statements of cash flows", "statements of operations"
+
+    response = llm.invoke([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_prompt)
     ])
 
+    return response.content
 
 def get_xbrl_financials_new(ticker: str) -> str:
     """
@@ -125,7 +131,9 @@ def get_xbrl_financials_new(ticker: str) -> str:
         purpose = (attach.purpose or "").lower()
         if any(k in purpose for k in all_keywords):
             try:
-                matched_texts.append(attach.text())
+                raw_attachment_text = attach.text()
+                refined_text = refine_financial_text(raw_attachment_text)
+                matched_texts.append(refined_text)
             except Exception as e:
                 matched_texts.append(
                     f"Error reading attachment seq={attach.sequence_number}: {str(e)}"

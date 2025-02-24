@@ -7,3 +7,4 @@ aws-wsgi
 requests
 langchain-core
 langchain-openai
+python-dotenv
