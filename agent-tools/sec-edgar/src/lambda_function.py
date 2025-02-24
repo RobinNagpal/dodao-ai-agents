@@ -103,8 +103,16 @@ def is_financial_attachment(attachment_name: str) -> bool:
 
 def get_xbrl_financials_new(ticker: str) -> str:
     """
-    Retrieve XBRL-based financials from the latest 10-Q filing.
+    Retrieve all attachments (raw text) from the latest 10-Q whose purpose
+    matches *any* of the financial statement keywords (balance sheet, 
+    income statement, cash flow, operation statement). Returns a single
+    concatenated string of all matched texts.
     """
+
+    all_keywords = set()
+    for keywords in search_map.values():
+        all_keywords.update(keywords)
+
     company = Company(ticker)
     filings = company.get_filings(form="10-Q")
     if not filings:
@@ -116,7 +124,7 @@ def get_xbrl_financials_new(ticker: str) -> str:
     matched_texts = []
     for attach in attachments:
         purpose = (attach.purpose or "").lower()
-        if any(k in purpose for k in "statements of"):
+        if any(k in purpose for k in all_keywords):
             try:
                 matched_texts.append(attach.text())
             except Exception as e:
@@ -167,3 +175,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     AWS Lambda entry point that adapts API Gateway events to the Flask WSGI app.
     """
     return response(app, event, context)
+
+if __name__ == "__main__":
+    # You can specify any port you want; 5000 is common.
+    app.run(debug=True, port=5000)
