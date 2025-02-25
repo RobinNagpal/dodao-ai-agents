@@ -105,7 +105,7 @@ def create_criteria_match_analysis(attachment_name: str, content: str, keywords:
     For each criterion, output:
     - 'matched': true or false
     - 'matched_amount': a percentage (0-100) indicating how much of the section is directly relevant
-    (Only return true if more than 40% is genuinely relevant).
+    (Only return true if more than 60% is genuinely relevant).
     - You can match at most two criteria as 'true'.
 
     Return JSON that fits the EXACT structure of 'CriterionMatchResponse':
@@ -220,14 +220,19 @@ def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMa
         if matched_result and matched_result.status == "success":
             for item in matched_result.criterion_matches:
                 if item.matched:
-                    attachments_per_criterion[item.criterion_key].append(attach_purpose)
+                    attachments_per_criterion[item.criterion_key].append(
+                        MatchedAttachment(
+                            name=attach.purpose,
+                            matched_amount=item.matched_amount
+                        )
+                    )
 
     criterion_to_matched_attachments: List[CriterionMatches] = []
-    for c_key, attach_list in attachments_per_criterion.items():
+    for c_key, matched_list in attachments_per_criterion.items():
         criterion_to_matched_attachments.append(
             CriterionMatches(
                 key=c_key,
-                attachments=attach_list
+                matched_attachments=matched_list
             )
         )
 
