@@ -1,0 +1,447 @@
+{
+    "subsubsector": "Technology Hardware, Storage & Peripherals",
+    "subsector": "Technology Hardware & Equipment",
+    "id": "information-technology-it-technology-hardware-equipment-technology-hardware-storage-peripherals",
+    "criteria": [
+        {
+            "name": "Market Growth Rate",
+            "description": "The annual growth rate of the technology hardware, storage, and peripherals market.",
+            "importance_rank": "Critical",
+            "reason": "High market growth indicates strong demand and innovation potential.",
+            "examples": [
+                "5% CAGR in cloud storage hardware",
+                "10% annual growth in gaming peripherals"
+            ],
+            "data_points": [
+                {
+                    "name": "Annual Revenue Growth",
+                    "description": "The percentage increase in annual revenues of major companies.",
+                    "source": "Company financial reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Market Growth Index",
+                    "formula": "Current Year Revenue / Previous Year Revenue",
+                    "unit": "percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Average Market Growth Rate",
+                    "ideal_value": "10%",
+                    "range": "5% - 15%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Apple Inc.",
+                    "ticker": "AAPL",
+                    "market_cap": "2.5 Trillion",
+                    "revenue": "365 Billion"
+                },
+                {
+                    "name": "Dell Technologies",
+                    "ticker": "DELL",
+                    "market_cap": "90 Billion",
+                    "revenue": "94 Billion"
+                },
+                {
+                    "name": "Seagate Technology",
+                    "ticker": "STX",
+                    "market_cap": "15 Billion",
+                    "revenue": "10 Billion"
+                }
+            ],
+            "key_points": [
+                "Analyze historical growth trends to predict future performance.",
+                "Consider external market factors influencing growth.",
+                "Evaluate competitor growth rates for benchmarking.",
+                "Identify emerging technologies affecting growth.",
+                "Monitor shifts in consumer demands."
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "A line chart effectively illustrates market growth trends over time, making it easy to visualize progress and forecast future performance."
+                },
+                {
+                    "type": "Bar Chart",
+                    "usage": "A bar chart can compare the annual revenue growth rates of different companies, highlighting market leaders."
+                }
+            ]
+        },
+        {
+            "name": "Innovation Rate",
+            "description": "The frequency of new product launches and innovations within the industry.",
+            "importance_rank": "High",
+            "reason": "A high innovation rate demonstrates a company's competitiveness and capability to adapt.",
+            "examples": [
+                "New gaming headset releases",
+                "Advancements in SSD technology"
+            ],
+            "data_points": [
+                {
+                    "name": "Number of Product Launches",
+                    "description": "Count of new products launched annually by major companies.",
+                    "source": "Trade publications and press releases"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Innovation Index",
+                    "formula": "Number of New Products / Total Products",
+                    "unit": "percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Industry Average Innovation Rate",
+                    "ideal_value": "20%",
+                    "range": "15% - 25%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "HP Inc.",
+                    "ticker": "HPQ",
+                    "market_cap": "34 Billion",
+                    "revenue": "63 Billion"
+                },
+                {
+                    "name": "Logitech International",
+                    "ticker": "LOGI",
+                    "market_cap": "8 Billion",
+                    "revenue": "3 Billion"
+                }
+            ],
+            "key_points": [
+                "Assess the impact of innovative products on sales.",
+                "Track patents and R&D spending.",
+                "Identify trends in consumer technology needs.",
+                "Monitor competitor innovation strategies.",
+                "Evaluate the sustainability of innovations."
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "A pie chart can effectively illustrate the proportion of new product categories launched versus the total product categories available."
+                },
+                {
+                    "type": "Scatter Plot",
+                    "usage": "A scatter plot can show the relationship between R&D investments and number of innovations, identifying correlation trends."
+                }
+            ]
+        },
+        {
+            "name": "Profit Margins",
+            "description": "The profitability of companies in the technology hardware, storage, and peripherals industry.",
+            "importance_rank": "High",
+            "reason": "Higher profit margins can indicate a company's operational efficiency and brand strength.",
+            "examples": [
+                "Gross margin of 30% for SSDs",
+                "Operating margin of 20% for peripherals"
+            ],
+            "data_points": [
+                {
+                    "name": "Gross Profit Margin",
+                    "description": "Percentage representing the difference between revenue and cost of goods sold.",
+                    "source": "Company financial statements"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Normalized Profit Margin",
+                    "formula": "Gross Profit / Revenue",
+                    "unit": "percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Industry Average Gross Margin",
+                    "ideal_value": "30%",
+                    "range": "25% - 35%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Western Digital",
+                    "ticker": "WDC",
+                    "market_cap": "16 Billion",
+                    "revenue": "15 Billion"
+                },
+                {
+                    "name": "Toshiba Corporation",
+                    "ticker": "TOSBF",
+                    "market_cap": "17 Billion",
+                    "revenue": "20 Billion"
+                }
+            ],
+            "key_points": [
+                "Analyze profit margin trends over time.",
+                "Understand cost structure behind products.",
+                "Benchmark margins against competitors.",
+                "Identify factors impacting profit margins.",
+                "Examine pricing strategies of the companies."
+            ],
+            "charts": [
+                {
+                    "type": "Bar Chart",
+                    "usage": "A bar chart can show the profit margins of various companies, allowing for easy comparison across the industry."
+                },
+                {
+                    "type": "Line Chart",
+                    "usage": "A line chart can track profit margins over time to indicating company performance and market trends."
+                }
+            ]
+        },
+        {
+            "name": "Customer Satisfaction",
+            "description": "Indicators of customer satisfaction and product usability in technology hardware.",
+            "importance_rank": "High",
+            "reason": "High customer satisfaction drives repeat purchases and brand loyalty.",
+            "examples": [
+                "Net Promoter Score for gaming mice",
+                "Customer reviews for storage devices"
+            ],
+            "data_points": [
+                {
+                    "name": "Net Promoter Score (NPS)",
+                    "description": "Measurement of customer loyalty and likelihood of recommendations.",
+                    "source": "Customer surveys"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Customer Satisfaction Index",
+                    "formula": "Number of Satisfied Customers / Total Customers",
+                    "unit": "percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Average NPS for Industry",
+                    "ideal_value": "50",
+                    "range": "40 - 60"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Corsair Gaming",
+                    "ticker": "CRSR",
+                    "market_cap": "5 Billion",
+                    "revenue": "1.5 Billion"
+                },
+                {
+                    "name": "Razer Inc.",
+                    "ticker": "RAZFF",
+                    "market_cap": "2 Billion",
+                    "revenue": "0.9 Billion"
+                }
+            ],
+            "key_points": [
+                "Review customer feedback data regularly.",
+                "Investigate common customer complaints.",
+                "Gauge the impact of customer service on satisfaction.",
+                "Analyze competitive customer satisfaction ratings.",
+                "Identify improvement areas based on customer feedback."
+            ],
+            "charts": [
+                {
+                    "type": "Radar Chart",
+                    "usage": "A radar chart can illustrate various aspects of customer satisfaction across different products, allowing for a comprehensive view of strengths and weaknesses."
+                },
+                {
+                    "type": "Bar Chart",
+                    "usage": "A bar chart can compare NPS scores of different companies to quickly assess market leaders."
+                }
+            ]
+        },
+        {
+            "name": "Supply Chain Efficiency",
+            "description": "The effectiveness and reliability of supply chain operations.",
+            "importance_rank": "Medium",
+            "reason": "Efficient supply chains contribute to lower costs and improved delivery times.",
+            "examples": [
+                "Lead time for components",
+                "Inventory turnover rates"
+            ],
+            "data_points": [
+                {
+                    "name": "Supply Chain Lead Time",
+                    "description": "Time taken from order to delivery of products.",
+                    "source": "Internal supply chain metrics"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Supply Chain Efficiency Ratio",
+                    "formula": "Total Delivery Time / Number of Deliveries",
+                    "unit": "days"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Best-in-Class Lead Time",
+                    "ideal_value": "5 days",
+                    "range": "3 - 7 days"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Asus",
+                    "ticker": "ASUUY",
+                    "market_cap": "21 Billion",
+                    "revenue": "19 Billion"
+                },
+                {
+                    "name": "Acer Inc.",
+                    "ticker": "ACEYY",
+                    "market_cap": "16 Billion",
+                    "revenue": "12 Billion"
+                }
+            ],
+            "key_points": [
+                "Assess the impact of supply chain delays on sales.",
+                "Identify key suppliers and their performance.",
+                "Monitor logistics costs and efficiency.",
+                "Evaluate inventory management practices.",
+                "Consider emerging risks in global supply chains."
+            ],
+            "charts": [
+                {
+                    "type": "Histogram",
+                    "usage": "A histogram can reveal distribution patterns of delivery times, helping identify areas for improvement."
+                },
+                {
+                    "type": "Line Chart",
+                    "usage": "A line chart can track trends in supply chain efficiency over time, indicating improvement or deterioration."
+                }
+            ]
+        },
+        {
+            "name": "Market Share",
+            "description": "The percentage of total sales within the market captured by each company.",
+            "importance_rank": "High",
+            "reason": "Greater market share typically means stronger competitive positioning.",
+            "examples": [
+                "Market share of SSD makers",
+                "Volume of gaming peripherals sold"
+            ],
+            "data_points": [
+                {
+                    "name": "Total Industry Sales",
+                    "description": "Total sales generated by all companies in the market.",
+                    "source": "Industry reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Normalized Market Share",
+                    "formula": "Company Sales / Total Industry Sales",
+                    "unit": "percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Top 3 Company Market Share",
+                    "ideal_value": "60%",
+                    "range": "50% - 70%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Lenovo Group",
+                    "ticker": "LNVGY",
+                    "market_cap": "12 Billion",
+                    "revenue": "50 Billion"
+                },
+                {
+                    "name": "Netgear Inc.",
+                    "ticker": "NTGR",
+                    "market_cap": "1.5 Billion",
+                    "revenue": "1 Billion"
+                }
+            ],
+            "key_points": [
+                "Track market share changes over time.",
+                "Investigate factors contributing to market share shifts.",
+                "Evaluate strategies for increasing market share.",
+                "Understand competitors\u2019 market positioning.",
+                "Monitor market entry of newcomers."
+            ],
+            "charts": [
+                {
+                    "type": "Stacked Bar Chart",
+                    "usage": "A stacked bar chart can depict market share changes among different competitors, showcasing shifts over time."
+                },
+                {
+                    "type": "Pie Chart",
+                    "usage": "A pie chart can show the market share composition of the top companies, illustrating dominance within the market."
+                }
+            ]
+        },
+        {
+            "name": "Brand Recognition",
+            "description": "The extent to which the market recognizes and trusts brands in this industry.",
+            "importance_rank": "Medium",
+            "reason": "Strong brand recognition can lead to increased consumer trust and loyalty.",
+            "examples": [
+                "Brand trust surveys",
+                "Recognition in technology rankings"
+            ],
+            "data_points": [
+                {
+                    "name": "Brand Trust Score",
+                    "description": "Score reflecting how much consumers trust the brand.",
+                    "source": "Market research surveys"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Brand Awareness Rate",
+                    "formula": "Known Brands / Total Brands",
+                    "unit": "percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Average Trust Score",
+                    "ideal_value": "75",
+                    "range": "70 - 80"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Samsung Electronics",
+                    "ticker": "SSNLF",
+                    "market_cap": "460 Billion",
+                    "revenue": "200 Billion"
+                },
+                {
+                    "name": "Sony Corporation",
+                    "ticker": "SNE",
+                    "market_cap": "120 Billion",
+                    "revenue": "75 Billion"
+                }
+            ],
+            "key_points": [
+                "Monitor changes in brand trust over time.",
+                "Investigate marketing initiatives' effectiveness.",
+                "Evaluate the impact of brand partnerships.",
+                "Understand consumer perception of brand value.",
+                "Analyze competitor brand strength."
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "A line chart can track brand trust score changes over time against competitors, highlighting shifts in consumer perception."
+                },
+                {
+                    "type": "Bar Chart",
+                    "usage": "A bar chart can compare brand recognition scores among various companies, allowing for a clear competitive analysis."
+                }
+            ]
+        }
+    ]
+}
