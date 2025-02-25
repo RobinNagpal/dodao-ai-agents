@@ -390,6 +390,41 @@ def repopulate_project_field(project_id: str, field: RepopulatableFields):
 
     print(f"Repopulated '{field}' uploaded to S3 for project {project_id}.")
 
+def is_industry_details_missing(project_info: ProcessedProjectInfoSchema) -> bool:
+    """
+    Check if 'industryDetails' is missing in 'processedProjectInfo'.
+    """
+    industry_details = project_info.get("industryDetails")
+    if industry_details is None:
+        return True
+
+    sector_details = industry_details.get("sectorDetails")
+    if sector_details is None:
+        return True
+
+    sub_sector_details = industry_details.get("subSectorDetails")
+    if sub_sector_details is None:
+        return True
+
+    total_addressable_market = industry_details.get("totalAddressableMarket")
+    if total_addressable_market is None:
+        return True
+
+    serviceable_addressable_market = industry_details.get("serviceableAddressableMarket")
+    if serviceable_addressable_market is None:
+        return True
+
+    serviceable_obtainable_market = industry_details.get("serviceableObtainableMarket")
+    if serviceable_obtainable_market is None:
+        return True
+
+    profit_margins = industry_details.get("profitMargins")
+    if profit_margins is None:
+        return True
+
+
+
+
 def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -> ProcessedProjectInfo:
     """
     Ensures that 'processed_project_info' is present in agent-status.json in S3.
@@ -433,7 +468,7 @@ def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -
                         or project_info_in_s3.get("contentOfCrowdfundingUrl") is None
                         or project_info_in_s3.get("contentOfCrowdfundingUrl") == ""
                         or project_info_in_s3.get("secInfo") is None
-                        or project_info_in_s3.get("industryDetails") is None or True
+                        or is_industry_details_missing(project_info_in_s3)
                         or project_info_in_s3.get("startupSummary") is None
                         )
 
@@ -470,7 +505,7 @@ def ensure_processed_project_info(project_id: str, generate_all:bool = False ) -
     combined_text = crowd_funding_and_website_content + project_info_in_s3.get("secInfo").get("secMarkdownContent")
 
 
-    if generate_all or project_info_in_s3.get("industryDetails") is None:
+    if generate_all or is_industry_details_missing(project_info_in_s3):
         print("Industry Details are missing. Scraping Industry Details.")
         industry_and_forecast_structure = get_project_industry_and_forecasts_info(
             combined_text

@@ -48,6 +48,9 @@ def get_llm(config: Config) -> BaseChatModel:
 
 def validate_structured_output(operation_name: str, output: StructuredLLMResponse) -> str:
     """Validate the structured output from the LLM"""
+
+    print(f"Validating output for operation: {operation_name}")
+
     if output.status == "failed":
         print(f"Failed to generate output for {operation_name}: {output.failureReason}")
         raise Exception(f"Failed to generate output: {output.failureReason}")
@@ -70,7 +73,7 @@ def validate_report_output(operation_name: str, output: StructuredReportResponse
 
 def structured_llm_response(config: Config, operation_name: str, prompt: str) -> str:
     """Get the response from the LLM"""
-    print(f'Fetching response from LLM for operation: {operation_name}')
+    print(f'Fetching response from LLM for operation: {operation_name} with model: {config.get("configurable", {}).get("model", OPEN_AI_DEFAULT_MODEL)}. Input length: {len(prompt)}')
     structured_llm = get_llm(config).with_structured_output(StructuredLLMResponse)
     response: StructuredLLMResponse = structured_llm.invoke([HumanMessage(content=prompt)])
     return validate_structured_output(operation_name, response)

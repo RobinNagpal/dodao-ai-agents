@@ -1,5 +1,8 @@
+import hashlib
+import json
 import traceback
 from typing import List, Dict, Any
+from urllib.parse import urlparse
 
 import requests
 from linkedin_scraper import Person, actions
@@ -8,6 +11,7 @@ from selenium.webdriver.chrome.options import Options
 from typing_extensions import TypedDict
 
 from cf_analysis_agent.utils.env_variables import LINKEDIN_EMAIL, LINKEDIN_PASSWORD, PROXYCURL_API_KEY
+from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
 
 class TeamMemberLinkedinUrl(TypedDict):
@@ -21,56 +25,177 @@ class RawLinkedinProfile(TypedDict):
     name: str
     profile: Dict[str, Any]
 
+class ProxyCurlLinkedinProfile(TypedDict):
+    public_identifier: str
+    profile_pic_url: str
+    first_name: str
+    last_name: str
+    full_name: str
+    headline: str
+    occupation: str
+    summary: str
+    experiences: List[Dict[str, Any]]
+    educations: List[Dict[str, Any]]
+    certifications: List[Dict[str, Any]]
 
 
-def scrape_linkedin_with_proxycurl(member: list[TeamMemberLinkedinUrl]) -> list[RawLinkedinProfile]:
-    raw_profiles: List[RawLinkedinProfile] = []
-    for member in member:
-        # Set the authorization header using your API key
-        headers = {'Authorization': f'Bearer {PROXYCURL_API_KEY}'}
+def scrape_single_linkedin_profiles_with_proxycurl(linkedin_url: str) -> ProxyCurlLinkedinProfile or None:
+    headers = {'Authorization': f'Bearer {PROXYCURL_API_KEY}'}
 
-        # API endpoint for retrieving a LinkedIn person profile
-        api_endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
-        linkedin_url = member.get('url')
+    # API endpoint for retrieving a LinkedIn person profile
+    api_endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
 
-        # Set up the parameters. Note that you should include only one of:
-        # 'linkedin_profile_url', 'twitter_profile_url', or 'facebook_profile_url'
-        params = {
-            'linkedin_profile_url': linkedin_url,
-            'extra': 'include',
-            'github_profile_id': 'include',
-            'facebook_profile_id': 'include',
-            'twitter_profile_id': 'include',
-            'personal_contact_number': 'include',
-            'personal_email': 'include',
-            'inferred_salary': 'include',
-            'skills': 'include',
-            'use_cache': 'if-present',
-            'fallback_to_cache': 'on-error',
+    # Set up the parameters. Note that you should include only one of:
+    # 'linkedin_profile_url', 'twitter_profile_url', or 'facebook_profile_url'
+    params = {
+        'linkedin_profile_url': linkedin_url,
+        'extra': 'include',
+        'github_profile_id': 'include',
+        'facebook_profile_id': 'include',
+        'twitter_profile_id': 'include',
+        'personal_contact_number': 'include',
+        'personal_email': 'include',
+        'inferred_salary': 'include',
+        'skills': 'include',
+        'use_cache': 'if-present',
+        'fallback_to_cache': 'on-error',
+    }
+
+    # Make the GET request to the API
+    response = requests.get(api_endpoint, headers=headers, params=params)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        profile = response.json()
+
+        relevant_profile = {
+            "public_identifier": profile.get('public_identifier'),
+            "profile_pic_url": profile.get('profile_pic_url'),
+            "first_name": profile.get('first_name'),
+            "last_name": profile.get('last_name'),
+            "full_name": profile.get('full_name'),
+            "headline": profile.get('headline'),
+            "occupation": profile.get('occupation'),
+            "summary": profile.get('summary'),
+            "experiences": profile.get('experiences'),
+            "educations": profile.get('educations'),
+            "certifications": profile.get('certifications'),
+
         }
 
-        # Make the GET request to the API
-        response = requests.get(api_endpoint, headers=headers, params=params)
+        return relevant_profile
+    else:
+        print(f"Failed to retrieve LinkedIn profile for {linkedin_url}. Status code: {response.status_code}")
+        print(response.json())
+        return None
 
-        # Check if the request was successful
+def get_identifier_from_linkedin_url(linkedin_url: str) -> str:
+    """
+    Extracts a human-readable identifier from the LinkedIn URL.
+    If the URL follows the '/in/<identifier>' or '/pub/<identifier>' format,
+    returns the identifier; otherwise, falls back to an MD5 hash.
+    """
+    parsed = urlparse(linkedin_url)
+    parts = parsed.path.strip("/").split("/")
+    if parts and parts[0] in {"in", "pub"} and len(parts) >= 2:
+        return parts[1]
+    return hashlib.md5(linkedin_url.encode("utf-8")).hexdigest()
+
+def get_s3_profile_key(linkedin_url: str) -> str:
+    """
+    Creates a readable S3 key for storing the LinkedIn profile JSON.
+    """
+    identifier = get_identifier_from_linkedin_url(linkedin_url)
+    return f"linkedin-profiles/{identifier}.json"
+
+def get_s3_pic_key(linkedin_url: str) -> str:
+    """
+    Creates a readable S3 key for storing the LinkedIn profile picture.
+    """
+    identifier = get_identifier_from_linkedin_url(linkedin_url)
+    return f"linkedin-pics/{identifier}.jpg"
+
+def cache_profile_pic(linkedin_url: str, profile_pic_url: str) -> str:
+    """
+    Downloads the profile picture from the provided URL and uploads it to S3.
+    Returns the public S3 URL of the uploaded image.
+    """
+    s3_pic_key = get_s3_pic_key(linkedin_url)
+
+    try:
+        # Check if the profile picture is already cached in S3
+        s3_client.head_object(Bucket=BUCKET_NAME, Key=s3_pic_key)
+        print(f"Profile picture already cached: {s3_pic_key}")
+    except s3_client.exceptions.ClientError:
+        print(f"Downloading profile picture from {profile_pic_url}")
+        response = requests.get(profile_pic_url)
         if response.status_code == 200:
-            profile = response.json()
-            print(f"Downloaded profile from url: {linkedin_url} : {profile}")
-            #  see - https://nubela.co/proxycurl/docs#people-api-person-profile-endpoint
-            raw_profiles.append({
-                "id": member.get('id'),
-                "name": member.get('name'),
-                "profile": profile
-            })
-
+            content_type = response.headers.get("Content-Type", "image/jpeg")
+            s3_client.put_object(
+                Bucket=BUCKET_NAME,
+                Key=s3_pic_key,
+                Body=response.content,
+                ContentType=content_type,
+                ACL="public-read",
+            )
+            print(f"Profile picture cached in S3: {s3_pic_key}")
         else:
-            # Print error details and raise an exception if needed
-            print(f"Error fetching profile: {linkedin_url}: ", response.status_code, response.text)
-            # response.raise_for_status()
+            print(f"Failed to download profile picture from {profile_pic_url} - Status code: {response.status_code}")
 
+    # Construct the public S3 URL (assuming the bucket is public-read)
+    s3_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{s3_pic_key}"
+    return s3_url
 
-    return raw_profiles
+def get_cached_linkedin_profile(linkedin_url: str):
+    """
+    Retrieves a LinkedIn profile from cache (S3) if available;
+    otherwise, fetches it from Proxycurl, caches it in S3, and returns the profile.
+    """
+    s3_profile_key = get_s3_profile_key(linkedin_url)
 
+    try:
+        # Attempt to check for the object in S3
+        s3_client.head_object(Bucket=BUCKET_NAME, Key=s3_profile_key)
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=s3_profile_key)
+        cached_data = response["Body"].read().decode("utf-8")
+        profile = json.loads(cached_data)
+        print(f"Cache hit: {s3_profile_key}")
+        return profile
+    except s3_client.exceptions.ClientError:
+        # If the object does not exist, fetch it from Proxycurl and cache it
+        print(f"Cache miss: {s3_profile_key}. Fetching from Proxycurl...")
+        profile = scrape_single_linkedin_profiles_with_proxycurl(linkedin_url)
+        if profile:
+            json_data = json.dumps(profile, indent=4)
+            print(f"Caching LinkedIn profile to S3: {s3_profile_key}")
+            s3_client.put_object(
+                Bucket=BUCKET_NAME,
+                Key=s3_profile_key,
+                Body=json_data,
+                ContentType="application/json",
+                ACL="public-read",
+            )
+        print(f"LinkedIn profile fetched and cached: {s3_profile_key}")
+
+        # If the profile contains a profile_pic_url, download and cache the image,
+        # then update the profile to use the S3 URL of the picture.
+        if profile and profile.get("profile_pic_url"):
+            s3_pic_url = cache_profile_pic(linkedin_url, profile["profile_pic_url"])
+            # Only update if the S3 URL is different from what is stored
+            if profile["profile_pic_url"] != s3_pic_url:
+                profile["profile_pic_url"] = s3_pic_url
+                # Update the cached profile with the new profile_pic_url
+                updated_json_data = json.dumps(profile, indent=4)
+                s3_client.put_object(
+                    Bucket=BUCKET_NAME,
+                    Key=s3_profile_key,
+                    Body=updated_json_data,
+                    ContentType="application/json",
+                    ACL="public-read",
+                )
+            print(f"Cached profile updated with new profile_pic_url: {s3_pic_url}")
+
+        return profile
 
 def scrape_linkedin_with_linkedin_scraper(linkedin_urls: list[TeamMemberLinkedinUrl]) -> list[RawLinkedinProfile]:
     """
