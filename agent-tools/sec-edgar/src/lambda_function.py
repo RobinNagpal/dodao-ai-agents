@@ -89,6 +89,7 @@ def refine_financial_text(raw_text: str) -> str:
     4) If there is only one set of data, keep it entirely.
     5) Preserve all headings and subheadings as lines above the table.
     6) Return the final data in Markdown tabular format.
+    7) Include headings or subheadings as lines immediately above the table (in plain text or bold text). Do not remove them.
     """
 
     user_prompt = f"""

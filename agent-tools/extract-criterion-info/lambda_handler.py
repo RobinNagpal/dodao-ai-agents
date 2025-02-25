@@ -163,7 +163,10 @@ def get_raw_10q_text(ticker: str, keywords: List[str]) -> dict:
         excluded_purposes = [
             "balance sheet",
             "statements of cash flows",
-            "income statement",
+            "statement of cash flows",
+            "statements of comprehensive income",
+            "statements of operations and comprehensive income",
+            "statement of operations and comprehensive income",
             "statements of operations",
             "statements of equity"
         ]

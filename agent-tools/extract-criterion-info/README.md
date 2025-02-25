@@ -20,3 +20,16 @@ This AWS Lambda function extracts topic-specific data from SEC 10-Q reports. It 
 4. Status Tracking & Retrieval
    - Updates a status file in S3 (status.json) to indicate if processing is complete.
    - A separate tool can read the stored files for further analysis.
+
+- [] Lambda Function Handler 
+- [] Parsing and Validating Input (ticker, keywords)
+- [] Fetching Latest 10-Q Filings from SEC
+- [] Excluding Attachments (which are already covered in another tool)
+- [] Limiting Topics to Two
+- [] See whether other attachments has very large content or not, if yes then divide it partially and then give it to LLM
+- [] Calling LLM with correct prompt
+- [] Checking for Matched Topics and Confidence Score
+- [] Adding Content to S3 files
+- [] Maintaining a Status file in S3
+- [] Lambda Response type
+- [] Testing Required
