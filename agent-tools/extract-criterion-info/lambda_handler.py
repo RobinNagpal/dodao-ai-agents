@@ -26,21 +26,19 @@
 # throw an error if the file is not present.
 
 import json
-import boto3
+# import boto3
 from edgar import *
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
-from typing import Optional, Literal, List
+from typing import Optional, Literal, List, Union
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
 
-
+load_dotenv()
 
 # Initialize S3 client
-s3_client = boto3.client("s3")
-S3_BUCKET_NAME = "your-s3-bucket-name"
-
-
-
+# s3_client = boto3.client("s3")
+# S3_BUCKET_NAME = "your-s3-bucket-name"
 
 class Criterion(BaseModel):
     """Criterion for which we need to extract data from SEC filings"""
@@ -70,11 +68,11 @@ class CriterionMatchResponse(BaseModel):
 
 class MatchedAttachment(BaseModel):
     name: str = Field(description="The name of the attachment")
-    amount: float = Field(description="The percentage of the content that matched the criterion")
+    matched_amount: float = Field(description="The percentage of the content that matched the criterion")
 
 class CriterionMatches(BaseModel):
     key: str = Field(description="The key of the criterion")
-    attachments: List[str] = Field(description="The list of attachments that matched the criterion")
+    matched_attachments: List[MatchedAttachment] = Field(description="The list of attachments that matched the criterion")
 
 reit_criteria: Criteria = Criteria(
     sector="Real Estate",
@@ -88,55 +86,47 @@ reit_criteria: Criteria = Criteria(
         Criterion(key="stock_types", name="Stock Types", short_description="Stock Distribution, Common State, Preferred Shares, Dividends, Dividend Payout")
     ])
 
-def create_criteria_match_analysis(attachment_name: str, content: str, keywords: list[Criterion]) -> CriterionMatchResponse or None:
+def create_criteria_match_analysis(attachment_name: str, content: str, keywords: list[Criterion]) -> Union[CriterionMatchResponse, None]:
     """
     Calls GPT-4o-mini to analyze if the content is relevant to provided topics.
     """
 
-    # TODO
-    """
-    1. Update the prompt to make sure it understand the criterion correctly
-    2. Pass the output schema json, and make sure it is returns the criterion keys properly 
-    """
-
+    criteria_json = json.dumps([kw.dict() for kw in keywords], indent=2)
 
     prompt = f"""
-    You are analyzing a section from an SEC 10-Q filing. Your task is to analyze the content 
-    and determine whether the section solely focuses to one or two of the provided topics.
-    
-    For example if the section focuses a lot on:
-    In case of rent - Rental Income of REIT, above and below market rents etc, and shares quantitave or qualitative data for it,
-                    Rental Income Growth Over Time, Occupancy Rates, Lease Terms, Rental Reversion, Tenant Concentration
-    In case of debt - Debt obligations, Mortgage Loans Payable, Lines of Credit and Term Loan, Schedule of Debt
-    
+    You are analyzing a section from an SEC 10-Q filing named '{attachment_name}'.
+    Determine how relevant the section is to each of the following criteria.
+
     ### **Importance of Precision**
-    - We are collecting only **highly relevant** sections, as they will later be analyzed for financial ratios and investment insights.
-    - **Loose or partial relevance is NOT enough**—a section should match **only if it contains direct, substantial information** about a topic.
-    - The purpose is to assess whether this company (REIT) is worth investing in.
+        - We are collecting only **highly relevant** sections, as they will later be analyzed for financial ratios and investment insights.
+        - **Loose or partial relevance is NOT enough**—a section should match **only if it contains direct, substantial information** about a topic.
+        - A section **must be strongly and directly related** to the topic to be considered a match.
 
-    ### **Matching Criteria:**
-    - A section **must be strongly and directly related** to the topic to be considered a match.
-    - **Avoid keyword-based matches**—evaluate meaning and financial relevance instead.
-    - A section **can match at most two topics**.
-    - Matching is based on **semantic relevance**, not just keyword appearance.
-    - If a topic matches, set `"matched": true` and provide the confidence score.
-    - Only return true if more than 40% of the section is very relevant to the topic.
-    - If a topic does not match, set `"matched": false` and provide a low confidence score.
+    For each criterion, output:
+    - 'matched': true or false
+    - 'matched_amount': a percentage (0-100) indicating how much of the section is directly relevant
+    (Only return true if more than 40% is genuinely relevant).
+    - You can match at most two criteria as 'true'.
 
-    ### **Response Format (JSON)**
-    Return the response in JSON format where **each topic has a matched flag and a confidence score**: """ + """
-
-    {
-        "topic_rent": {"matched": true, "match_confidence": 0.85},
-        "topic_debt": {"matched": false, "match_confidence": 0.40},
+    Return JSON that fits the EXACT structure of 'CriterionMatchResponse':
+    {{
+    "criterion_matches": [
+        {{
+        "criterion_key": "...",
+        "matched": true/false,
+        "matched_amount": 0-100
+        }},
         ...
-    }
-    """ + f"""
+    ],
+    "status": "success" or "failure",
+    "confidence": 1-10,
+    "failureReason": "optional"
+    }}
 
-    Topics: 
-    {"\n".join([f"{index}. - key: {kw.key},  name: {kw.name},  short_description: {kw.short_description}" for index, kw in keywords])}
-    
-    Section content:
+    Criteria:
+    {criteria_json}
+
+    ATTACHMENT CONTENT:
     {content}
     """
 
@@ -150,43 +140,42 @@ def create_criteria_match_analysis(attachment_name: str, content: str, keywords:
         print(f"Error analyzing content: {attachment_name} - {str(e)}")
         return None
 
-def append_to_s3(bucket: str, key: str, content: str):
-    """
-    Appends content to an existing file in S3 or creates a new file if it does not exist.
-    """
-    try:
-        # Try to fetch existing content
-        existing_content = ""
-        try:
-            obj = s3_client.get_object(Bucket=bucket, Key=key)
-            existing_content = obj['Body'].read().decode("utf-8")
-        except s3_client.exceptions.NoSuchKey:
-            pass  # File does not exist yet, so we'll create it
+# def append_to_s3(bucket: str, key: str, content: str):
+#     """
+#     Appends content to an existing file in S3 or creates a new file if it does not exist.
+#     """
+#     try:
+#         # Try to fetch existing content
+#         existing_content = ""
+#         try:
+#             obj = s3_client.get_object(Bucket=bucket, Key=key)
+#             existing_content = obj['Body'].read().decode("utf-8")
+#         except s3_client.exceptions.NoSuchKey:
+#             pass  # File does not exist yet, so we'll create it
 
-        # Append new content
-        updated_content = existing_content + "\n\n" + content if existing_content else content
+#         # Append new content
+#         updated_content = existing_content + "\n\n" + content if existing_content else content
 
-        # Store updated content
-        s3_client.put_object(Bucket=bucket, Key=key, Body=updated_content.encode("utf-8"))
-        print(f"Updated S3 file: {key}")
-    except Exception as e:
-        print(f"Error updating file {key}: {str(e)}")
+#         # Store updated content
+#         s3_client.put_object(Bucket=bucket, Key=key, Body=updated_content.encode("utf-8"))
+#         print(f"Updated S3 file: {key}")
+#     except Exception as e:
+#         print(f"Error updating file {key}: {str(e)}")
 
-def update_status(bucket: str, ticker: str, status: str):
-    """
-    Updates a status file in S3 to track processing.
-    """
-    key = f"{ticker}/Latest10QReport/status.json"
-    status_data = json.dumps({"status": status})
-    s3_client.put_object(Bucket=bucket, Key=key, Body=status_data.encode("utf-8"))
-
-
+# def update_status(bucket: str, ticker: str, status: str):
+#     """
+#     Updates a status file in S3 to track processing.
+#     """
+#     key = f"{ticker}/Latest10QReport/status.json"
+#     status_data = json.dumps({"status": status})
+#     s3_client.put_object(Bucket=bucket, Key=key, Body=status_data.encode("utf-8"))
 
 def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMatches]:
     """
     Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
     """
     print(f"Fetching latest 10-Q report for {ticker}...")
+    print(f"Keywords: {keywords}")
     set_identity("dawoodmehmood52@gmail.com")
     company = Company(ticker)
     filings = company.get_filings(form="10-Q")
@@ -199,12 +188,7 @@ def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMa
 
     if not keywords:
         raise Exception("Error: No keywords provided for analysis.")
-
-    # Update processing status
-    update_status(S3_BUCKET_NAME, ticker, "Processing")
-
-    results = {}
-
+    
     excluded_purposes = [
         "balance sheet",
         "statements of cash flows",
@@ -215,26 +199,37 @@ def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMa
         "statements of operations",
         "statements of equity"
     ]
-    # This will tell which topics are matched in the attachment
-    matched_results: dict[str, CriterionMatchResponse] = {}
+
+    from collections import defaultdict
+    attachments_per_criterion = defaultdict(list)
+
     for attach in attachments:
-        # Get the purpose of the attachment and normalize it to lowercase
+        if attach.document_type != "HTML":
+            continue
+
         attach_purpose = (attach.purpose or "").lower()
-
-        # Define a set of terms indicating financial statements that should be skipped
-
-        # Skip attachments that match the excluded purposes
         if any(excluded in attach_purpose for excluded in excluded_purposes):
             continue
 
-
         content = attach.text()
-        matched_result = create_criteria_match_analysis(content, keywords)
-        if matched_result:
-            matched_results[attach.description] = matched_result
+        matched_result = create_criteria_match_analysis(
+            attachment_name=attach_purpose or "Unnamed Attachment",
+            content=content,
+            keywords=keywords
+        )
+        if matched_result and matched_result.status == "success":
+            for item in matched_result.criterion_matches:
+                if item.matched:
+                    attachments_per_criterion[item.criterion_key].append(attach_purpose)
 
-    # Here the key is the key of the criterion and the value is the list of name of attachments that matched the criterion
-    criterion_to_matched_attachments: list[CriterionMatches] = []
+    criterion_to_matched_attachments: List[CriterionMatches] = []
+    for c_key, attach_list in attachments_per_criterion.items():
+        criterion_to_matched_attachments.append(
+            CriterionMatches(
+                key=c_key,
+                attachments=attach_list
+            )
+        )
 
     return criterion_to_matched_attachments
 
@@ -247,14 +242,19 @@ def lambda_handler(event, context):
         body = json.loads(event["body"]) if "body" in event and event["body"] else {}
 
         ticker = body.get("ticker", "").upper()
-        keywords = body.get("keywords", [])
+        keywords_from_body = body.get("keywords", [])
 
-        if not ticker or not keywords:
-            return json_response(400, {"error": "Missing 'ticker' or 'keywords' parameter."})
+        if not ticker:
+            return json_response(400, {"error": "Missing 'ticker' parameter."})
 
+        if not keywords_from_body:
+            keywords = reit_criteria.criteria
+        else:
+            keywords = [Criterion(**kw) for kw in keywords_from_body]
+        
         results = get_raw_10q_text(ticker, keywords)
 
-        return json_response(200 if "error" not in results else 400, results)
+        return json_response(200, [r.dict() for r in results])
 
     except Exception as e:
         return json_response(500, {"error": f"Internal server error: {str(e)}"})
