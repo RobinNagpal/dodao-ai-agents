@@ -68,7 +68,13 @@ class CriterionMatchResponse(BaseModel):
     confidence: Optional[float] = Field(description="The confidence of the response in the range of 1-10.0, where 10.0 is very confident.")
     failureReason: Optional[str] = Field(description="The reason for the failure if the status is failed.")
 
+class MatchedAttachment(BaseModel):
+    name: str = Field(description="The name of the attachment")
+    amount: float = Field(description="The percentage of the content that matched the criterion")
 
+class CriterionMatches(BaseModel):
+    key: str = Field(description="The key of the criterion")
+    attachments: List[str] = Field(description="The list of attachments that matched the criterion")
 
 reit_criteria: Criteria = Criteria(
     sector="Real Estate",
@@ -174,7 +180,9 @@ def update_status(bucket: str, ticker: str, status: str):
     status_data = json.dumps({"status": status})
     s3_client.put_object(Bucket=bucket, Key=key, Body=status_data.encode("utf-8"))
 
-def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> dict[str, list[str]]:
+
+
+def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMatches]:
     """
     Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
     """
@@ -226,7 +234,7 @@ def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> dict[str, list[s
             matched_results[attach.description] = matched_result
 
     # Here the key is the key of the criterion and the value is the list of name of attachments that matched the criterion
-    criterion_to_matched_attachments: dict[str, list[str]] = {}
+    criterion_to_matched_attachments: list[CriterionMatches] = []
 
     return criterion_to_matched_attachments
 
