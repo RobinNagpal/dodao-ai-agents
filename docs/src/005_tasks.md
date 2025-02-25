@@ -17,8 +17,10 @@ See [005_z01_push_pull_agent_status_fom_s3.md](./005_z01_push_pull_agent_status_
 ## Extracting Information from Latest 10Q - `Dawood` - `In Progress`
 We want this for analyzing REITs. 
 
-See [005_z05_extracting_info_from_latest_10q.md](./005_z05_extracting_info_from_latest_10q.md)
-
+See 
+- [005_z05_extracting_info_from_latest_10q.md](./005_z05_extracting_info_from_latest_10q.md)
+- [005_z06_processing_long_sec_filings.md](./005_z06_processing_long_sec_filings.md)
+- [005_z07_collecting_info_from_pdf.md](./005_z07_collecting_info_from_pdf.md)
 
 ---
 

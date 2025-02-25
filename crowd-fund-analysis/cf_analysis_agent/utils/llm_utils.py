@@ -76,6 +76,7 @@ def structured_llm_response(config: Config, operation_name: str, prompt: str) ->
     print(f'Fetching response from LLM for operation: {operation_name} with model: {config.get("configurable", {}).get("model", OPEN_AI_DEFAULT_MODEL)}. Input length: {len(prompt)}')
     structured_llm = get_llm(config).with_structured_output(StructuredLLMResponse)
     response: StructuredLLMResponse = structured_llm.invoke([HumanMessage(content=prompt)])
+    print(f"Got response from LLM for operation: {operation_name}")
     return validate_structured_output(operation_name, response)
 
 
