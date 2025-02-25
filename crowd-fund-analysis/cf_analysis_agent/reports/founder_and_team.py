@@ -1,19 +1,17 @@
-import json
 import traceback
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_core.messages import HumanMessage
+from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 
 from cf_analysis_agent.agent_state import AgentState, Config, ReportType, ProcessedProjectInfo
 from cf_analysis_agent.structures.report_structures import StartupAndTeamInfoStructure, StructuredReportResponse, \
     TeamMemberStructure
-from cf_analysis_agent.utils.linkedin_utls import scrape_single_linkedin_profiles_with_proxycurl, \
-    get_cached_linkedin_profile
-from cf_analysis_agent.utils.llm_utils import get_llm, structured_report_response, structured_llm_response, \
-    MINI_4_0_CONFIG
+from cf_analysis_agent.utils.linkedin_utls import get_cached_linkedin_profile
+from cf_analysis_agent.utils.llm_utils import get_llm, structured_report_response, NORMAL_4_0_CONFIG
 from cf_analysis_agent.utils.prompt_utils import create_prompt_for_checklist
 from cf_analysis_agent.utils.report_utils import update_report_status_failed, \
     update_report_status_in_progress, update_report_with_structured_output
@@ -21,6 +19,14 @@ from cf_analysis_agent.utils.report_utils import update_report_status_failed, \
 load_dotenv()
 
 search = GoogleSerperAPIWrapper()
+
+
+class TeamMemberProfile(BaseModel):
+    name: str = Field(description="The name of the team member")
+    profile_url: str = Field(description="URL that opens in a new tab of the team member's LinkedIn profile")
+    profile_summary: str = Field(description="Summary of the team member's LinkedIn profile")
+    experiences: list[str] = Field(description="List of experiences with the title, company, and duration")
+    educations: list[str] = Field(description="List of educations with the degree, school, and duration")
 
 
 class AnalyzedTeamProfile(TypedDict):
@@ -35,70 +41,68 @@ class AnalyzedTeamProfile(TypedDict):
     relevantWorkExperience: str
 
 
-
-
 def find_startup_info(config: Config, page_content: str) -> StartupAndTeamInfoStructure:
     prompt = (
-        """From the scraped content, extract the following project info as JSON:
-        
-        - startup_name: str (The name of the project or startup being discussed) 
-        - startup_details: str (A single sentence explaining what the startup does)
-        - industry: str (A brief overview of the industry, including how it has grown in the last 3-5 years, its expected growth in the next 3-5 years, challenges, and unique benefits for startups in this space)
-        - team_members: list of objects {id: str (Unique ID for each team member, formatted as firstname_lastname), name: str (The name of the team member), title: str (The position of the team member in the startup), info: str (Details or additional information about the team member as mentioned on the startup page)}
-        
-        Return the extracted information as a JSON object.
-        
-        {
-          "$schema": "http://json-schema.org/draft-07/schema#",
-          "title": "StartupAndTeamInfoStructure",
-          "description": "Information about the startup, industry, and team",
-          "type": "object",
-          "properties": {
-            "startup_name": {
-              "type": "string",
-              "description": "The name of the project or startup being discussed"
-            },
-            "startup_details": {
-              "type": "string",
-              "description": "A single sentence explaining what the startup does"
-            },
-            "industry": {
-              "type": "string",
-              "description": "A brief overview of the industry, including how it has grown in the last 3-5 years, its expected growth in the next 3-5 years, challenges, and unique benefits for startups in this space"
-            },
-            "team_members": {
-              "type": "array",
-              "description": "A list of team members with their details",
-              "items": {
-                "type": "object",
-                "title": "TeamMemberStructure",
-                "description": "Information about the team members",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "Unique ID for each team member, formatted as firstname_lastname"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "The name of the team member"
-                  },
-                  "title": {
-                    "type": "string",
-                    "description": "The position of the team member in the startup"
-                  },
-                  "info": {
-                    "type": "string",
-                    "description": "Details or additional information about the team member as mentioned on the startup page"
-                  }
+            """From the scraped content, extract the following project info as JSON:
+            
+            - startup_name: str (The name of the project or startup being discussed) 
+            - startup_details: str (A single sentence explaining what the startup does)
+            - industry: str (A brief overview of the industry, including how it has grown in the last 3-5 years, its expected growth in the next 3-5 years, challenges, and unique benefits for startups in this space)
+            - team_members: list of objects {id: str (Unique ID for each team member, formatted as firstname_lastname), name: str (The name of the team member), title: str (The position of the team member in the startup), info: str (Details or additional information about the team member as mentioned on the startup page)}
+            
+            Return the extracted information as a JSON object.
+            
+            {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "title": "StartupAndTeamInfoStructure",
+              "description": "Information about the startup, industry, and team",
+              "type": "object",
+              "properties": {
+                "startup_name": {
+                  "type": "string",
+                  "description": "The name of the project or startup being discussed"
                 },
-                "required": ["id", "name", "title", "info"]
-              }
+                "startup_details": {
+                  "type": "string",
+                  "description": "A single sentence explaining what the startup does"
+                },
+                "industry": {
+                  "type": "string",
+                  "description": "A brief overview of the industry, including how it has grown in the last 3-5 years, its expected growth in the next 3-5 years, challenges, and unique benefits for startups in this space"
+                },
+                "team_members": {
+                  "type": "array",
+                  "description": "A list of team members with their details",
+                  "items": {
+                    "type": "object",
+                    "title": "TeamMemberStructure",
+                    "description": "Information about the team members",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Unique ID for each team member, formatted as firstname_lastname"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the team member"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "The position of the team member in the startup"
+                      },
+                      "info": {
+                        "type": "string",
+                        "description": "Details or additional information about the team member as mentioned on the startup page"
+                      }
+                    },
+                    "required": ["id", "name", "title", "info"]
+                  }
+                }
+              },
+              "required": ["startup_name", "startup_details", "industry", "team_members"]
             }
-          },
-          "required": ["startup_name", "startup_details", "industry", "team_members"]
-        }
-
-        """ + f"Startup Info:  \n{page_content}"
+    
+            """ + f"Startup Info:  \n{page_content}"
     )
     print("Fetching Team Info")
     structured_llm = get_llm(config).with_structured_output(StartupAndTeamInfoStructure)
@@ -122,6 +126,7 @@ def is_linkedin_profile_url(url: str) -> bool:
             return True
     return False
 
+
 def search_linkedin_url(query: str) -> str:
     print("Searching for:", query)
     results = search.results(query)  # Ensure 'search' is defined/imported
@@ -141,56 +146,72 @@ def generate_team_member_report(startup_name: str, member: TeamMemberStructure) 
         if linked_in_url == "":
             print(f"Could not find LinkedIn url for {member.name} from search")
             return f"## {member.name} - ${member.title}:\nLinkedin Info:  Could not find LinkedIn profile\n\nInfo on startup Page: {member.info}"
-        else:
-            linkedin_profile = get_cached_linkedin_profile(linked_in_url)
-            print(f"Linkedin Profile: {linkedin_profile}")
-            if linkedin_profile is None:
-                print(f"Could not find LinkedIn profile for {member.name} from {linked_in_url}")
-                return f"## {member.name} - ${member.title}:\nLinkedin Info:  Could not find LinkedIn profile\n\nInfo on startup Page: {member.info}"
-            else:
-                prompt = f"""
-                Return the profile information of the team member as a markdown table which includes the following fields:
-                - Name: str (The name of the team member)
-                - Profile URL - URL that opens in a new tab of the team member's LinkedIn profile
-                - Profile: title, and summary of the team member's LinkedIn profile
-                - Experiences: List of experiences with the title, company, and duration
-                - Educations: List of educations with the degree, school, and duration 
-                
-                Summarize the experiences and educations in a concise manner.
-                
-                Here is the information of the team member:
-                Profile URL: {linked_in_url}
-                
-                Name: {member.name}
-                Title: {member.title}
-                Info: {member.info}
-                
-                {linkedin_profile}
-                """
 
-                operation_name = "generate_team_member_report"
+        linkedin_profile = get_cached_linkedin_profile(linked_in_url)
+        print(f"Fetched LinkedIn profile for {member.name} from {linked_in_url}")
 
-                lined_in_info = structured_llm_response(MINI_4_0_CONFIG, operation_name, prompt)
-                image_tag = ""
-                if linkedin_profile.get('profile_pic_url'):
-                    image_tag = f"""![{member.name}]({linkedin_profile.get('profile_pic_url')} "200x200")"""
+        if linkedin_profile is None:
+            print(f"Could not find LinkedIn profile for {member.name} from {linked_in_url}")
+            return f"## {member.name} - ${member.title}:\nLinkedin Info:  Could not find LinkedIn profile\n\nInfo on startup Page: {member.info}"
 
-                return f"""
-                
-                
-## {member.name} - ${member.title}:
+        prompt = f"""
+        Return the profile information of the team member as a markdown table which includes the following fields:
+        - Name: str (The name of the team member)
+        - Profile URL - URL that opens in a new tab of the team member's LinkedIn profile
+        - Profile: Summary of the team member's LinkedIn profile
+        - Experiences: List of experiences with the title, company, and duration
+        - Educations: List of educations with the degree, school, and duration 
+        
+        Summarize the experiences and educations in a concise manner.
+        
+        Here is the information of the team member:
+        Profile URL: {linked_in_url}
+        
+        Name: {member.name}
+        Title: {member.title}
+        Info: {member.info}
+        
+        {linkedin_profile}
+        """
 
+        structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(TeamMemberProfile)
+        response: TeamMemberProfile = structured_llm.invoke([HumanMessage(content=prompt)])
 
-{image_tag}
+        member_profile_table_str =(
+        f"<table>"
+        f"    <tr>"
+        f"        <td><b>Name:</b></td>"
+        f"        <td>{response.name}</td>"
+        f"    </tr>"
+        f"    <tr>"
+        f"        <td><b>Profile URL:</b></td>"
+        f"""       <td><a href="{response.profile_url}" target="_blank">{response.profile_url}</a></td>"""
+        f"    </tr>"
+        f"    <tr>"
+        f"        <td><b>Profile:</b></td>"
+        f"        <td>{response.profile_summary}</td>"
+        f"    </tr>"
+        f"    <tr>"
+        f"        <td><b>Experiences:</b></td>"
+        f"        <td>{'<br>'.join(response.experiences)}</td>"
+        f"    </tr>"
+        f"    <tr>"
+        f"        <td><b>Educations:</b></td>"
+        f"        <td>{'<br>'.join(response.educations)}</td>"
+        f"    </tr>"
+        f"</table>")
 
-### Linkedin Info: 
+        image_tag = ""
+        if linkedin_profile.get('profile_pic_url'):
+            image_tag = f"""![{member.name}]({linkedin_profile.get('profile_pic_url')} "200x200")"""
 
-{lined_in_info}
-
-### Info on startup Page: 
-{member.info}
-                
-"""
+        return (f"## {member.name} - {member.title}:\n"
+                f"{image_tag}\n"
+                "### Linkedin Info:\n"
+                f"{member_profile_table_str}\n\n"
+                f"### Info on startup Page:"
+                f"{member.info}"
+                )
     except Exception as e:
         print(traceback.format_exc())
         return f"## {member.name} - ${member.title}:\nLinkedin Info:  Error occurred while finding LinkedIn profile\n\nInfo on startup Page: {member.info}"
@@ -200,7 +221,8 @@ def generate_team_performance_report(state: AgentState, profile_information: str
     processes_project_info: ProcessedProjectInfo = state.get("processed_project_info")
     crowdfunding_page_content = processes_project_info.get("content_of_crowdfunding_url")
     sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
-    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get(
+        'basic_info')
 
     prompt = f"""
     You are an expert startup investor. Analyze that the team woking in the startup is exceptional or just good enough.:
@@ -255,7 +277,8 @@ def create_founder_and_team_report(state: AgentState) -> None:
 
         team_info_report = "\n\n".join(team_members_tables)
         founder_and_team_report = generate_team_performance_report(state, team_info_report)
-        update_report_with_structured_output(project_id, ReportType.FOUNDER_AND_TEAM, founder_and_team_report, team_info_report)
+        update_report_with_structured_output(project_id, ReportType.FOUNDER_AND_TEAM, founder_and_team_report,
+                                             team_info_report)
     except Exception as e:
         # Capture full stack trace
         print(traceback.format_exc())

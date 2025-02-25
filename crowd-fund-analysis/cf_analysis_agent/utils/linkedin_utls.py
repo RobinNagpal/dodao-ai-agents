@@ -49,14 +49,6 @@ def scrape_single_linkedin_profiles_with_proxycurl(linkedin_url: str) -> ProxyCu
     # 'linkedin_profile_url', 'twitter_profile_url', or 'facebook_profile_url'
     params = {
         'linkedin_profile_url': linkedin_url,
-        'extra': 'include',
-        'github_profile_id': 'include',
-        'facebook_profile_id': 'include',
-        'twitter_profile_id': 'include',
-        'personal_contact_number': 'include',
-        'personal_email': 'include',
-        'inferred_salary': 'include',
-        'skills': 'include',
         'use_cache': 'if-present',
         'fallback_to_cache': 'on-error',
     }
