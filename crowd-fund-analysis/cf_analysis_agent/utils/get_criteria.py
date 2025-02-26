@@ -1,9 +1,10 @@
-import traceback
-from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse
+import json
+from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME
+from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse,IndustryGroupData
 from cf_analysis_agent.utils.llm_utils import structured_criteria_response
 
 
-def get_industry_group_criteria(sector: str, industry_group: str,industry:str,sub_industry:str) -> StructuredIndustryGroupCriteriaResponse:
+def get_industry_group_criteria(sector: str, industry_group: str) -> StructuredIndustryGroupCriteriaResponse:
     """
     Generates a structured report with 6-8 evaluation criteria for a company operating in a specific sector and industry group.
     """
@@ -33,3 +34,19 @@ def get_industry_group_criteria(sector: str, industry_group: str,industry:str,su
     )
 
 
+def get_criteria_file(sector:str,industry_group:str) -> IndustryGroupData:
+    """
+    Fetches and returns the project status data from S3.
+    """
+    try:
+        criteria_file_path = get_criteria_file_path(sector,industry_group)
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key="US/" + criteria_file_path)
+        return json.loads(response['Body'].read().decode('utf-8'))
+    except s3_client.exceptions.NoSuchKey:
+        return None
+
+def get_criteria_file_path(sector:str,industry_group:str) -> str:
+    """
+    Returns the path to the status file for the given project ID.
+    """
+    return f"{sector}/{industry_group}/criteria.json"

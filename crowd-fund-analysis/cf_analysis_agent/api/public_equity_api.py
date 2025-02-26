@@ -1,8 +1,8 @@
 import json
 from flask import Blueprint, request, jsonify
 from cf_analysis_agent.utils.s3_utils import upload_equity_project_to_s3
-from cf_analysis_agent.utils.get_criteria import get_industry_group_criteria
-from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse,EquityDeatils,IndustryGroupData
+from cf_analysis_agent.utils.get_criteria import get_industry_group_criteria,get_criteria_file
+from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse,EquityDeatils,IndustryGroupData,Criteria
 
 public_equity_api = Blueprint("public_equity_api", __name__)
 
@@ -17,7 +17,14 @@ def submit_equity_project():
         s3_key = f"{sector}/{industryGroup}/{industry}/{subIndustry}/agent-status.json"
         print("Received Equity Details:", equity_details)
         upload_equity_project_to_s3(json.dumps(equity_details), s3_key , content_type="application/json")
-        industry_group_criteria:StructuredIndustryGroupCriteriaResponse  = get_industry_group_criteria(sector, industryGroup,industry,subIndustry)
+        criteria_file=get_criteria_file(sector,industryGroup)
+        if criteria_file:
+            print("criteria file already exists.")
+            return jsonify({
+                "success": True,
+                "message": "criteria file already exists."
+            }), 200
+        industry_group_criteria:StructuredIndustryGroupCriteriaResponse  = get_industry_group_criteria(sector, industryGroup)
         final_data:IndustryGroupData ={
             "tickers": industry_group_criteria.tickers,
             "id": equity_details["industryGroup"]["id"],
