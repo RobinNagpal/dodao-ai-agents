@@ -1,0 +1,31 @@
+services:
+  langflow:
+    image: public.ecr.aws/p7g4h0z9/langflow-public:latest
+    ports:
+      - "7860:7860"
+    depends_on:
+      - postgres
+    environment:
+      - LANGFLOW_DATABASE_URL=postgresql://admin:admin@postgres:5432/langflow
+      # This variable defines where the logs, file storage, monitor data and secret keys are stored.
+      - LANGFLOW_CONFIG_DIR=app/langflow
+      - LANGFLOW_LOAD_FLOWS_PATH=/app/custom_flows
+      - LANGFLOW_COMPONENTS_PATH=/app/custom_components
+      - LANGFLOW_HOST=0.0.0.0
+    volumes:
+      - ./langflow-data:/app/langflow  # Changed to local folder
+      - ./custom_flows:/app/custom_flows  # Changed to local folder
+      - ./custom_components:/app/custom_components  # Changed to local folder
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: langflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data  # Changed to local folder
+
+# Removed top-level volumes section
