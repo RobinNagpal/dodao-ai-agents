@@ -1,13 +1,11 @@
 import requests
-import json
-
 from langflow.custom import Component
 from langflow.inputs import MessageTextInput
-from langflow.template import Output
 from langflow.schema.message import Message
+from langflow.template import Output
 
 class SecEdgarComponent(Component):
-    display_name = "SEC Edgar 10-Q Fetcher"
+    display_name = "Specific 10Q Report"
     description = "Fetch the latest 10-Q for a given ticker and report type."
     icon = "custom_components"  # or any icon name you like
     name = "SecEdgarSearchComponent"

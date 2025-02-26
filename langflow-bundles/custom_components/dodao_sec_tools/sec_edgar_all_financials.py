@@ -7,7 +7,7 @@ from langflow.template import Output
 from langflow.schema.message import Message
 
 class SecEdgarFinancialsComponent(Component):
-    display_name = "SEC Edgar 10-Q Financials"
+    display_name = "All 10Q Financials"
     description = "Fetch the structured XBRL-based financial statements for a given ticker."
     icon = "custom_components"
     name = "SecEdgarFinancialsComponent"
