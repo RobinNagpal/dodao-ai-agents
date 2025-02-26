@@ -33,3 +33,45 @@ This AWS Lambda function extracts topic-specific data from SEC 10-Q reports. It 
 - [] Maintaining a Status file in S3
 - [] Lambda Response type
 - [] Testing Required
+
+
+## changes
+
+### cleanups
+- rename `get_raw_10q_text` to `get_criterion_matched_attachments_list`
+- store attachment url instead of content
+- add url key in MatchedAttachment model:
+  ```python
+  class MatchedAttachment(BaseModel):
+    name: str = Field(description="The name of the attachment")
+    url: str = Field(description="The url of the attachment")
+    matched_amount: float = Field(description="The percentage of the content that matched the criterion")
+  ```
+- store and use open api key from env variable
+
+### s3 changes
+- store and use bucket name from env variable
+- store the json file `<bucket-name>/US/<ticker>/latest-10q-criterial-info.json` in the following format:
+  ```json 
+   {
+      "ticker": "AMT",
+      "sector": {id: 6, name: "Real Estate"},
+      "industryGroup": {id: 60, name: "Equity REITs"},
+      "industry": {id: 6010, name: "Specialized REITs"},
+      "subIndustry": {id: 601010, name: "Specialized REITs"},
+      "latest10QSecURL": "https://www.sec.gov/Archives/edgar/data/1053507/000105350721000013/0001053507-21-000013-index.htm",
+      "criteriaExtractedInfo": [
+         {
+            criterionId: 'rental_health',
+            criterionName: 'Rental Health',
+            relevantAttachments: [
+            {
+               attachmentName: 'Exhibit 99.1',
+               attachmentURL: 'https://www.sec.gov/Archives/edgar/data/1053507/000105350721000013/amt-ex991_6.htm',
+               mathcingAmount: 80 // Percentage of matching information
+            }
+            ]
+         }
+      ]
+   }
+  ```
