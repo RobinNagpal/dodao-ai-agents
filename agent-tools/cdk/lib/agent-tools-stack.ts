@@ -24,6 +24,22 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY environment variable is not set.");
 }
 
+if (!process.env.S3_BUCKET_NAME) {
+  throw new Error("S3_BUCKET_NAME environment variable is not set.");
+}
+
+if (!process.env.AWS_DEFAULT_REGION) {
+  throw new Error("AWS_DEFAULT_REGION environment variable is not set.");
+}
+
+if (!process.env.AWS_ACCESS_KEY_ID) {
+  throw new Error("AWS_ACCESS_KEY_ID environment variable is not set.");
+}
+
+if (!process.env.AWS_SECRET_ACCESS_KEY) {
+  throw new Error("AWS_SECRET_ACCESS_KEY environment variable is not set.");
+}
+
 export class AgentToolsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: AgentToolsStackProps) {
     super(scope, id, props);

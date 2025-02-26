@@ -26,7 +26,8 @@
 # throw an error if the file is not present.
 
 import json
-# import boto3
+import boto3
+import os
 from edgar import *
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
@@ -37,8 +38,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize S3 client
-# s3_client = boto3.client("s3")
-# S3_BUCKET_NAME = "your-s3-bucket-name"
+s3_client = boto3.client(
+    "s3",
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    region_name=os.getenv("AWS_DEFAULT_REGION")
+)
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 class Criterion(BaseModel):
     """Criterion for which we need to extract data from SEC filings"""
@@ -68,12 +74,23 @@ class CriterionMatchResponse(BaseModel):
 
 class MatchedAttachment(BaseModel):
     name: str = Field(description="The name of the attachment")
+    url: str = Field(description="The url of the attachment")
     matched_amount: float = Field(description="The percentage of the content that matched the criterion")
 
 class CriterionMatches(BaseModel):
     key: str = Field(description="The key of the criterion")
     matched_attachments: List[MatchedAttachment] = Field(description="The list of attachments that matched the criterion")
 
+class CriterialInfoOutput(BaseModel):
+    ticker: str = Field(description="")
+    sector: str = Field(description="The sector of the company")
+    industry_group: str = Field(description="The industry group of the company")
+    industry: str = Field(description="The industry of the company")
+    sub_industry: str = Field(description="The sub-industry of the company")
+    status: Literal['success', 'failure', 'processing'] = Field(description="If successful in processing the prompt and producing the output.")
+    failureReason: Optional[str] = Field(description="The reason for the failure if the status is failed.")
+    criterion_matches: List[CriterionMatches] = Field(description="The list of criteria that matched the criterion")
+    
 reit_criteria: Criteria = Criteria(
     sector="Real Estate",
     industry_group="Equity Real Estate Investment Trusts (REITs)",
@@ -85,6 +102,46 @@ reit_criteria: Criteria = Criteria(
         Criterion(key="cost_of_operations", name="Cost of Operations", short_description="Cost of Operations, Operating Expenses, Property Management Expenses, General and Administrative Expenses"),
         Criterion(key="stock_types", name="Stock Types", short_description="Stock Distribution, Common State, Preferred Shares, Dividends, Dividend Payout")
     ])
+
+def s3_key_for_criterial_info(ticker: str) -> str:
+    """Construct the S3 key/path for the JSON file."""
+    return f"public-equities/US/{ticker}/latest-10q-criterial-info.json"
+
+def get_criterial_info_from_s3(ticker: str) -> CriterialInfoOutput:
+    """
+    Attempts to load <bucket>/public-equities/US/{ticker}/latest-10q-criterial-info.json
+    If not found, creates a new record with 'processing' status.
+    """
+    key = s3_key_for_criterial_info(ticker)
+    try:
+        obj = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key=key)
+        body = obj['Body'].read().decode("utf-8")
+        data = json.loads(body)
+        return CriterialInfoOutput(**data)
+    except s3_client.exceptions.NoSuchKey:
+        # File doesn't exist, create new
+        info = CriterialInfoOutput(
+            ticker=ticker,
+            sector=reit_criteria.sector,
+            industry_group=reit_criteria.industry_group,
+            industry=reit_criteria.industry,
+            sub_industry=reit_criteria.sub_industry,
+            status="processing",
+            failureReason=None,
+            criterion_matches=[]
+        )
+        return info
+
+def put_criterial_info_to_s3(ticker: str, info: CriterialInfoOutput):
+    """Writes the updated info JSON to S3."""
+    key = s3_key_for_criterial_info(ticker)
+    data = json.dumps(info.dict(), indent=2)
+    s3_client.put_object(
+        Bucket=S3_BUCKET_NAME,
+        Key=key,
+        Body=data.encode("utf-8"),
+        ContentType="application/json"
+    )
 
 def create_criteria_match_analysis(attachment_name: str, content: str, keywords: list[Criterion]) -> Union[CriterionMatchResponse, None]:
     """
@@ -140,43 +197,13 @@ def create_criteria_match_analysis(attachment_name: str, content: str, keywords:
         print(f"Error analyzing content: {attachment_name} - {str(e)}")
         return None
 
-# def append_to_s3(bucket: str, key: str, content: str):
-#     """
-#     Appends content to an existing file in S3 or creates a new file if it does not exist.
-#     """
-#     try:
-#         # Try to fetch existing content
-#         existing_content = ""
-#         try:
-#             obj = s3_client.get_object(Bucket=bucket, Key=key)
-#             existing_content = obj['Body'].read().decode("utf-8")
-#         except s3_client.exceptions.NoSuchKey:
-#             pass  # File does not exist yet, so we'll create it
-
-#         # Append new content
-#         updated_content = existing_content + "\n\n" + content if existing_content else content
-
-#         # Store updated content
-#         s3_client.put_object(Bucket=bucket, Key=key, Body=updated_content.encode("utf-8"))
-#         print(f"Updated S3 file: {key}")
-#     except Exception as e:
-#         print(f"Error updating file {key}: {str(e)}")
-
-# def update_status(bucket: str, ticker: str, status: str):
-#     """
-#     Updates a status file in S3 to track processing.
-#     """
-#     key = f"{ticker}/Latest10QReport/status.json"
-#     status_data = json.dumps({"status": status})
-#     s3_client.put_object(Bucket=bucket, Key=key, Body=status_data.encode("utf-8"))
-
-def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMatches]:
+def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion]) -> list[CriterionMatches]:
     """
     Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
     """
     print(f"Fetching latest 10-Q report for {ticker}...")
     print(f"Keywords: {keywords}")
-    set_identity("dawoodmehmood52@gmail.com")
+    set_identity("dodao@gmail.com")
     company = Company(ticker)
     filings = company.get_filings(form="10-Q")
     
@@ -184,6 +211,10 @@ def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMa
         raise Exception(f"Error: No 10-Q filings found for {ticker}.")
 
     latest_10q = filings.latest()
+    cik = latest_10q.cik
+    raw_acc_number = latest_10q.accession_number  # e.g. "0000950170-24-127114"
+    acc_number_no_dashes = raw_acc_number.replace("-", "")
+    
     attachments = latest_10q.attachments
 
     if not keywords:
@@ -208,6 +239,11 @@ def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMa
             continue
 
         attach_purpose = (attach.purpose or "").lower()
+        filename = attach.document  # e.g. "R10.htm"
+
+        # 4) Construct the URL
+        attachment_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{filename}"
+
         if any(excluded in attach_purpose for excluded in excluded_purposes):
             continue
 
@@ -223,6 +259,7 @@ def get_raw_10q_text(ticker: str, keywords: list[Criterion]) -> list[CriterionMa
                     attachments_per_criterion[item.criterion_key].append(
                         MatchedAttachment(
                             name=attach.purpose,
+                            url=attachment_url,
                             matched_amount=item.matched_amount
                         )
                     )
@@ -252,17 +289,42 @@ def lambda_handler(event, context):
         if not ticker:
             return json_response(400, {"error": "Missing 'ticker' parameter."})
 
+        info: CriterialInfoOutput = get_criterial_info_from_s3(ticker)
+        info.status = "processing"
+        info.failureReason = None
+        put_criterial_info_to_s3(ticker, info)
+        print('Status updated to: processing')
+        
         if not keywords_from_body:
             keywords = reit_criteria.criteria
         else:
             keywords = [Criterion(**kw) for kw in keywords_from_body]
         
-        results = get_raw_10q_text(ticker, keywords)
+        results = get_criterion_matched_attachments_list(ticker, keywords)
+        
+        info.status = "success"
+        info.criterion_matches = results
+        put_criterial_info_to_s3(ticker, info)
+        print('Status updated to: success')
 
-        return json_response(200, [r.dict() for r in results])
+        return json_response(200, info.dict())
 
     except Exception as e:
-        return json_response(500, {"error": f"Internal server error: {str(e)}"})
+        # If anything fails, update the file with 'failure'
+        error_msg = str(e)
+        # We attempt to load the info again to update it
+        if 'ticker' in locals():
+            info = get_criterial_info_from_s3(ticker)
+            info.status = "failure"
+            info.failureReason = error_msg
+            # Clear out matches if you want them empty on failure
+            info.criterion_matches = []
+            put_criterial_info_to_s3(ticker, info)
+            print('Status updated to: failure')
+            
+        # Return error response
+        return json_response(500, {"error": "Internal server error", "details": error_msg})
+
 
 def json_response(http_status, payload):
     """
