@@ -20,4 +20,5 @@
   - [Structured LLM Prompt Editor](./005_z02_structured_llm_prompt_editor.md)
   - [Spider Charts Criterion for all the tickers](./005_z03_generic_spider_chart_criterion.md)
   - [Compare SEC Filing Libraries](./005_z04_compare_sec_filing_libs.md)
-  
+- [Investment Strategies](./006_investment_strategies.md)
+  - [Intrinsic Value](./006_z01_intrinsic_value.md))
