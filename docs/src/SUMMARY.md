@@ -4,6 +4,7 @@
   - [Use Case 1 - General Investing in Pubic Equities](./001_z01_general_public_investing.md)
 - [Main Milestones](./002_main_milestones.md)
   - [Crowdfunding](./002_z01_crowd_funding.md)
+  - [Public Equities](./002_z05_public_equities.md)
   - [REITs](./002_z02_reits.md)
   - [SEC Filings](./002_z03_sec_filings.md)
   - [Custom Finance Agents](./002_z04_custom_finance_agents.md)
