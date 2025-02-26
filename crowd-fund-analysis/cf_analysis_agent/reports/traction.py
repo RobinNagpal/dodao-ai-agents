@@ -18,8 +18,9 @@ def generate_traction_report(state: AgentState) -> StructuredReportResponse:
     """
     combined_content = get_combined_content(state)
 
-    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
-    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+    industry_details = state.get("processed_project_info").get('industry_details')
+    sector_info = industry_details.get('sector_details').get('basic_info')
+    sub_sector_info = industry_details.get('sub_sector_details').get('basic_info')
 
     # Prompt to instruct the LLM to focus only on traction
     prompt = f"""

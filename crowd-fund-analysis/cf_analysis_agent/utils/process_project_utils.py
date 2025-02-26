@@ -410,11 +410,19 @@ def is_industry_details_missing(project_info: ProcessedProjectInfoSchema) -> boo
         return True
 
     sector_details = industry_details.get("sectorDetails")
-    if sector_details is None:
+    if sector_details is None or not  isinstance(sector_details, dict):
+        return True
+
+    sector_basic_info = industry_details.get("sectorDetails").get("basicInfo")
+    if sector_basic_info is None:
         return True
 
     sub_sector_details = industry_details.get("subSectorDetails")
     if sub_sector_details is None:
+        return True
+
+    sub_sector_basic_info = industry_details.get("subSectorDetails").get("basicInfo")
+    if sub_sector_basic_info is None:
         return True
 
     total_addressable_market = industry_details.get("totalAddressableMarket")
@@ -546,7 +554,7 @@ def ensure_processed_project_info(project_id: str, generate_all: bool = False) -
         }
         print(f"Need Processing because of the following reasons: {changed_dict}")
 
-    if not generate_all or not needs_processing:
+    if not generate_all and not needs_processing:
         print("Project Info is up-to-date. No need to re-scrape project URLs.")
         return convert_s3_processed_info_to_state(project_info_in_s3)
 
