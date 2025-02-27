@@ -14,7 +14,6 @@ This tool extracts the relevant attachments from the latest 10Q filings that are
 See
 - [005_z05_extracting_info_from_latest_10q.md](./005_z05_extracting_info_from_latest_10q.md)
 - [005_z06_processing_long_sec_filings.md](./005_z06_processing_long_sec_filings.md)
-- [005_z07_collecting_info_from_pdf.md](./005_z07_collecting_info_from_pdf.md)
 
 
 # Working
