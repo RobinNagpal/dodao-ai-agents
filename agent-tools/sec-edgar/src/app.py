@@ -6,8 +6,9 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from dotenv import load_dotenv
 
-from all_financial_reports import get_xbrl_financials
-from specific_10Q_report import specific_report_text
+from src.all_financial_reports import get_xbrl_financials
+from src.specific_10Q_report import specific_report_text
+from src.criteria_matching import get_matching_criteria_attachments
 
 load_dotenv()
 
@@ -15,20 +16,7 @@ load_dotenv()
 use_local_storage()
 set_identity("your_email@example.com")
 
-
-
-
 def lambda_handler(event, context):
-    """
-    We'll parse the path from the Lambda Function URL or API Gateway event.
-    Then branch logic:
-      - /search     => calls get_raw_10q_text
-      - /financials => calls get_xbrl_financials
-
-    We return consistent JSON: { "status": <code>, "data" or "message": ... }
-    plus 'statusCode' and 'headers' for the HTTP response.
-    """
-
     try:
         # event["rawPath"] is for Lambda Function URLs and new HTTP API Gateway
         # Or event["path"] if you're using REST API Gateway
@@ -36,9 +24,7 @@ def lambda_handler(event, context):
         method = event.get("requestContext", {}).get("http", {}).get("method", "POST")
 
         # parse JSON body
-        body = {}
-        if "body" in event and event["body"]:
-            body = json.loads(event["body"])
+        body = json.loads(event["body"]) if "body" in event and event["body"] else {}
 
         ticker = body.get("ticker", "AAPL")
 
@@ -56,7 +42,14 @@ def lambda_handler(event, context):
                 return json_response(200, {"status": 200, "data": data})
             except Exception as e:
                 return json_response(500, {"status": 500, "message": str(e)})
-
+            
+        elif path == "/save-attachment-criteria-matches":  # route 3
+            try:
+                data = get_matching_criteria_attachments(ticker)
+                return json_response(200, {"status": 200, "data": data})
+            except Exception as e:
+                return json_response(500, {"status": 500, "message": str(e)})
+            
         else:
             # If path not recognized, return 404
             return json_response(404, {

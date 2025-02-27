@@ -233,18 +233,28 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
         if attach.document_type != "HTML":
             continue
 
-        attach_purpose = (attach.purpose or "").lower()
-        filename = attach.document  # e.g. "R10.htm"
+        attach_purpose = str(attach.purpose or "").lower()
+        filename = str(attach.document or "")  # e.g. "R10.htm"
+        content = str(attach.text() or "")
 
-        # 4) Construct the URL
         attachment_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{filename}"
 
+        # Skipping conditions
         if any(excluded in attach_purpose for excluded in excluded_purposes):
             continue
 
-        content = attach.text()
+        if not attach_purpose:
+            print(f"Warning: Attachment {attach.purpose} has empty purpose; skipping.")
+            continue
+        if not filename:
+            print(f"Warning: Attachment {attach.purpose} has empty filename; skipping.")
+            continue
+        if not content:
+            print(f"Warning: Attachment {attach.purpose} has empty content; skipping.")
+            continue
+        
         matched_result = create_criteria_match_analysis(
-            attachment_name=attach_purpose or "Unnamed Attachment",
+            attachment_name=attach_purpose,
             content=content,
             keywords=keywords
         )
@@ -253,7 +263,7 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
                 if item.matched:
                     attachments_per_criterion[item.criterion_key].append(
                         MatchedAttachment(
-                            name=attach.purpose,
+                            name=attach_purpose,
                             url=attachment_url,
                             matched_amount=item.matched_amount
                         )
@@ -270,63 +280,48 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
 
     return criterion_to_matched_attachments
 
-def lambda_handler(event, context):
+def get_matching_criteria_attachments(ticker: str, keywords_from_input: Optional[List[dict]] = None) -> dict:
     """
-    AWS Lambda function to handle API requests.
+    This function encapsulates the logic to:
+      - Retrieve or create the criterial info from S3.
+      - Set status to 'processing'.
+      - Run the matching logic.
+      - Update the S3 file with the results.
+      - Return the final criterial info as a dict.
     """
     try:
-        # Parse JSON body
-        body = json.loads(event["body"]) if "body" in event and event["body"] else {}
-
-        ticker = body.get("ticker", "").upper()
-        keywords_from_body = body.get("keywords", [])
-
-        if not ticker:
-            return json_response(400, {"error": "Missing 'ticker' parameter."})
-
         info: CriterialInfoOutput = get_criterial_info_from_s3(ticker)
         info.status = "processing"
         info.failureReason = None
         put_criterial_info_to_s3(ticker, info)
-        print('Status updated to: processing')
         
-        if not keywords_from_body:
+        if not keywords_from_input:
             keywords = reit_criteria.criteria
         else:
-            keywords = [Criterion(**kw) for kw in keywords_from_body]
-        
+            keywords = [Criterion(**kw) for kw in keywords_from_input]
+            
         results = get_criterion_matched_attachments_list(ticker, keywords)
-        
         info.status = "success"
         info.criterion_matches = results
         put_criterial_info_to_s3(ticker, info)
-        print('Status updated to: success')
-
-        return json_response(200, info.dict())
-
+        return info.dict()
     except Exception as e:
-        # If anything fails, update the file with 'failure'
         error_msg = str(e)
-        # We attempt to load the info again to update it
-        if 'ticker' in locals():
+        try:
             info = get_criterial_info_from_s3(ticker)
-            info.status = "failure"
-            info.failureReason = error_msg
-            # Clear out matches if you want them empty on failure
-            info.criterion_matches = []
-            put_criterial_info_to_s3(ticker, info)
-            print('Status updated to: failure')
-            
-        # Return error response
-        return json_response(500, {"error": "Internal server error", "details": error_msg})
-
-
-def json_response(http_status, payload):
-    """
-    Helper to format a Lambda Function response consistently.
-    """
-    return {
-        "statusCode": http_status,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(payload)
-    }
+        except Exception:
+            info = CriterialInfoOutput(
+                ticker=ticker,
+                sector=reit_criteria.sector,
+                industry_group=reit_criteria.industry_group,
+                industry=reit_criteria.industry,
+                sub_industry=reit_criteria.sub_industry,
+                status="failure",
+                failureReason=error_msg,
+                criterion_matches=[]
+            )
+        info.status = "failure"
+        info.failureReason = error_msg
+        info.criterion_matches = []
+        put_criterial_info_to_s3(ticker, info)
+        raise e

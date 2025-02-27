@@ -11,10 +11,6 @@
     {
       "name": "s3-uploader",
       "enabled": true
-    },
-    {
-      "name": "extract-criterion-info",
-      "enabled": true
     }
   ]
 }

@@ -7,7 +7,7 @@ import pytest
 # Ensure the root folder is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.lambda_function import lambda_handler
+from src.app import lambda_handler
 
 # Dummy context implementing the LambdaContext protocol
 class DummyLambdaContext:

@@ -1,5 +1,5 @@
 import json
-from lambda_function import lambda_handler
+from src.app import lambda_handler
 
 def local_invoke_search(ticker, report_type):
     """

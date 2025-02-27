@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from edgar import Company, use_local_storage, set_identity
 from typing import Optional, Tuple
 
-from reports_search_map import search_map
+from src.reports_search_map import search_map
 
 load_dotenv()
 
