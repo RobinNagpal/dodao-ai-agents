@@ -5,6 +5,7 @@ from langchain_openai import ChatOpenAI
 
 from cf_analysis_agent.agent_state import Config
 from cf_analysis_agent.structures.report_structures import StructuredLLMResponse, StructuredReportResponse
+from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse
 from cf_analysis_agent.utils.env_variables import OPEN_AI_DEFAULT_MODEL
 from cf_analysis_agent.utils.project_utils import scrape_url
 
@@ -78,6 +79,14 @@ def structured_llm_response(config: Config, operation_name: str, prompt: str) ->
     response: StructuredLLMResponse = structured_llm.invoke([HumanMessage(content=prompt)])
     print(f"Got response from LLM for operation: {operation_name}")
     return validate_structured_output(operation_name, response)
+
+
+def structured_criteria_response(config: Config, operation_name: str, prompt: str) -> StructuredIndustryGroupCriteriaResponse:
+    """Get the response from the LLM"""
+    print(f'Fetching response from LLM for operation: {operation_name}')
+    structured_llm = get_llm(config).with_structured_output(StructuredIndustryGroupCriteriaResponse)
+    response: StructuredIndustryGroupCriteriaResponse = structured_llm.invoke([HumanMessage(content=prompt)])
+    return response
 
 
 def structured_report_response(config: Config, operation_name: str, prompt: str) -> StructuredReportResponse:
