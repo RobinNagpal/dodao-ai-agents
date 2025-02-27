@@ -37,13 +37,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Initialize S3 client
-s3_client = boto3.client(
-    "s3",
-    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-    region_name=os.getenv("AWS_DEFAULT_REGION")
-)
+s3_client = boto3.client("s3")
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 class Criterion(BaseModel):
@@ -221,6 +215,7 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
         raise Exception("Error: No keywords provided for analysis.")
     
     excluded_purposes = [
+        "cover page",
         "balance sheet",
         "statements of cash flows",
         "statement of cash flows",

@@ -1,5 +1,5 @@
 import json
-from lambda_handler import lambda_handler
+from lambda_function import lambda_handler
 
 # Example local test
 if __name__ == "__main__":
