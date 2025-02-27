@@ -26,7 +26,6 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 if (!process.env.S3_BUCKET_NAME) {
-  console.log("Bucket name: ", process.env.S3_BUCKET_NAME)
   throw new Error("S3_BUCKET_NAME environment variable is not set.");
 }
 
