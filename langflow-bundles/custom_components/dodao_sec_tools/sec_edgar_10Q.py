@@ -60,7 +60,7 @@ class SecEdgarMergedComponent(Component):
 
     FINANCIALS_ENDPOINT = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/financials"
     SEARCH_ENDPOINT = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/search"
-    CRITERIA_ENDPOINT = "https://<your-lambda-url>/criteria"
+    CRITERIA_ENDPOINT = "https://<your-lambda-url>/save-attachment-criteria-matches"
     
     inputs = [
         StrInput(
