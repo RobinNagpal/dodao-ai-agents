@@ -31,7 +31,7 @@ def upload_equity_project_to_s3(content, s3_key, content_type="text/plain"):
     print(f"Uploading to S3... at s3://{BUCKET_NAME}/{s3_key} with content type {content_type}")
     s3_client.put_object(
         Bucket=BUCKET_NAME,
-        Key=f"US/{s3_key}",
+        Key=f"public-equities/US/gics/{s3_key}",
         Body=content,
         ContentType=content_type,
         ACL="public-read",
