@@ -47,14 +47,14 @@ def test_financials_route():
         
 def test_criteria_route():
     """
-    Test the /save-attachment-criteria-matches route for raw 10-Q text attachments.
+    Test the /get-matching-criteria-attachments route for raw 10-Q text attachments.
     """
-    url = base_lambda_url + "/save-attachment-criteria-matches"
+    url = base_lambda_url + "/get-matching-criteria-attachments"
     payload = {
         "ticker": "AMT",
     }
     response = requests.post(url, json=payload)
-    print("=== /save-attachment-criteria-matches Route ===")
+    print("=== /get-matching-criteria-attachments Route ===")
     print("Status code:", response.status_code)
     try:
         print("JSON response:", response.json())

@@ -27,7 +27,8 @@ def lambda_handler(event, context):
         body = json.loads(event["body"]) if "body" in event and event["body"] else {}
 
         ticker = body.get("ticker", "AAPL")
-
+        criterion_key = body.get("criterion_key", "debt")
+        
         # Simple routing logic:
         if path == "/search":  # route 1
             report_type = body.get("report_type", "balance_sheet")
@@ -43,9 +44,9 @@ def lambda_handler(event, context):
             except Exception as e:
                 return json_response(500, {"status": 500, "message": str(e)})
             
-        elif path == "/save-attachment-criteria-matches":  # route 3
+        elif path == "/get-matching-criteria-attachments":  # route 3
             try:
-                data = get_matching_criteria_attachments(ticker)
+                data = get_matching_criteria_attachments(ticker, criterion_key)
                 return json_response(200, {"status": 200, "data": data})
             except Exception as e:
                 return json_response(500, {"status": 500, "message": str(e)})
