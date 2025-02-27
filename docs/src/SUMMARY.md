@@ -22,3 +22,4 @@
   - [Compare SEC Filing Libraries](./005_z04_compare_sec_filing_libs.md)
 - [Investment Strategies](./006_investment_strategies.md)
   - [Intrinsic Value](./006_z01_intrinsic_value.md))
+  - [Warren Buffet - Intrinsic Value](./006_z02_warren_buffet_charlie_munger.md)
