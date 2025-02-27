@@ -1,43 +1,68 @@
-# Updating Deployment
-Rightnow we deploy langflow to AWS Lightsail instance. Below you will see all the instructions to deploy langflow to AWS Lightsail instance.
+# Langflow Docker Setup
 
-We now want to update the deployment and use docker within the AWS Lightsail instance. So the langflow image will 
-be built and pushed to AWS ECR and then pulled and installed in the AWS Lightsail instance.
+This repository provides a Docker setup for running [Langflow](https://github.com/langflow-ai/langflow) with **custom components**.
 
-We are doing this because we want to run the latest code of langflow on our environment.
+## Requirements
+- [Docker](https://docs.docker.com/get-docker/) installed
+- [Git](https://git-scm.com/) (for cloning repositories if needed)
 
-Things we want to achieve:
-- [x] We want to run the latest code of langflow on our environment.
-    - [x] Build the docker image of langflow.
-    - [ ] Ignore for now - We want to run it in a way so that it uses our database. For this we need to pass the database url 
-       to the docker container as environment variable. `LANGFLOW_DATABASE_URL`.
-    - [ ] Ignore for now - Along with this we can pass other environment variables as well.
-- [ ] We want to run and install the custom components in langflow. Langflow has a feature to install custom components and mention the path of the custom components in environment variable `LANGFLOW_CUSTOM_COMPONENTS_PATH`.
-    - [ ] Do this - We want to mount the local directory to a path in the docker container. This path(the path in container) will be used as the `LANGFLOW_CUSTOM_COMPONENTS_PATH`.
-    - [ ] Do this - Make sure the custom components show up in the langflow UI.
+## 1. Directory Structure
 
-Some clarifications:
-- We will not be using docker-compose. We will be using docker only.
-- Docker Compose is used to run multiple containers. We will be running only one container, so we will be using docker only.
-- Docker can be used to run a single container and pass environment variables to it. And also to mount volumes.
-- Hassaan doesn't need to do anything with lightsail instance. 
-- No need to push as well.
+Make sure your custom components reside in a folder hierarchy like:
+```
+custom_components/
+    tools/
+        my_tool.py
+    helpers/
+        helper_component.py
+```
+> The folder under `custom_components` (e.g., `tools`, `helpers`) **determines the category name** in Langflow’s UI.
 
+## 2. Building the Docker Image
 
-### How will the new deployment work?
-Here are the following pieces of the deployment:
-1. Docker Container
-   - This will be build using the latest code of langflow.
-   - We will then push this image to our AWS ECR.
-2. AWS Lightsail Instance
-   - Lightsail instance is like a normal linux server. We will use this to run the docker container.
-   - Just like we run the docker container on our local machine, we will run the docker container on the AWS Lightsail instance.
-   - We will pull the latest image from AWS ECR and run the docker container on the AWS Lightsail instance.
-3. Custom Components
-   - Our custom components are stored in `dodao-ai-agents` repository. We will clone this reporitory on the AWS Lightsail instance, or on your local machine and 
-     then mount this directory to the docker container.
-   - So we dont need to clone the repo inside the docker container. We will clone it on the AWS Lightsail instance(or local) and then mount this directory to the docker container.
-   - This way we just need to pull the latest code from the `dodao-ai-agents` repository, and restart the docker container to see the changes. The new custom components will be available in the docker container and the UI.
+Place or clone the Langflow repo (or a Dockerfile that references it) in a folder, then build:
+
+```bash
+docker build -t langflow-custom .
+```
+
+This creates a Docker image named `langflow-custom`.
+
+## 3. Running the Container (Volume-Mount Approach)
+
+### Local Development
+
+You can **mount** your local `custom_components` folder into the container so that changes appear without rebuilding the image:
+
+```bash
+docker run -p 7860:7860 -v "<your_custom_components_path_in_local>:/app/custom_components" langflow-custom
+```
+
+### Verify Components
+Inside the container, you can check your files were mounted correctly:
+```bash
+docker exec -it <container_id> ls /app/custom_components
+```
+You should see subfolders (`tools`, `helpers`, etc.) and `.py` files.
+
+## 4. Alternative: Copy Components Into Image
+
+For **production** deployments or if you prefer a self-contained image, you can **copy** the components into the Docker image:
+
+1. Put your `custom_components/` folder in the same directory as your Dockerfile.
+2. Add this snippet in your `Dockerfile`:
+   ```dockerfile
+   COPY custom_components /app/custom_components
+   ENV LANGFLOW_COMPONENTS_PATH=/app/custom_components
+   ```
+3. Build and run **without** mounting a volume:
+   ```bash
+   docker build -t langflow-custom .
+   docker run -p 7860:7860 langflow-custom
+   ```
+
+Your custom components will be in the image itself, so no extra volume mapping is required.
+
 
 # Deployment Guide: Langflow on AWS Lightsail
 This guide explains how the Lightsail instance is configured to run Langflow using Terraform and a startup script. It also covers the main commands used for service management, debugging, and viewing logs.
