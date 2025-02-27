@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 COPY . ${LAMBDA_TASK_ROOT}
 
 # Set the Lambda entry point to lambda_function.lambda_handler
-CMD [ "src.lambda_function.lambda_handler" ]
+CMD [ "src.app.lambda_handler" ]

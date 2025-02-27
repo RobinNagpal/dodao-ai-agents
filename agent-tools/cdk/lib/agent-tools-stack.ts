@@ -79,7 +79,7 @@ export class AgentToolsStack extends cdk.Stack {
       });
 
       // Create a Lambda function that uses the container image.
-      const timeout = tool === "sec-edgar" || tool === "extract-criterion-info" ? cdk.Duration.seconds(300): cdk.Duration.seconds(30);
+      const timeout = tool === "sec-edgar" ? cdk.Duration.seconds(300): cdk.Duration.seconds(30);
       const memorySize = tool === "sec-edgar" ? 1024: 512;
 
       console.log(`Creating Lambda function for ${tool} with timeout ${timeout.toSeconds()}s and memory ${memorySize}MB`);

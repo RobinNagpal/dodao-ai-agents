@@ -44,8 +44,25 @@ def test_financials_route():
         print("JSON response:", response.json())
     except ValueError:
         print("Raw text response:", response.text)
+        
+def test_criteria_route():
+    """
+    Test the /get-matching-criteria-attachments route for raw 10-Q text attachments.
+    """
+    url = base_lambda_url + "/get-matching-criteria-attachments"
+    payload = {
+        "ticker": "AMT",
+    }
+    response = requests.post(url, json=payload)
+    print("=== /get-matching-criteria-attachments Route ===")
+    print("Status code:", response.status_code)
+    try:
+        print("JSON response:", response.json())
+    except ValueError:
+        print("Raw text response:", response.text)
 
 if __name__ == "__main__":
-    test_search_route()
+    # test_search_route()
     print()
-    test_financials_route()
+    # test_financials_route()
+    test_criteria_route()

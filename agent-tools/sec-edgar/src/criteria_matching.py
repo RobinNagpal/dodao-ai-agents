@@ -29,7 +29,7 @@ import json
 import boto3
 import os
 from edgar import *
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from typing import Optional, Literal, List, Union
 from pydantic import BaseModel, Field
@@ -68,7 +68,7 @@ class CriterionMatchResponse(BaseModel):
 
 class MatchedAttachment(BaseModel):
     name: str = Field(description="The name of the attachment")
-    url: str = Field(description="The url of the attachment")
+    content: str = Field(description="The content of the attachment")
     matched_amount: float = Field(description="The percentage of the content that matched the criterion")
 
 class CriterionMatches(BaseModel):
@@ -215,7 +215,7 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
         raise Exception("Error: No keywords provided for analysis.")
     
     excluded_purposes = [
-        "cover page",
+        "cover",
         "balance sheet",
         "statements of cash flows",
         "statement of cash flows",
@@ -233,18 +233,28 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
         if attach.document_type != "HTML":
             continue
 
-        attach_purpose = (attach.purpose or "").lower()
-        filename = attach.document  # e.g. "R10.htm"
+        attach_purpose = str(attach.purpose or "").lower()
+        filename = str(attach.document or "")  # e.g. "R10.htm"
+        content = str(attach.text() or "")
 
-        # 4) Construct the URL
         attachment_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{filename}"
 
+        # Skipping conditions
         if any(excluded in attach_purpose for excluded in excluded_purposes):
             continue
 
-        content = attach.text()
+        if not attach_purpose:
+            print(f"Warning: Attachment {attach.purpose} has empty purpose; skipping.")
+            continue
+        if not filename:
+            print(f"Warning: Attachment {attach.purpose} has empty filename; skipping.")
+            continue
+        if not content:
+            print(f"Warning: Attachment {attach.purpose} has empty content; skipping.")
+            continue
+        
         matched_result = create_criteria_match_analysis(
-            attachment_name=attach_purpose or "Unnamed Attachment",
+            attachment_name=attach_purpose,
             content=content,
             keywords=keywords
         )
@@ -253,8 +263,8 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
                 if item.matched:
                     attachments_per_criterion[item.criterion_key].append(
                         MatchedAttachment(
-                            name=attach.purpose,
-                            url=attachment_url,
+                            name=attach_purpose,
+                            content=content,
                             matched_amount=item.matched_amount
                         )
                     )
@@ -270,63 +280,121 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
 
     return criterion_to_matched_attachments
 
-def lambda_handler(event, context):
+def refine_financial_text(raw_text: str) -> str:
     """
-    AWS Lambda function to handle API requests.
+    Calls GPT-4o-mini to filter out older periods and keep only
+    the latest quarter. Preserves original formatting.
+    """
+    llm = ChatOpenAI(
+        temperature=0,
+        model_name="gpt-4o-mini",
+    )
+
+    system_prompt = """
+    You are a financial data extraction assistant. The user has provided some
+    text from a 10-Q attachment. It may contain multiple time periods
+    (e.g. “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”).
+
+    Your job:
+    1) Remove any older periods/columns, retaining only the latest quarter or period.
+    2) Preserve the rest of the text exactly as it is, including spacing and line breaks,
+    except for the removed columns/rows.
+    3) Do not reformat or summarize; do not alter numbers or wording.
+    4) If there is only one set of data, keep it entirely.
+    5) Preserve all headings and subheadings as lines above the table.
+    6) Return the final data in Markdown tabular format.
+    """
+
+    user_prompt = f"""
+    Here is the raw financial statement text from one 10-Q attachment.
+    Please remove older periods but keep the latest quarter/period.
+
+    Raw text:
+    {raw_text}
+    """
+
+    response = llm.invoke([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_prompt)
+    ])
+
+    return response.content
+
+def process_top_attachments(criterion_match) -> str:
+    """
+    Helper function to process the top 5 attachments:
+    - Sorts by matched_amount (highest first).
+    - Refines each attachment individually.
+    - Combines all refined texts into a single output.
+    """
+    if not criterion_match or not criterion_match.matched_attachments:
+        return None
+    
+    # Sort and select the top 5 attachments
+    top_attachments = sorted(criterion_match.matched_attachments, key=lambda x: x.matched_amount, reverse=True)[:5]
+    refined_texts = [refine_financial_text(attachment.content) for attachment in top_attachments]
+    return "\n\n".join(refined_texts)
+
+
+def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_from_input: Optional[List[dict]] = None) -> dict:
+    """
+    This function:
+      - Retrieves existing data from S3.
+      - Extracts and processes the top 5 matched attachments.
+      - Calls GPT-4o-mini to keep only the latest quarter's content.
+      - If data is missing, runs the full process and then returns results.
     """
     try:
-        # Parse JSON body
-        body = json.loads(event["body"]) if "body" in event and event["body"] else {}
+        # Fetch existing criteria info from S3
+        info = get_criterial_info_from_s3(ticker)
 
-        ticker = body.get("ticker", "").upper()
-        keywords_from_body = body.get("keywords", [])
+        # Check if file exists and contains matches
+        if info.status == "success" and info.criterion_matches:
+            # Find the criterion match for the given key
+            criterion_match = next((cm for cm in info.criterion_matches if cm.key == criterion_key), None)
 
-        if not ticker:
-            return json_response(400, {"error": "Missing 'ticker' parameter."})
+            # Process and return the refined content if available
+            final_text = process_top_attachments(criterion_match)
+            if final_text:
+                return {"status": "success", "content": final_text}
 
-        info: CriterialInfoOutput = get_criterial_info_from_s3(ticker)
+        # If file does not exist or criterion_matches is empty, invoke the full process
+        print("Data not found or incomplete. Running full extraction process.")
         info.status = "processing"
-        info.failureReason = None
         put_criterial_info_to_s3(ticker, info)
-        print('Status updated to: processing')
-        
-        if not keywords_from_body:
-            keywords = reit_criteria.criteria
-        else:
-            keywords = [Criterion(**kw) for kw in keywords_from_body]
-        
+
+        # Use keywords from input if provided, otherwise default to predefined criteria
+        keywords = [Criterion(**kw) for kw in keywords_from_input] if keywords_from_input else reit_criteria.criteria
+
+        # Run the full analysis process
         results = get_criterion_matched_attachments_list(ticker, keywords)
-        
         info.status = "success"
         info.criterion_matches = results
         put_criterial_info_to_s3(ticker, info)
-        print('Status updated to: success')
 
-        return json_response(200, info.dict())
+        # Fetch and process the top 5 attachments after populating
+        criterion_match = next((cm for cm in results if cm.key == criterion_key), None)
+        final_text = process_top_attachments(criterion_match)
+
+        if final_text:
+            return {"status": "success", "content": final_text}
+
+        return {"status": "failure", "message": "No matching attachments found after processing."}
 
     except Exception as e:
-        # If anything fails, update the file with 'failure'
         error_msg = str(e)
-        # We attempt to load the info again to update it
-        if 'ticker' in locals():
-            info = get_criterial_info_from_s3(ticker)
-            info.status = "failure"
-            info.failureReason = error_msg
-            # Clear out matches if you want them empty on failure
-            info.criterion_matches = []
-            put_criterial_info_to_s3(ticker, info)
-            print('Status updated to: failure')
-            
-        # Return error response
-        return json_response(500, {"error": "Internal server error", "details": error_msg})
+        print(f"Error: {error_msg}")
 
-
-def json_response(http_status, payload):
-    """
-    Helper to format a Lambda Function response consistently.
-    """
-    return {
-        "statusCode": http_status,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(payload)
-    }
+        # Update S3 with failure status
+        info = CriterialInfoOutput(
+            ticker=ticker,
+            sector=reit_criteria.sector,
+            industry_group=reit_criteria.industry_group,
+            industry=reit_criteria.industry,
+            sub_industry=reit_criteria.sub_industry,
+            status="failure",
+            failureReason=error_msg,
+            criterion_matches=[]
+        )
+        put_criterial_info_to_s3(ticker, info)
+        return {"status": "failure", "message": error_msg}

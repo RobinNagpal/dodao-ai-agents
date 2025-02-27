@@ -30,7 +30,7 @@ Example System Prompt (to guide the LLM on how to choose the 'mode' & inputs):
 
 When a user asks for the full 10-Q financial statements, set mode='all_financials'.
 When a user asks for a specific statement, set mode='specific_report' and fill 'report_type'.
-When a user asks for a custom criterion, set mode='criteria_related_info' and fill 'criteria_key'.
+When a user asks for a custom criterion, set mode='criteria_related_info' and fill 'criterion_key'.
 Always set 'ticker' according to the user's request."
 
 -------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ Example User Prompts that will route to the correct mode:
 
 1) "Give me the info of debt criteria of AMT in sec filing."
    "Find me info on lease obligations for AMT's latest 10-Q."
-   -> mode='criteria_related_info', ticker='AMT', criteria_key='debt'
+   -> mode='criteria_related_info', ticker='AMT', criterion_key='debt'
 
 2) "Give me all financial details of AMT stock in sec filing."
    "Please fetch all 10-Q financial data for AMT."
@@ -60,7 +60,7 @@ class SecEdgarMergedComponent(Component):
 
     FINANCIALS_ENDPOINT = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/financials"
     SEARCH_ENDPOINT = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/search"
-    CRITERIA_ENDPOINT = "https://<your-lambda-url>/criteria"
+    CRITERIA_ENDPOINT = "https://<your-lambda-url>/get-matching-criteria-attachments"
     
     inputs = [
         StrInput(
@@ -89,8 +89,8 @@ class SecEdgarMergedComponent(Component):
             tool_mode=True,
         ),
         StrInput(
-            name="criteria_key",
-            display_name="Criteria Key (Used if mode='criteria_related_info')",
+            name="criterion_key",
+            display_name="Criterion Key (Used if mode='criteria_related_info')",
             value="",
             info="Provide the criterion key to retrieve e.g. 'debt', 'rent', etc.",
             tool_mode=True,
@@ -115,7 +115,7 @@ class SecEdgarMergedComponent(Component):
         ticker = self.ticker
         mode = self.mode
         report_type = self.report_type
-        criteria_key = self.criteria_key
+        criterion_key = self.criterion_key
 
         if mode == "all_financials":
             return self._call_all_financials(ticker)
@@ -124,7 +124,7 @@ class SecEdgarMergedComponent(Component):
             return self._call_specific_report(ticker, report_type)
         
         elif mode == "criteria_related_info":
-            return self._call_criteria_info(ticker, criteria_key)
+            return self._call_criteria_info(ticker, criterion_key)
 
         else:
             return Message(
@@ -164,11 +164,19 @@ class SecEdgarMergedComponent(Component):
             error_text = f"Error calling SEC Edgar Lambda (/search): {e}"
             return Message(text=error_text)
 
-    def _call_criteria_info(self, ticker: str, criteria_key: str) -> Message:
-        placeholder_text = (
-            f"Mode: criteria_related_info\n"
-            f"Ticker: {ticker}\n"
-            f"Criteria Key: {criteria_key}\n\n"
-            f"(No actual endpoint implemented yet. Replace with real requests.post(...) logic.)"
-        )
-        return Message(text=placeholder_text)
+    def _call_criteria_info(self, ticker: str, criterion_key: str) -> Message:
+        try:
+            payload = {"ticker": ticker, "criterion_key": criterion_key}
+            response = requests.post(self.CRITERIA_ENDPOINT, json=payload)
+            response_data = response.json()  
+
+            if "message" in response_data:
+                return Message(text=response_data["message"])
+            elif "data" in response_data:
+                return Message(text=json.dumps(response_data["data"], indent=2))
+            else:
+                return Message(text=json.dumps(response_data, indent=2))
+
+        except Exception as e:
+            error_text = f"Error calling SEC Edgar Lambda (/get-matching-criteria-attachments): {e}"
+            return Message(text=error_text)

@@ -1,7 +1,0 @@
-# Dependencies specific to the SEC Edgar tool
-boto3
-edgartools
-pytest
-langchain == 0.3.18
-langchain-openai == 0.3.4
-python-dotenv
