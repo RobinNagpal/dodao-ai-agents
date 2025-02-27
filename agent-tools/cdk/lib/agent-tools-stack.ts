@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import * as ecr from "aws-cdk-lib/aws-ecr";
 import * as ecr_assets from "aws-cdk-lib/aws-ecr-assets";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as iam from "aws-cdk-lib/aws-iam";
 import {Construct} from "constructs";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
@@ -25,6 +26,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 if (!process.env.S3_BUCKET_NAME) {
+  console.log("Bucket name: ", process.env.S3_BUCKET_NAME)
   throw new Error("S3_BUCKET_NAME environment variable is not set.");
 }
 
@@ -33,6 +35,7 @@ if (!process.env.AWS_DEFAULT_REGION) {
 }
 
 if (!process.env.AWS_ACCESS_KEY_ID) {
+  console.log("Access key id: ", process.env.AWS_ACCESS_KEY_ID)
   throw new Error("AWS_ACCESS_KEY_ID environment variable is not set.");
 }
 
@@ -90,7 +93,7 @@ export class AgentToolsStack extends cdk.Stack {
       });
 
       // Create a Lambda function that uses the container image.
-      const timeout = tool === "sec-edgar" ? cdk.Duration.seconds(300): cdk.Duration.seconds(30);
+      const timeout = tool === "sec-edgar" || tool === "extract-criterion-info" ? cdk.Duration.seconds(300): cdk.Duration.seconds(30);
       const memorySize = tool === "sec-edgar" ? 1024: 512;
 
       console.log(`Creating Lambda function for ${tool} with timeout ${timeout.toSeconds()}s and memory ${memorySize}MB`);
@@ -107,6 +110,17 @@ export class AgentToolsStack extends cdk.Stack {
         },
 
       });
+      
+      // Add permissions so the Lambda role can access your S3 bucket
+      lambdaFunction.addToRolePolicy(new iam.PolicyStatement({
+        actions: ["s3:ListBucket"],
+        resources: [`arn:aws:s3:::${process.env.S3_BUCKET_NAME}`],
+      }));
+      
+      lambdaFunction.addToRolePolicy(new iam.PolicyStatement({
+        actions: ["s3:GetObject", "s3:PutObject"],
+        resources: [`arn:aws:s3:::${process.env.S3_BUCKET_NAME}/*`],
+      }));
 
       // Add a Lambda Function URL with no auth (public endpoint).
       const functionUrl = lambdaFunction.addFunctionUrl({
