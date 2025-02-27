@@ -1,0 +1,194 @@
+# Saving Criteria Information
+
+Terms Used
+- Criteria - A set of criterion that can be used to evaluate a company.
+  - Spider Charts: we plan to create spider charts for each company based on these criteria, with scores for each criterion. see example here - https://koalagains.com/crowd-funding/projects/nightware
+- Criterion - A single parameter or topic or area that can be used to evaluate a company in a Industry Group. example `founderAndTeam`, `traction`, `marketOpportunity`, `executionSpeed` etc. See example of six criterion here - https://koalagains.com/crowd-funding/projects/nightware
+  - For each criterion, need to calculate a score. We can use our current pattern for this
+  - So corresponding to each criterion, we can have a `performanceChecklist: List[ChecklistItem]` of size 5
+    ```python
+    from pydantic import BaseModel, Field
+    
+    class ChecklistItem(BaseModel):
+        """Checklist item with a score and comment."""
+        checklist_item: str = Field(description="The item to be checked. Explain in 7-10 words.")
+        one_line_explanation: str = Field(description="A brief explanation of how the item was evaluated.")
+        information_used: str = Field(description="All the information used to evaluate the item.")
+        detailed_explanation: str = Field(description="A very detailed explanation of how the item was evaluated. "
+                                                      "Use numbers whenever possible like the numbers shared by startup or by industry standards. "
+                                                      "Explain in at least 4-5 sentences.")
+        evaluation_logic: str = Field(description="Explain in detail on how did you make an opinion. "
+                                                  "What type of startup's data did you use, what industry standards did you take. "
+                                                  "Explain by using the numbers shared by startup or by industry standards"
+                                                  "Explain in at least 4-5 sentences.")
+        score: Literal[0, 1] = Field(description="The score given for this item 0 or 1.")
+    ```
+- Metric - Under a criterion, a metric is a specific numerical value that will show how well a company is doing in that criterion. 
+The reason to define these metrics is to have a common set of metrics when we compare different companies in a Industry Group. Will be implemented later.
+- Report - For each criterion, we can have a report that can be generated. 
+    
+
+
+
+## Introduction
+- We have four levels of information - Sector(11), Industry Group(25), Industry(74), and Sub-Industry(163).
+- It wont be possible to have specific criteria for all 163 sub-industries, or even all 74 industries.
+- If we are working on a specific criteria, it might be good to target them at "Industry Group" level, as if they are at Sector level, they might be too broad, and if they are at 
+Industry level, they might be difficult to create based on the number of industries.
+- So this can be our assumption for now.
+
+## List of Industry Groups with Specific Criteria
+- We can create a file in `public-equities/US/gics/custom-criterias.json` which will have the list of Industry Groups with specific criteria.
+- We can upsert criteria for Industry Groups in this file.
+
+The file can look something like
+
+```json
+{
+  "criteria": [
+      {
+        "sectorId": 6,
+        "sectorName": "Real Estate",
+        "industryGroupId": 60,
+        "industryGroupName": "Equity REITs",
+        "criteriaFileLocation": "public-equities/US/gics/real-estate/equity-reits/custom-criteria.json"
+      }
+  ]
+}
+```
+When generating a report for a specific ticker, we can check if the criteria is available in the `custom-criterias.json` 
+file, and if it is, we can use the criteria from the file.
+
+If not we can use the criteria from the `public-equities/US/gics/real-estate/equity-reits/ai-criteria.json` file.
+
+If this file doesn"t exist, we can 
+- Create one using a prompt (Done) 
+- Then use it for generating the report.
+
+The reason we have two separate files is that we can know if the criteria is created by AI or by a human. From the
+file name itself, we can know if the criteria is created by AI or by a human.
+
+
+### UI for upsert
+We can show a list of Industry Groups, and show the ai-criteria.json and custom-criteria.json files for each Industry Group if it exists, else those columns will be empty.
+
+We can have a button(link) to create a new criteria for the Industry Group. This button can be in both the columns, if they are important. 
+
+For ai column, we can also have a re-generate button, which will re-generate the criteria for the Industry Group.
+
+Here we can use either Icon buttons or Links as normal buttons will look ugly. For creating or re-generating ai criteria, we can show a confirmation dialog, and then create the criteria.
+
+See "ConfirmationModal" in shared components. 
+
+### Create/Edit Criteria(Human Criteria)
+
+A Criteria can have the following fields
+```json
+  {
+    "key": "rental_health",
+    "name": "Rental Health",
+    "shortDescription": "Rental Health is a measure of the health of the rental market. It includes metrics like occupancy rates, lease expirations, and rental rates.",
+    "importantMetrics": [
+      {
+        "key": "occupancy_rates",
+        "name": "Occupancy Rates",
+        "description": "The percentage of occupied units in a property or portfolio.",
+        "abbreviation": "OR",
+        "calculationFormula": "occupiedUnits/totalUnits"
+      },
+      {
+        "key": "lease_expirations",
+        "name": "Lease Expirations",
+        "description": "The percentage of leases expiring in the next 12 months.",
+        "abbreviation": "LE",
+        "calculationFormula": "leasesExpiring/totalLeases"
+        
+      },
+      {
+        "key": "rental_rates",
+        "name": "Rental Rates",
+        "description": "The average rental rates for the company’s properties.",
+        "abbreviation": "RR",
+        "calculationFormula": "sum(rentalRates)/totalProperties"
+      }
+    ],
+    "reports": [
+      {
+        "key": "rental_health_summary",
+        "name": "Rental Health Summary",
+        "description": "A summary of the company’s rental health based on key metrics.",
+        "outputType": "TextReport"
+      },
+      {
+        "key": "rental_health_trend",
+        "name": "Rental Health Trend",
+        "description": "A trend analysis of the company’s rental health over time.",
+        "outputType": "BarGraph"
+      }
+    ]
+  }
+```
+
+
+
+### Other
+
+Agent Status File can look something like
+
+These files will be saved in the `public-equities/US/gics/<sector>/<industry-group>/<industry>/<sub-industry>/` folder.
+
+Where the folder names are slugs of the sector, industry group, industry, and sub-industry. 
+
+```js
+const subIndustry = {
+  "tickers": ["AMT"], // These are just for exmaple purpose to make sure we can write some code to test it out later
+  "id": 601010,
+  "name": "Specialized REITs",
+  "subIndustry": {id: 601010, name: "Specialized REITs"},
+  "sector": {id: 6, name: "Real Estate"}, 
+  "industryGroup": {id: 60, name: "Equity REITs"}, 
+  "industry": {id: 6010, name: "Specialized REITs"},
+  "processedInformation": {
+    "criteria": [
+      {
+        id: "rental_health",
+        name: "Rental Health",
+        shortDescription: "Rental Health is a measure of the health of the rental market. It includes metrics like occupancy rates, lease expirations, and rental rates.",
+        importantMetrics: [
+          {
+            id: "occupancy_rates",
+            name: "Occupancy Rates",
+            description: "The percentage of occupied units in a property or portfolio."
+          },
+          {
+            id: "lease_expirations",
+            name: "Lease Expirations",
+            description: "The percentage of leases expiring in the next 12 months."
+          },
+          {
+            id: "rental_rates",
+            name: "Rental Rates",
+            description: "The average rental rates for the company’s properties."
+          }
+        ],
+        reports: [
+          {
+            id: "rental_health_summary",
+            name: "Rental Health Summary",
+            description: "A summary of the company’s rental health based on key metrics.",
+            prompt: "Give me a summary of the rental health ..........." ,
+            outputType: "TextReport"
+          },
+          {
+            id: "rental_health_trend",
+            name: "Rental Health Trend",
+            description: "A trend analysis of the company’s rental health over time.",
+            prompt: "Give me a trend analysis of the rental trend ...........",
+            outputType: "BarGraph"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
