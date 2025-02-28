@@ -1,9 +1,9 @@
 import json
 from typing import List
-from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME
+from cf_analysis_agent.utils.s3_utils import s3_client, upload_equity_project_to_s3
 from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse,IndustryGroupData,IndustryGroupCriteria
 from cf_analysis_agent.utils.llm_utils import structured_criteria_response
-
+from cf_analysis_agent.utils.env_variables import BUCKET_NAME, REGION
 
 def get_industry_group_criteria(sector: str, industry_group: str) -> StructuredIndustryGroupCriteriaResponse:
     """
@@ -66,3 +66,51 @@ def get_criteria_file_path(sector:str,industry_group:str) -> str:
     Returns the path to the status file for the given project ID.
     """
     return f"{sector}/{industry_group}/ai-criteria.json"
+
+def fetch_criteria_file(equity_details):
+    """Fetch the AI criteria file for a given sector and industry group."""
+    sector = equity_details.get("sectorName", "").lower().replace(" ", "-")
+    industry_group = equity_details.get("industryGroupName", "").lower().replace(" ", "-")
+    return get_criteria_file(sector, industry_group), sector, industry_group
+
+def generate_ai_criteria(equity_details, sector, industry_group):
+    """Generate AI criteria data using industry group information."""
+    industry_group_criteria = get_industry_group_criteria(sector, industry_group)
+    return {
+        "tickers": industry_group_criteria.tickers,
+        "id": equity_details["industryGroupId"],
+        "name": equity_details["industryGroupName"],
+        "sector": {"id": equity_details["sectorId"], "name": equity_details["sectorName"]},
+        "industryGroup": {"id": equity_details["industryGroupId"], "name": equity_details["industryGroupName"]},
+        "processedInformation": industry_group_criteria.processedInformation.model_dump()
+    }
+
+def upload_ai_criteria_to_s3(final_data, sector, industry_group):
+    """Upload AI criteria to S3 and return the S3 URL."""
+    s3_key = f"{sector}/{industry_group}/ai-criteria.json"
+    upload_equity_project_to_s3(json.dumps(final_data, indent=2), s3_key, content_type="application/json")
+    return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/gics/{s3_key}"
+
+def update_custom_criteria(equity_details, ai_criteria_url):
+    """Update the custom-criterias.json file with AI criteria information."""
+    custom_criteria = get_custom_criterias_file()
+    if not custom_criteria:
+        custom_criteria = {"criteria": []}
+
+    found = False
+    for criteria in custom_criteria["criteria"]:
+        if criteria["sectorId"] == equity_details["sectorId"] and criteria["industryGroupId"] == equity_details["industryGroupId"]:
+            criteria["aiCriteriaFileLocation"] = ai_criteria_url
+            found = True
+            break
+
+    if not found:
+        custom_criteria["criteria"].append({
+            "sectorId": equity_details["sectorId"],
+            "sectorName": equity_details["sectorName"],
+            "industryGroupId": equity_details["industryGroupId"],
+            "industryGroupName": equity_details["industryGroupName"],
+            "aiCriteriaFileLocation": ai_criteria_url
+        })
+
+    upload_equity_project_to_s3(json.dumps(custom_criteria, indent=2), "custom-criterias.json", content_type="application/json")
