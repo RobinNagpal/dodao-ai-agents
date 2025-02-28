@@ -48,7 +48,7 @@ Here [002_z05_z01_evaluation_criteria.md](./002_z05_z01_evaluation_criteria.md) 
 
 
 # Step 2 - Generating Reports for a Ticker
-This involves two steps
+This involves three steps
 
 ### Extracting Information from Latest 10Q
 Here we want to extract information related to each criterion from the latest 10Q. This has already been implemented 
@@ -56,3 +56,6 @@ in [004_z02_latest_10Q_criterion_info.md](./004_z02_latest_10Q_criterion_info.md
 
 ### Create the Report
 This is discussed in this section: [002_z05_z02_generating_reports_for_a_ticker.md](./002_z05_z02_generating_reports_for_a_ticker.md)
+
+### Save the Report
+See [002_z05_z03_save_report.md](./002_z05_z03_save_report.md)

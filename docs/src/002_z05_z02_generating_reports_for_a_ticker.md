@@ -1,5 +1,14 @@
 # Reports for Each Ticker
 
+# Overview
+This diagrams shows the flow of generating reports for a ticker. The flow is divided into 3 parts:
+
+![Process](./images/02_milestones/reports-for-ticker.png)
+
+
+# Details
+
+
 The report will be generated for each ticker. The report file will be saved in the `public-equities/US/tickers-evaluations/<ticker>.json` folder.
 
 The report will contain the following information:
@@ -76,122 +85,25 @@ just use a structured output.
 
 
 # Report Generation Logic/Process/Code
+
 We would want to write this part in Langflow. The reasons for writing this in Langflow are:
 1. We need to have at-least 25 agents if we write custom criteria for each industry group. This will be a lot of code to write.
 2. Langflow allows any non-technical person to write the agent
 3. Non-devs can use the tools, and keep updating the prompts to make sure a right report is generated.
 4. We can hire interns in Summer to cover 5-10 Industry Groups. They can write the prompts for the agents.
 
-### Invoking the Agent
-An agent can have a webhook url which can be invoked to generate the report. This component is already present in Langflow.
+# Process
 
-See WebhookComponent - https://docs.langflow.org/components-data#webhook
-
-To the agent we need to pass the following information:
-
-```json
-{
-   "ticker": "AMT",
-   "criteria": [
-      {
-         "key": "rental_health",
-         "name": "Rental Health",
-         "shortDescription": "Rental Health is a measure of the health of the rental market. It includes metrics like occupancy rates, lease expirations, and rental rates.",
-         "importantMetrics": [
-            {
-               "key": "occupancy_rates",
-               "name": "Occupancy Rates",
-               "description": "The percentage of occupied units in a property or portfolio.",
-               "abbreviation": "OR",
-               "calculationFormula": "occupiedUnits/totalUnits"
-            },
-            {
-               "key": "lease_expirations",
-               "name": "Lease Expirations",
-               "description": "The percentage of leases expiring in the next 12 months.",
-               "abbreviation": "LE",
-               "calculationFormula": "leasesExpiring/totalLeases"
-
-            },
-            {
-               "key": "rental_rates",
-               "name": "Rental Rates",
-               "description": "The average rental rates for the company’s properties.",
-               "abbreviation": "RR",
-               "calculationFormula": "sum(rentalRates)/totalProperties"
-            }
-         ],
-         "reports": [
-            {
-               "key": "rental_health_summary",
-               "name": "Rental Health Summary",
-               "description": "A summary of the company’s rental health based on key metrics.",
-               "outputType": "TextReport"
-            },
-            {
-               "key": "rental_health_trend",
-               "name": "Rental Health Trend",
-               "description": "A trend analysis of the company’s rental health over time.",
-               "outputType": "BarGraph"
-            }
-         ]
-      }
-   ]
-}
-```
-
-Other option is we can pass
-```json
-{
-   "ticker": "AMT",
-   "criteriaFileUrl": "<s3-base-url>/public-equities/US/gics/real-estate/equity-reits/custom-criteria.json"
-}
-```
-Here langflow can download the file and then use the criteria from the file to generate the report.
-
-So langflow should be able to 
-1. parse the criteria file/data
-2. Loop through each criterion
-3. Match the criteria key - There is already if-else component in langflow, so we have to use 5-6 if-else components 
-4. Then for each criteria, we will have logic to generate the report. This is already there for `debt`
-
-### Task
-- Work on 1, 2, 3, 4.
-- For now you can pass hardcoded criteria info from postman(or other REST tool) to the webhook url.  
+The process will be divided into 3 parts:
+1. Backend - See [002_z05_z03_backend.md](./002_z05_z03_backend.md)
+2. Langflow - See [002_z05_z03_langflow_agent.md](./002_z05_z03_langflow_agent.md)
+3. Saving the Report - See [002_z05_z03_save_report.md](./002_z05_z03_save_report.md)
 
 
-### Conditional Logic in Langflow
-- SWITCH CASE - Better, but we dont have this in langflow. 
-- IF-ELSE - We have this in langflow. So we can use this for now.
+# Debug Page
+We can have a debug page where we can see the information that we produce or the middle steps. This can be useful for debugging.
 
-So the if-else component will have the following logic:
-```typescript
-// First Component
-if(criterial.key == "rentalHealth") {
-    // Generate the report for rental_health
-} else 
-  // Second Component
-  if(criterial.key == "debtAndLeverage") {
-    // Generate the report for debt
-  } else 
-    // Third Component
-    if(criterial.key == "stockDistribution") {
-        // Generate the report for founderAndTeam
-        } else 
-        // Fourth Component
-        if(criterial.key == "costOfOperations") {
-            // Generate the report for traction
-        } else 
-            // Fifth Component
-            if(criterial.key == "team") {
-            // Generate the report for marketOpportunity
-            } else 
-               // Sixth Component
-               if(criterial.key == "ffoAndAffo") {
-                   // Generate the report for executionSpeed
-               }
-```
-
+See [002_z05_z04_ticker_debug_page.md](./002_z05_z04_ticker_debug_page.md)
 
 
 # Langflow Tools

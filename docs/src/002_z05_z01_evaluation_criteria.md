@@ -1,8 +1,5 @@
 # Saving Criteria Information
 
-
-
-
 ## Introduction
 - We have four levels of information - Sector(11), Industry Group(25), Industry(74), and Sub-Industry(163).
 - It wont be possible to have specific criteria for all 163 sub-industries, or even all 74 industries.
@@ -42,7 +39,7 @@ The reason we have two separate files is that we can know if the criteria is cre
 file name itself, we can know if the criteria is created by AI or by a human.
 
 
-### UI for upsert
+### Criteria Table
 We can show a list of Industry Groups, and show the ai-criteria.json and custom-criteria.json files for each Industry Group if it exists, else those columns will be empty.
 
 We can have a button(link) to create a new criteria for the Industry Group. This button can be in both the columns, if they are important. 
@@ -102,7 +99,112 @@ A Criteria can have the following fields
   }
 ```
 
+### Upsert Custom Criteria
 
+Criteria can be displayed as a table with each criterion representing a two. There will be an add button at the top 
+and edit button at the end of each row. 
+
+Try using our existing Table component for this.
+
+When we add or edit a criterion, we can show a modal with the text area, where the user can edit or paste the criteria.
+
+In the popup we can use https://github.com/microlinkhq/react-json-view to allow adding and editing a particular criterion.
+
+The json editing library should provide support for json schema validation also. Let Robin know if it doesn't
+
+The criteria table can have the following columns
+- Key
+- Name
+- Short Description
+- Edit Icon Button (only pencil icon. No text needed)
+
+Or table component allows us to add a button at the top which can be an add icon button.
+
+For now assume any schema for criterion. We want to validate the schema as well. We can have this schema as the
+starting point. 
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RentalHealth",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "shortDescription": {
+      "type": "string"
+    },
+    "importantMetrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "abbreviation": {
+            "type": "string"
+          },
+          "calculationFormula": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "description",
+          "abbreviation",
+          "calculationFormula"
+        ]
+      }
+    },
+    "reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "outputType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "description",
+          "outputType"
+        ]
+      }
+    }
+  },
+  "required": [
+    "key",
+    "name",
+    "shortDescription",
+    "importantMetrics",
+    "reports"
+  ]
+}
+
+```
 
 ### Other
 
