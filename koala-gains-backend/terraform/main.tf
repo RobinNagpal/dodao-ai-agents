@@ -46,7 +46,7 @@ resource "aws_lightsail_container_service_deployment_version" "cf_deployment" {
 
   container {
     container_name = "cf-analysis-container"
-    image = "729763663166.dkr.ecr.us-east-1.amazonaws.com/crowd-fund-analysis:latest" # Replace with your ECR repo URL
+    image = "729763663166.dkr.ecr.us-east-1.amazonaws.com/koala-gains-backend:latest" # Replace with your ECR repo URL
     command = []
 
     environment = {
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "default" {
 }
 
 resource "aws_ecr_repository_policy" "default" {
-  repository = "crowd-fund-analysis"
+  repository = "koala-gains-backend"
   policy     = data.aws_iam_policy_document.default.json
 }
 

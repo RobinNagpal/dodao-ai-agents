@@ -51,7 +51,7 @@ crew_ai_agent/.venv
 crew_ai_agent/.env
 crew_ai_agent/src/crew_ai_agent/__pycache__/
 crew_ai_agent/src/crew_ai_agent/tools/__pycache__/
-crowd-fund-analysis/cf_analysis_agent/.env
+koala-gains-backend/cf_analysis_agent/.env
 
 clickable-demos/node_modules
 venv/
@@ -59,11 +59,12 @@ out/
 shared/pull-tweets/accounts.db
 shared/pull-tweets/.env
 
-crowd-fund-analysis/terraform/.terraform.lock.hcl
-crowd-fund-analysis/terraform/terraform.tfstate
-crowd-fund-analysis/terraform/terraform.tfstate.backup
-crowd-fund-analysis/terraform/terraform.tfvars
-crowd-fund-analysis/terraform/.terraform/providers/
+koala-gains-backend/terraform/.terraform.lock.hcl
+koala-gains-backend/terraform/.terraform*
+koala-gains-backend/terraform/terraform.tfstate
+koala-gains-backend/terraform/terraform.tfstate.backup
+koala-gains-backend/terraform/terraform.tfvars
+koala-gains-backend/terraform/.terraform/providers/
 
 
 agent-tools/cdk/node_modules

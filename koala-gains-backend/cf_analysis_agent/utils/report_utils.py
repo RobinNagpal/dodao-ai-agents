@@ -118,7 +118,7 @@ class ProcessedProjectInfoSchema(TypedDict):
 class ProjectStatusFileSchema(TypedDict, total=False):
     """
     The top-level structure that gets stored in
-    `crowd-fund-analysis/<project_id>/agent-status.json`.
+    `koala-gains-backend/<project_id>/agent-status.json`.
     """
     id: str
     name: str
