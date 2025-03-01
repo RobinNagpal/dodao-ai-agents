@@ -1,33 +1,19 @@
 # V0 - Proof of Concept - CrowdFunding
 
-Here the focus is to learn about agents, their effectiveness, and getting some useful output from them.
+Here the focus was to learn about agents, their effectiveness, and getting some useful output from them.
 
-We are targeting CrowdFunding as not much information is available about them and can be useful for investors.
+We are targeted CrowdFunding as not much information is available about them and can be useful for investors.
 
 ## Main Features
 
-#### 1. Spider Charts - Done
+1. Spider Charts - Done
+2. Summary of Analysis - Done
+3. Detailed Analysis of Each Evaluation Category - Done
+4. Detailed analysis of each item explaining
 
-- Spider Chart with 6 or 8 sections
-- For each pie in the spider chart, we will have a rating (0s or 1s for ~5 items).
 
-#### 2. Summary of Analysis - Done
 
-For these categories in Spider Chart, we will have summary of analysis which is the same as the pie chart i.e.
-tick or cross on each item
-
-#### Detailed Analysis of Each Evaluation Category - Done
-
-Detailed analysis of each item explaining
-
-- Important Information Available related to the item(evaluation criteria like revenue, growth, price, etc)
-- The opinion of the AI Agent on the investment opportunity
-
-#### Improve accuracy of the agent - In Progress
-
-The reports currently produced are not very accurate. We are working on improving the accuracy of the agent.
-
-Learnings:
+## Learnings:
 
 - The agent is accurate to 50-60%
 - If we have more accurate information like in the case of public companies, the agent can be more accurate

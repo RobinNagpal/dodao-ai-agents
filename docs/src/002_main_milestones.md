@@ -17,7 +17,7 @@ SEC events and filings will be analyzed to provide a clearer picture of market m
 
 See more here - [REITs](002_z02_reits.md)
 
-### **V1 - SEC Filings Summarization & Timeline**  
+### **V2 - SEC Filings Summarization & Timeline**  
 A dedicated product for summarizing SEC EDGAR filings is being developed, with two main components: structured summaries 
 of filings and a timeline for key events. The goal is to extract and categorize critical information, balancing 
 quantitative and qualitative insights while maintaining context. Important filings such as 10-K, 10-Q, and 8-K will be 
@@ -25,6 +25,9 @@ processed to enhance the understanding of REITs' financial health and strategic 
 lengthy documents while preserving essential details is a primary focus.
 
 See more here - [SEC Filings](002_z03_sec_filings.md)
+
+### **V2 - Other Investment Sectors**
+
 
 ### **V2 - Customizable AI Agents**  
 The next iteration will enable users to create their own AI agents tailored to specific investment strategies and 
