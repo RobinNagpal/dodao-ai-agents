@@ -60,7 +60,7 @@ Other option is we can pass
 ```json
 {
    "ticker": "AMT",
-   "criteriaFileUrl": "<s3-base-url>/public-equities/US/gics/real-estate/equity-reits/custom-criteria.json"
+   "criteriaFileUrl": "<s3-base-url>/public-equities/US/gics/<sector>/<industry-group>/custom-criteria.json"
 }
 ```
 Here langflow can download the file and then use the criteria from the file to generate the report.

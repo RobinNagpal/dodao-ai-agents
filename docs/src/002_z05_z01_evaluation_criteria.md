@@ -8,7 +8,7 @@ Industry level, they might be difficult to create based on the number of industr
 - So this can be our assumption for now.
 
 ## List of Industry Groups with Specific Criteria
-- We can create a file in `public-equities/US/gics/custom-criterias.json` which will have the list of Industry Groups with specific criteria.
+- We can create a file in `public-equities/US/gics/<sector>/<industry-group>/custom-criterias.json` which will have the list of Industry Groups with specific criteria.
 - We can upsert criteria for Industry Groups in this file.
 
 The file can look something like
@@ -16,28 +16,60 @@ The file can look something like
 ```json
 {
   "criteria": [
-      {
-        "sectorId": 6,
-        "sectorName": "Real Estate",
-        "industryGroupId": 60,
-        "industryGroupName": "Equity REITs",
-        "criteriaFileLocation": "public-equities/US/gics/real-estate/equity-reits/custom-criteria.json"
-      }
+    {
+      "key": "rental_health",
+      "name": "Rental Health",
+      "shortDescription": "Rental Health is a measure of the health of the rental market. It includes metrics like occupancy rates, lease expirations, and rental rates.",
+      "importantMetrics": [
+        {
+          "key": "occupancy_rates",
+          "name": "Occupancy Rates",
+          "description": "The percentage of occupied units in a property or portfolio.",
+          "abbreviation": "OR",
+          "calculationFormula": "occupiedUnits/totalUnits"
+        },
+        {
+          "key": "lease_expirations",
+          "name": "Lease Expirations",
+          "description": "The percentage of leases expiring in the next 12 months.",
+          "abbreviation": "LE",
+          "calculationFormula": "leasesExpiring/totalLeases"
+
+        },
+        {
+          "key": "rental_rates",
+          "name": "Rental Rates",
+          "description": "The average rental rates for the company’s properties.",
+          "abbreviation": "RR",
+          "calculationFormula": "sum(rentalRates)/totalProperties"
+        }
+      ],
+      "reports": [
+        {
+          "key": "rental_health_summary",
+          "name": "Rental Health Summary",
+          "description": "A summary of the company’s rental health based on key metrics.",
+          "outputType": "TextReport"
+        },
+        {
+          "key": "rental_health_trend",
+          "name": "Rental Health Trend",
+          "description": "A trend analysis of the company’s rental health over time.",
+          "outputType": "BarGraph"
+        }
+      ]
+    }  
   ]
 }
 ```
-When generating a report for a specific ticker, we can check if the criteria is available in the `custom-criterias.json` 
+When generating a report for a specific ticker, we can check if the criteria is available in the `public-equities/US/gics/<sector>/<industry-group>/custom-criterias.json` 
 file, and if it is, we can use the criteria from the file.
 
-If not we can use the criteria from the `public-equities/US/gics/real-estate/equity-reits/ai-criteria.json` file.
-
-If this file doesn"t exist, we can 
-- Create one using a prompt (Done) 
-- Then use it for generating the report.
+If not we can use the criteria from the `public-equities/US/gics/real-estate/equity-reits/ai-criteria.json` file. If this
+file doesn't exist, we throw error.
 
 The reason we have two separate files is that we can know if the criteria is created by AI or by a human. From the
 file name itself, we can know if the criteria is created by AI or by a human.
-
 
 ### Criteria Table
 We can show a list of Industry Groups, and show the ai-criteria.json and custom-criteria.json files for each Industry Group if it exists, else those columns will be empty.

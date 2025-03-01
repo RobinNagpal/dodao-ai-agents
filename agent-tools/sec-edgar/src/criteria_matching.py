@@ -63,7 +63,6 @@ class CriterionMatchResponse(BaseModel):
     """Return LLM response in a structured format"""
     criterion_matches: List[CriterionMatchItem] = Field(description="List of criterion matches")
     status: Literal['success', 'failure'] = Field(description="If successful in processing the prompt and producing the output.")
-    confidence: Optional[float] = Field(description="The confidence of the response in the range of 1-10.0, where 10.0 is very confident.")
     failureReason: Optional[str] = Field(description="The reason for the failure if the status is failed.")
 
 class MatchedAttachment(BaseModel):
@@ -126,7 +125,7 @@ def get_criterial_info_from_s3(ticker: str) -> CriterialInfoOutput:
         )
         return info
 
-def put_criterial_info_to_s3(ticker: str, info: CriterialInfoOutput):
+def put_criteria_info_to_s3(ticker: str, info: CriterialInfoOutput):
     """Writes the updated info JSON to S3."""
     key = s3_key_for_criterial_info(ticker)
     data = json.dumps(info.dict(), indent=2)
@@ -361,7 +360,7 @@ def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_
         # If file does not exist or criterion_matches is empty, invoke the full process
         print("Data not found or incomplete. Running full extraction process.")
         info.status = "processing"
-        put_criterial_info_to_s3(ticker, info)
+        put_criteria_info_to_s3(ticker, info)
 
         # Use keywords from input if provided, otherwise default to predefined criteria
         keywords = [Criterion(**kw) for kw in keywords_from_input] if keywords_from_input else reit_criteria.criteria
@@ -370,7 +369,7 @@ def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_
         results = get_criterion_matched_attachments_list(ticker, keywords)
         info.status = "success"
         info.criterion_matches = results
-        put_criterial_info_to_s3(ticker, info)
+        put_criteria_info_to_s3(ticker, info)
 
         # Fetch and process the top 5 attachments after populating
         criterion_match = next((cm for cm in results if cm.key == criterion_key), None)
@@ -396,5 +395,5 @@ def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_
             failureReason=error_msg,
             criterion_matches=[]
         )
-        put_criterial_info_to_s3(ticker, info)
+        put_criteria_info_to_s3(ticker, info)
         return {"status": "failure", "message": error_msg}

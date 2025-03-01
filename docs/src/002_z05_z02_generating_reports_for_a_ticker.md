@@ -8,8 +8,7 @@ This diagrams shows the flow of generating reports for a ticker. The flow is div
 
 # Details
 
-
-The report will be generated for each ticker. The report file will be saved in the `public-equities/US/tickers-evaluations/<ticker>.json` folder.
+The report will be generated for each ticker. See [002_z05_z05_paths_and_json_structures.md](./002_z05_z05_paths_and_json_structures.md) for the paths and the structures.
 
 The report will contain the following information:
 
@@ -17,48 +16,7 @@ Few things to note:
 - Many times a single company can belong to multiple sectors, industry groups, industries, and sub-industries. For example tesla, google, etc.
 - For now we will only focus on evaluating the company based on a single sub-industry. But in the schema, we are keeping that provision.
 
-```json
-{
-    "ticker": "AMT",
-    "sectors": [{"id": 6, "name": "Real Estate"}], 
-    "industryGroups": [{"id": 60, "name": "Equity REITs"}],  
-    "industries": [{"id": 6010, "name": "Specialized REITs"}], 
-    "subIndustries": [{"id": 601010, "name": "Specialized REITs"}
-    ],
-    "processedInformation": {
-    "subIndustryReports": [{
-      "id": 601010,
-      "name": "Specialized REITs",
-      "criteriaEvaluations": [{
-          "criterion": "rental_health",
-          "reports": [
-            {
-              "key": "rental_health_summary",
-              "name": "Rental Health Summary",
-              "outputType": "TextReport",
-              "outputFile": "https://s3.amazonaws.com/koalagains/public-equities/US/tickers-reports/<ticker>/<sub-industry>/<criteria>/{report-key}.md"
-            },
-            {
-              "key": "rental_health_trend",
-              "name": "Rental Health Trend",
-              "outputType": "BarGraph",
-              "outputFileUrl": "https://s3.amazonaws.com/koalagains/public-equities/US/tickers-reports/<ticker>/<sub-industry>/<criteria>/{report-key}.json"
-            }
-          ],
-          "performanceChecklist": [{
-            "checklistItem": "The item to be checked. Explain in 7-10 words.",
-            "oneLinerExplanation": "A brief explanation of how the item was evaluated.",
-            "informationUsed": "The information used to evaluate the item.",
-            "detailedExplanation": "A detailed explanation of how the item was evaluated.",
-            "evaluationLogic": "The logic used to evaluate the item.",
-            "score": 1
-          }]
-        }
-      ]
-    }]
-  }
-}
-```
+See [002_z05_z07_sample_report_json.md](./002_z05_z07_sample_report_json.md) for the sample report json.
 
 # Criterion Reports
 For crowdfunding we just had a single report for each criterion. But for public equities, we can have multiple 

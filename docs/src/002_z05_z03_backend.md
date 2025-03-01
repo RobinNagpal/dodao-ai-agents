@@ -76,36 +76,10 @@ This will throw an error if the criteria is not found, or an existing report str
 This will not trigger the extraction of data if the data is not found.
 
 
-# Report Structure
-The report structure should be saved in the `public-equities/US/tickers-evaluations/<ticker>.json` folder.
+# Report Structure (Initial/Not Processed)
 
-It can have the following structure
+The json schema for the initial report structure can be found in [002_z05_z05_paths_and_json_structures.md](./002_z05_z05_paths_and_json_structures.md)
 
-Note - We can treat null as not started status for reports
 
-See full report sample JSON here - [Full Report JSON](002_z05_z05_sample_report_json)
 
-```json
-{
-    "ticker": "AMT",
-    "sectors": [{"id": 6, "name": "Real Estate"}], 
-    "industryGroups": [{"id": 60, "name": "Equity REITs"}],  
-    "industries": [{"id": 6010, "name": "Specialized REITs"}], 
-    "subIndustries": [{"id": 601010, "name": "Specialized REITs"}
-    ],
-    "processedInformation": {
-    "subIndustryReports": [{
-      "id": 601010,
-      "name": "Specialized REITs",
-      "criteriaEvaluationsOfLatest10Q": [{
-          "criterion": "rental_health",
-          "importantMetricsResults": null,
-          "reports": null,
-          "performanceChecklist": null
-      }]
-    }]
-  }
-}
-```
 
-```
