@@ -4,8 +4,12 @@ from koala_gains.agent_state import AgentState, get_combined_content, ReportType
 from koala_gains.structures.report_structures import StructuredReportResponse
 from koala_gains.utils.llm_utils import structured_report_response
 from koala_gains.utils.prompt_utils import create_prompt_for_checklist
-from koala_gains.utils.report_utils import create_report_file_and_upload_to_s3, update_report_status_failed, \
-    update_report_status_in_progress, update_report_with_structured_output
+from koala_gains.utils.report_utils import (
+    create_report_file_and_upload_to_s3,
+    update_report_status_failed,
+    update_report_status_in_progress,
+    update_report_with_structured_output,
+)
 
 
 def generate_execution_and_speed_report(state: AgentState) -> StructuredReportResponse:
@@ -19,8 +23,18 @@ def generate_execution_and_speed_report(state: AgentState) -> StructuredReportRe
     """
     combined_content = get_combined_content(state)
 
-    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
-    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
+    sector_info = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("sector_details")
+        .get("basic_info")
+    )
+    sub_sector_info = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("sub_sector_details")
+        .get("basic_info")
+    )
 
     # Prompt to instruct the LLM to focus only on traction
     prompt = f"""
@@ -59,15 +73,11 @@ def generate_execution_and_speed_report(state: AgentState) -> StructuredReportRe
     """
 
     return structured_report_response(
-        state.get("config"),
-        "detailed_traction_report",
-        prompt
+        state.get("config"), "detailed_traction_report", prompt
     )
 
     return structured_report_response(
-        state.get("config"),
-        "detailed_execution_speed_report",
-        prompt
+        state.get("config"), "detailed_execution_speed_report", prompt
     )
 
 
@@ -77,13 +87,13 @@ def create_execution_and_speed_report(state: AgentState) -> None:
     try:
         update_report_status_in_progress(project_id, ReportType.EXECUTION_AND_SPEED)
         report_output = generate_execution_and_speed_report(state)
-        update_report_with_structured_output(project_id, ReportType.EXECUTION_AND_SPEED, report_output)
+        update_report_with_structured_output(
+            project_id, ReportType.EXECUTION_AND_SPEED, report_output
+        )
     except Exception as e:
         print(traceback.format_exc())
         error_message = str(e)
         print(f"An error occurred:\n{error_message}")
         update_report_status_failed(
-            project_id,
-            ReportType.EXECUTION_AND_SPEED,
-            error_message=error_message
+            project_id, ReportType.EXECUTION_AND_SPEED, error_message=error_message
         )

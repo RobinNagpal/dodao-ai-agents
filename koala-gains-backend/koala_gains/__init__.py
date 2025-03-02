@@ -12,26 +12,30 @@ from typing_extensions import TypedDict
 # Load environment variables from .env
 load_dotenv()
 
+
 # Define the tool to scrape a URL
 @tool("scrape_web")
 def tool(url: str) -> str:
     """Scrape the content of a URL using ScrapingAntLoader."""
     try:
         print("Scraping URL:", url)
-        loader = ScrapingAntLoader([url], api_key="adfc00b0a0a241d1986007248c0c8444")  
-        documents = loader.load()  
+        loader = ScrapingAntLoader([url], api_key="adfc00b0a0a241d1986007248c0c8444")
+        documents = loader.load()
         page_content = documents[0].page_content
         print(page_content)
         return page_content
     except Exception as e:
         print(traceback.format_exc())
         return f"Failed to scrape URL: {e}"
-    
+
+
 tools = [tool]
+
 
 # Define the state for the graph
 class State(TypedDict):
     messages: Annotated[list, add_messages]
+
 
 # Build the LangGraph
 graph_builder = StateGraph(State)
@@ -40,10 +44,12 @@ graph_builder = StateGraph(State)
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 llm_with_tools = llm.bind_tools(tools)
 
+
 # Define the chatbot node
 def chatbot(state: State):
     print("State:", state)
     return {"messages": [llm_with_tools.invoke(state["messages"])]}
+
 
 # Add nodes to the graph
 graph_builder.add_node("chatbot", chatbot)
@@ -68,5 +74,3 @@ user_input = "Scrape this URL: https://wefunder.com/fluyo"
 # )
 # for event in events:
 #     event["messages"][-1].pretty_print()
-
-

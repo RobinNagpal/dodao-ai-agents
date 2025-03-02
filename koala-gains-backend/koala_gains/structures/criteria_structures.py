@@ -2,7 +2,6 @@ from typing import List, TypedDict, Optional, Literal
 from pydantic import BaseModel, Field
 
 
-
 class Sector(BaseModel):
     id: int = Field(description="ID of the sector.")
     name: str = Field(description="Name of the sector.")
@@ -11,6 +10,7 @@ class Sector(BaseModel):
 class IndustryGroup(BaseModel):
     id: int = Field(description="ID of the industry group.")
     name: str = Field(description="Name of the industry group.")
+
 
 class ImportantMetric(BaseModel):
     key: str = Field(
@@ -66,7 +66,6 @@ class IndustryGroupCriteria(BaseModel):
     )
 
 
-
 class CriteriaLookupItem(TypedDict):
     sectorId: int
     sectorName: str
@@ -74,6 +73,7 @@ class CriteriaLookupItem(TypedDict):
     industryGroupName: str
     aiCriteriaFileLocation: Optional[str]
     customCriteriaFileLocation: Optional[str]
+
 
 class CriteriaLookupList(TypedDict):
     criteria: List[CriteriaLookupItem]

@@ -1,8 +1,7 @@
-
-
 def create_prompt_for_checklist(report_type: str) -> str:
 
-    return f"""
+    return (
+        f"""
     Make sure the output is formatted nicely in markdown and doesn't have many nested points. Use longer sentences and
     paragraphs instead of second and third level bullet points. Include timeline comparisons and velocity metrics.
     
@@ -13,7 +12,8 @@ def create_prompt_for_checklist(report_type: str) -> str:
     
     Here is how the json structure should look like:
 
-    """ +  """
+    """
+        + """
 
     {
         "oneLineSummary": "This report evaluates key performance areas with detailed insights.",
@@ -41,3 +41,4 @@ def create_prompt_for_checklist(report_type: str) -> str:
           ]
     }
     """
+    )

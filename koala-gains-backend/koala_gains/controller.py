@@ -8,7 +8,9 @@ from koala_gains.utils.report_utils import get_project_info_from_s3
 from koala_gains.utils.process_project_utils import ensure_processed_project_info
 
 
-def prepare_processing_command(project_id, model, script_path="koala_gains/controller.py"):
+def prepare_processing_command(
+    project_id, model, script_path="koala_gains/controller.py"
+):
     """
     Prepares the command to start processing based on variables extracted from S3.
 
@@ -25,12 +27,15 @@ def prepare_processing_command(project_id, model, script_path="koala_gains/contr
 
     # Base command
     command = [
-        "poetry", "run", "python", script_path,
+        "poetry",
+        "run",
+        "python",
+        script_path,
         variables["project_id"],
         variables["project_name"],
         variables["crowdfunding_link"],
         variables["website_url"],
-        variables["latest_sec_filing_link"]
+        variables["latest_sec_filing_link"],
     ]
 
     # Include additional links if they exist
@@ -50,7 +55,9 @@ def parse_arguments() -> AgentState:
     parser = argparse.ArgumentParser(description="Run the project report generator.")
     parser.add_argument("project_id", help="The id of the project.")
     parser.add_argument("project_name", help="The name of the project.")
-    parser.add_argument("crowdfunding_link", help="The crowdfunding link for the project.")
+    parser.add_argument(
+        "crowdfunding_link", help="The crowdfunding link for the project."
+    )
     parser.add_argument("website_url", help="The official website URL of the project.")
     parser.add_argument("latest_sec_filing_link", help="The latest SEC filing link.")
     parser.add_argument(
@@ -61,12 +68,12 @@ def parse_arguments() -> AgentState:
     parser.add_argument(
         "--report_type",
         help="Optional: Specify a single report type to regenerate (e.g., 'general_info').",
-        default=None  # Default to None if not provided
+        default=None,  # Default to None if not provided
     )
     parser.add_argument(
         "--model",
         help="Optional: Specify the model to use for regeneration (e.g., 'gpt-4o' or 'gpt-4o-mini').",
-        default=None  # Default to None if not provided
+        default=None,  # Default to None if not provided
     )
 
     args = parser.parse_args()
@@ -77,7 +84,9 @@ def parse_arguments() -> AgentState:
     crowdfunding_link = args.crowdfunding_link.strip().strip('"')
     website_url = args.website_url.strip().strip('"')
     latest_sec_filing_link = args.latest_sec_filing_link.strip().strip('"')
-    additional_links = [link.strip() for link in args.additional_links.split(",") if link.strip()]
+    additional_links = [
+        link.strip() for link in args.additional_links.split(",") if link.strip()
+    ]
     report_type = args.report_type.strip().strip('"') if args.report_type else "all"
     model = args.model.strip().strip('"') if args.model else "gpt-4o-mini"
 
@@ -96,17 +105,12 @@ def parse_arguments() -> AgentState:
         "messages": [],
         "project_info": project_info,
         "report_input": report_type,
-        "config": {
-            "configurable": {
-                "model": model
-            }
-        },
+        "config": {"configurable": {"model": model}},
         "reports_to_generate": None,
         "processed_project_info": processed_project_info,
-        "final_report": None
+        "final_report": None,
     }
     return state
-
 
 
 async def main_controller_async(agent_state: AgentState):
@@ -119,5 +123,3 @@ async def main_controller_async(agent_state: AgentState):
 if __name__ == "__main__":
     initialState = parse_arguments()
     asyncio.run(main_controller_async(initialState))
-
-

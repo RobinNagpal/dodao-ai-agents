@@ -12,8 +12,11 @@ from typing_extensions import TypedDict
 
 from koala_gains.agent_state import AgentState, Config
 from koala_gains.utils.llm_utils import get_llm
-from koala_gains.utils.report_utils import create_report_file_and_upload_to_s3, update_report_status_failed, \
-    update_report_status_in_progress
+from koala_gains.utils.report_utils import (
+    create_report_file_and_upload_to_s3,
+    update_report_status_failed,
+    update_report_status_in_progress,
+)
 
 load_dotenv()
 
@@ -21,20 +24,25 @@ SCRAPINGANT_API_KEY = os.getenv("SCRAPINGANT_API_KEY")
 GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
+
 class StartupInfo(TypedDict):
     startup_name: str
     startup_details: str
+
 
 class SearchResult(TypedDict):
     title: str
     snippet: str
     link: str
 
+
 class WebpageSummary(TypedDict):
     link: str
     summary: str
 
+
 REPORT_NAME = "relevant_links"
+
 
 def find_startup_info(config: Config, page_content: str):
     """
@@ -53,10 +61,8 @@ def find_startup_info(config: Config, page_content: str):
         return json.loads(response.content)
     except:
         print(traceback.format_exc())
-        return {
-            "startup_name": "",
-            "startup_details": ""        
-            }
+        return {"startup_name": "", "startup_details": ""}
+
 
 def search_startup_on_google(startup_info: StartupInfo):
     """
@@ -64,23 +70,26 @@ def search_startup_on_google(startup_info: StartupInfo):
     Stores them in state["allGoogleResults"].
     """
     search = GoogleSearchAPIWrapper(k=10)
-    startup_name = startup_info.get('startup_name','')
+    startup_name = startup_info.get("startup_name", "")
     if not startup_name:
-        print(f'Startup name: {startup_name}')
+        print(f"Startup name: {startup_name}")
         return []
 
     print(f"Performing Google search for: {startup_name}")
 
-    results = search.results(startup_name, 10)  
+    results = search.results(startup_name, 10)
     formatted_results: List[SearchResult] = []
     for item in results:
-        formatted_results.append({
-            "title": item.get("title"),
-            "snippet": item.get("snippet"),
-            "link": item.get("link")
-        })
-    
+        formatted_results.append(
+            {
+                "title": item.get("title"),
+                "snippet": item.get("snippet"),
+                "link": item.get("link"),
+            }
+        )
+
     return formatted_results
+
 
 def summarize_google_search_results(config: Config, all_results: list):
     """
@@ -108,16 +117,16 @@ def summarize_google_search_results(config: Config, all_results: list):
         except Exception as e:
             print(traceback.format_exc())
             summary = f"Error summarizing {link}: {e}"
-        
-        summaries.append({
-            "link": link,
-            "summary": summary
-        })
+
+        summaries.append({"link": link, "summary": summary})
         print(f"[{i+1}/{len(all_results)}] Summarized: {link[:50]}...")
 
     return summaries
 
-def filter_relevant_links_from_summaries(config: Config, startup_info: StartupInfo, summaries: list):
+
+def filter_relevant_links_from_summaries(
+    config: Config, startup_info: StartupInfo, summaries: list
+):
     """
     Uses an LLM prompt to pick the 3-4 most relevant links from allGoogleResults,
     in context of the startup's name/description, etc.
@@ -134,7 +143,7 @@ def filter_relevant_links_from_summaries(config: Config, startup_info: StartupIn
         "Below is a JSON array of objects with 'link' and 'summary'. Each summary is a short overview of the webpage's content. "
         "Select the 3 or 4 that are MOST relevant to learning about this startup specifically—its mission, products, services, "
         "partnerships, etc. Return ONLY a raw JSON array of the chosen objects in the same shape, i.e. "
-        "[{\"link\": str, \"summary\": str}, ...].\n\n"
+        '[{"link": str, "summary": str}, ...].\n\n'
         f"{summaries_json}\n\n"
         "Return ONLY the JSON array, no extra text."
     )
@@ -153,6 +162,7 @@ def filter_relevant_links_from_summaries(config: Config, startup_info: StartupIn
     relevant_links = [item["link"] for item in relevant if "link" in item]
     return relevant_links
 
+
 def create_relevant_links_report(state: AgentState) -> None:
     """
     Orchestrates the entire relevant links search process.
@@ -160,20 +170,26 @@ def create_relevant_links_report(state: AgentState) -> None:
     project_id = state.get("project_info").get("project_id")
     print("Generating relevant links")
     try:
-        combined_text = state.get("processed_project_info").get("combined_scrapped_content")
+        combined_text = state.get("processed_project_info").get(
+            "combined_scrapped_content"
+        )
         update_report_status_in_progress(project_id, REPORT_NAME)
         startup_info = find_startup_info(state.get("config"), combined_text)
         all_google_results = search_startup_on_google(startup_info)
-        summaries = summarize_google_search_results(state.get("config"), all_google_results)
-        relevant_links = filter_relevant_links_from_summaries(state.get("config"), startup_info, summaries)
-        create_report_file_and_upload_to_s3(project_id, REPORT_NAME, "\n".join(relevant_links))
+        summaries = summarize_google_search_results(
+            state.get("config"), all_google_results
+        )
+        relevant_links = filter_relevant_links_from_summaries(
+            state.get("config"), startup_info, summaries
+        )
+        create_report_file_and_upload_to_s3(
+            project_id, REPORT_NAME, "\n".join(relevant_links)
+        )
     except Exception as e:
         # Capture full stack trace
         print(traceback.format_exc())
         error_message = str(e)
         print(f"An error occurred:\n{error_message}")
         update_report_status_failed(
-            project_id,
-            REPORT_NAME,
-            error_message=error_message
+            project_id, REPORT_NAME, error_message=error_message
         )

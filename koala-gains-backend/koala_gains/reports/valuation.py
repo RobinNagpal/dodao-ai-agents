@@ -1,11 +1,19 @@
 import traceback
 
-from koala_gains.agent_state import AgentState, get_combined_content, ReportType, get_combined_content_for_valuation
+from koala_gains.agent_state import (
+    AgentState,
+    get_combined_content,
+    ReportType,
+    get_combined_content_for_valuation,
+)
 from koala_gains.structures.report_structures import StructuredReportResponse
 from koala_gains.utils.llm_utils import structured_report_response
 from koala_gains.utils.prompt_utils import create_prompt_for_checklist
-from koala_gains.utils.report_utils import update_report_status_failed, \
-    update_report_status_in_progress, update_report_with_structured_output
+from koala_gains.utils.report_utils import (
+    update_report_status_failed,
+    update_report_status_in_progress,
+    update_report_with_structured_output,
+)
 
 
 def generate_valuation_report(state: AgentState) -> StructuredReportResponse:
@@ -17,13 +25,43 @@ def generate_valuation_report(state: AgentState) -> StructuredReportResponse:
       - Critical analysis of startup's claims
     """
     combined_content = get_combined_content_for_valuation(state)
-    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
-    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
-    
-    tam = state.get("processed_project_info").get('industry_details').get('total_addressable_market').get('details')
-    sam = state.get("processed_project_info").get('industry_details').get('serviceable_addressable_market').get('details')
-    som = state.get("processed_project_info").get('industry_details').get('serviceable_obtainable_market').get('details')
-    pm = state.get("processed_project_info").get('industry_details').get('total_addressable_market').get('details')
+    sector_info = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("sector_details")
+        .get("basic_info")
+    )
+    sub_sector_info = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("sub_sector_details")
+        .get("basic_info")
+    )
+
+    tam = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("total_addressable_market")
+        .get("details")
+    )
+    sam = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("serviceable_addressable_market")
+        .get("details")
+    )
+    som = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("serviceable_obtainable_market")
+        .get("details")
+    )
+    pm = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("total_addressable_market")
+        .get("details")
+    )
 
     # Prompt for comprehensive valuation analysis
     prompt = f"""
@@ -64,10 +102,9 @@ def generate_valuation_report(state: AgentState) -> StructuredReportResponse:
     """
 
     return structured_report_response(
-        state.get("config"),
-        "detailed_valuation_report",
-        prompt
+        state.get("config"), "detailed_valuation_report", prompt
     )
+
 
 def create_valuation_report(state: AgentState) -> None:
     print("Generating valuation report")
@@ -75,13 +112,13 @@ def create_valuation_report(state: AgentState) -> None:
     try:
         update_report_status_in_progress(project_id, ReportType.VALUATION)
         report_output = generate_valuation_report(state)
-        update_report_with_structured_output(project_id, ReportType.VALUATION, report_output)
+        update_report_with_structured_output(
+            project_id, ReportType.VALUATION, report_output
+        )
     except Exception as e:
         print(traceback.format_exc())
         error_message = str(e)
         print(f"An error occurred:\n{error_message}")
         update_report_status_failed(
-            project_id,
-            ReportType.VALUATION,
-            error_message=error_message
+            project_id, ReportType.VALUATION, error_message=error_message
         )

@@ -11,4 +11,7 @@ def handle_exception(e):
     elif isinstance(e, ValueError):
         return jsonify({"status": "error", "message": str(e)}), 400
     else:
-        return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
+        return (
+            jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}),
+            500,
+        )

@@ -4,18 +4,40 @@ from typing import List
 
 from langchain_core.messages import HumanMessage
 
-from koala_gains.agent_state import MarketDetailPoints, ProcessingStatus, ProcessedProjectInfo, ProcessedSecInfo, \
-    SectorDetailPoints, \
-    IndustryDetailsAndForecast
+from koala_gains.agent_state import (
+    MarketDetailPoints,
+    ProcessingStatus,
+    ProcessedProjectInfo,
+    ProcessedSecInfo,
+    SectorDetailPoints,
+    IndustryDetailsAndForecast,
+)
 from koala_gains.structures.form_c_structures import StructuredFormCResponse
-from koala_gains.structures.industry_details import MarketDetailStructure, SectorDetailStructure, \
-    IndustryDetailsAndForecastStructure
-from koala_gains.utils.llm_utils import get_startup_summary, structured_llm_response, MINI_4_0_CONFIG, \
-    scrape_and_clean_content_with_same_details, get_llm, NORMAL_4_0_CONFIG
+from koala_gains.structures.industry_details import (
+    MarketDetailStructure,
+    SectorDetailStructure,
+    IndustryDetailsAndForecastStructure,
+)
+from koala_gains.utils.llm_utils import (
+    get_startup_summary,
+    structured_llm_response,
+    MINI_4_0_CONFIG,
+    scrape_and_clean_content_with_same_details,
+    get_llm,
+    NORMAL_4_0_CONFIG,
+)
 from koala_gains.utils.project_utils import scrape_urls
-from koala_gains.utils.report_utils import MarketDetailSchema, RepopulatableFields, SectorDetailSchema, \
-    get_project_status_file_path, ProcessedProjectInfoSchema, \
-    ProjectStatusFileSchema, ProjectInfoInputSchema, ProcessedSecInfoSchema, ProcessedIndustryAndForecastsSchema
+from koala_gains.utils.report_utils import (
+    MarketDetailSchema,
+    RepopulatableFields,
+    SectorDetailSchema,
+    get_project_status_file_path,
+    ProcessedProjectInfoSchema,
+    ProjectStatusFileSchema,
+    ProjectInfoInputSchema,
+    ProcessedSecInfoSchema,
+    ProcessedIndustryAndForecastsSchema,
+)
 from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
 
@@ -23,7 +45,8 @@ def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:
     """
     Convert the raw SEC content to JSON format.
     """
-    prompt = """Parse the following Form C document and return it in a structured JSON format based on the provided schema. Ensure that:
+    prompt = (
+        """Parse the following Form C document and return it in a structured JSON format based on the provided schema. Ensure that:
 
     * All fields are extracted correctly.
     * Numerical values are formatted as numbers, and missing values are set to null.
@@ -145,8 +168,12 @@ def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:
     
     
     SEC Content:
-    """ + raw_content
-    structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(StructuredFormCResponse)
+    """
+        + raw_content
+    )
+    structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(
+        StructuredFormCResponse
+    )
     response = structured_llm.invoke([HumanMessage(content=prompt)])
     return response
 
@@ -154,7 +181,9 @@ def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:
 def get_sec_info(sec_url: str) -> ProcessedSecInfoSchema:
     raw_content = scrape_and_clean_content_with_same_details(sec_url, NORMAL_4_0_CONFIG)
     json_data = get_sec_structured_response(raw_content)
-    markdown_content = get_markdown_content_from_json(json_data.model_dump_json(indent=4))
+    markdown_content = get_markdown_content_from_json(
+        json_data.model_dump_json(indent=4)
+    )
     return {
         "secJsonContent": json_data.model_dump_json(indent=4),
         "secMarkdownContent": markdown_content,
@@ -162,9 +191,12 @@ def get_sec_info(sec_url: str) -> ProcessedSecInfoSchema:
     }
 
 
-def get_project_industry_and_forecasts_info(project_text: str) -> IndustryDetailsAndForecastStructure:
+def get_project_industry_and_forecasts_info(
+    project_text: str,
+) -> IndustryDetailsAndForecastStructure:
     print("Getting project industry and forecasts info")
-    prompt = """
+    prompt = (
+        """
     You are the expert in investing in startups and have been asked to provide a detailed analysis of the industry 
     and forecasts for the following project. When providing details of the industry, include the overall industry
     information and information about the specific sector the project is in. 
@@ -209,9 +241,13 @@ def get_project_industry_and_forecasts_info(project_text: str) -> IndustryDetail
       }
     }
     
-    """ + project_text
+    """
+        + project_text
+    )
 
-    structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(IndustryDetailsAndForecastStructure)
+    structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(
+        IndustryDetailsAndForecastStructure
+    )
 
     response = structured_llm.invoke([HumanMessage(content=prompt)])
     print(response.model_dump_json(indent=4))
@@ -248,8 +284,8 @@ def convert_market_structure(market: MarketDetailStructure) -> MarketDetailSchem
 def convert_s3_sector(sector_points_in_s3: SectorDetailSchema) -> SectorDetailPoints:
     if sector_points_in_s3 and isinstance(sector_points_in_s3, dict):
         sector: SectorDetailPoints = {
-            "basic_info": sector_points_in_s3.get('basicInfo'),
-            "growth_rate": sector_points_in_s3.get('growthRate'),
+            "basic_info": sector_points_in_s3.get("basicInfo"),
+            "growth_rate": sector_points_in_s3.get("growthRate"),
         }
 
         return sector
@@ -257,16 +293,20 @@ def convert_s3_sector(sector_points_in_s3: SectorDetailSchema) -> SectorDetailPo
         return None
 
 
-def convert_s3_market_points(market_points_in_s3: MarketDetailSchema) -> MarketDetailPoints:
+def convert_s3_market_points(
+    market_points_in_s3: MarketDetailSchema,
+) -> MarketDetailPoints:
     market: MarketDetailPoints = {
-        "details": market_points_in_s3.get('details'),
-        "calculation_logic": market_points_in_s3.get('calculationLogic'),
+        "details": market_points_in_s3.get("details"),
+        "calculation_logic": market_points_in_s3.get("calculationLogic"),
     }
 
     return market
 
 
-def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoSchema) -> ProcessedProjectInfo:
+def convert_s3_processed_info_to_state(
+    project_info_in_s3: ProcessedProjectInfoSchema,
+) -> ProcessedProjectInfo:
     sec_info_in_s3: ProcessedSecInfoSchema = project_info_in_s3.get("secInfo")
     sec_info: ProcessedSecInfo = {
         "sec_json_content": sec_info_in_s3.get("secJsonContent"),
@@ -274,27 +314,40 @@ def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoS
         "sec_raw_content": sec_info_in_s3.get("secRawContent"),
     }
 
-    industry_details_in_s3: ProcessedIndustryAndForecastsSchema = project_info_in_s3.get("industryDetails")
+    industry_details_in_s3: ProcessedIndustryAndForecastsSchema = (
+        project_info_in_s3.get("industryDetails")
+    )
 
     industry_details: IndustryDetailsAndForecast = {
-        "sector_details": convert_s3_sector(industry_details_in_s3.get("sectorDetails")),
-        "sub_sector_details": convert_s3_sector(industry_details_in_s3.get("subSectorDetails")),
-        "total_addressable_market": convert_s3_market_points(industry_details_in_s3.get("totalAddressableMarket")),
+        "sector_details": convert_s3_sector(
+            industry_details_in_s3.get("sectorDetails")
+        ),
+        "sub_sector_details": convert_s3_sector(
+            industry_details_in_s3.get("subSectorDetails")
+        ),
+        "total_addressable_market": convert_s3_market_points(
+            industry_details_in_s3.get("totalAddressableMarket")
+        ),
         "serviceable_addressable_market": convert_s3_market_points(
-            industry_details_in_s3.get("serviceableAddressableMarket")),
+            industry_details_in_s3.get("serviceableAddressableMarket")
+        ),
         "serviceable_obtainable_market": convert_s3_market_points(
-            industry_details_in_s3.get("serviceableObtainableMarket")),
-        "profit_margins": convert_s3_market_points(industry_details_in_s3.get("profitMargins")),
+            industry_details_in_s3.get("serviceableObtainableMarket")
+        ),
+        "profit_margins": convert_s3_market_points(
+            industry_details_in_s3.get("profitMargins")
+        ),
     }
 
     processed_info: ProcessedProjectInfo = {
         "additional_urls_used": project_info_in_s3.get("additionalUrlsUsed"),
         "content_of_additional_urls": project_info_in_s3.get("contentOfAdditionalUrls"),
-        "content_of_crowdfunding_url": project_info_in_s3.get("contentOfCrowdfundingUrl"),
+        "content_of_crowdfunding_url": project_info_in_s3.get(
+            "contentOfCrowdfundingUrl"
+        ),
         "content_of_website_url": project_info_in_s3.get("contentOfWebsiteUrl"),
         "sec_info": sec_info,
         "industry_details": industry_details,
-
         "last_updated": project_info_in_s3.get("lastUpdated"),
         "status": project_info_in_s3.get("status"),
     }
@@ -302,12 +355,14 @@ def convert_s3_processed_info_to_state(project_info_in_s3: ProcessedProjectInfoS
 
 
 def scrape_additional_links_and_update_project_info(
-        project_info: ProcessedProjectInfoSchema) -> ProcessedProjectInfoSchema:
+    project_info: ProcessedProjectInfoSchema,
+) -> ProcessedProjectInfoSchema:
     """
     Scrape the URLs in 'project_info' and update the 'processed_project_info' with the scraped content.
     """
     print(
-        f"Scraping URLs and updating 'processed_project_info' in S3 for project: {project_info.get('additionalUrlsUsed')}")
+        f"Scraping URLs and updating 'processed_project_info' in S3 for project: {project_info.get('additionalUrlsUsed')}"
+    )
     current_urls = project_info.get("additionalUrlsUsed") or []
     scraped_content_list: List[str] = []
     if current_urls:
@@ -317,8 +372,13 @@ def scrape_additional_links_and_update_project_info(
     if len(current_urls) > 0:
         combined_scrapped_content = "\n\n".join(scraped_content_list)
 
-        prompt = "Remove the duplicates from the below content, but don't remove any information. Be as detailed as possible. Don't remove any information at all \n\n" + combined_scrapped_content
-        content_of_scrapped_urls = structured_llm_response(MINI_4_0_CONFIG, "summarize_scraped_content", prompt)
+        prompt = (
+            "Remove the duplicates from the below content, but don't remove any information. Be as detailed as possible. Don't remove any information at all \n\n"
+            + combined_scrapped_content
+        )
+        content_of_scrapped_urls = structured_llm_response(
+            MINI_4_0_CONFIG, "summarize_scraped_content", prompt
+        )
 
         project_info["additionalUrlsUsed"] = current_urls
         project_info["contentOfAdditionalUrls"] = content_of_scrapped_urls
@@ -327,8 +387,12 @@ def scrape_additional_links_and_update_project_info(
 
 def get_agent_status_file_content(agent_status_file_path: str):
     try:
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=f"crowd-fund-analysis/{agent_status_file_path}")
-        project_file_contents: ProjectStatusFileSchema = json.loads(response['Body'].read().decode('utf-8'))
+        response = s3_client.get_object(
+            Bucket=BUCKET_NAME, Key=f"crowd-fund-analysis/{agent_status_file_path}"
+        )
+        project_file_contents: ProjectStatusFileSchema = json.loads(
+            response["Body"].read().decode("utf-8")
+        )
         return project_file_contents
     except s3_client.exceptions.NoSuchKey:
         print(traceback.format_exc())
@@ -348,55 +412,76 @@ def repopulate_project_field(project_id: str, field: RepopulatableFields):
 
     # Gather required text data for some fields
     combined_text = (
-            project_info_in_s3.get("contentOfCrowdfundingUrl", "") +
-            project_info_in_s3.get("contentOfWebsiteUrl", "") +
-            project_info_in_s3.get("secInfo", {}).get("secMarkdownContent", "")
+        project_info_in_s3.get("contentOfCrowdfundingUrl", "")
+        + project_info_in_s3.get("contentOfWebsiteUrl", "")
+        + project_info_in_s3.get("secInfo", {}).get("secMarkdownContent", "")
     )
 
     if field == RepopulatableFields.INDUSTRY_DETAILS.value:
         print("Repopulating industry details...")
-        industry_and_forecast_structure = get_project_industry_and_forecasts_info(combined_text)
+        industry_and_forecast_structure = get_project_industry_and_forecasts_info(
+            combined_text
+        )
         project_info_in_s3["industryDetails"] = {
-            "sectorDetails": convert_sector_structure(industry_and_forecast_structure.sector_details),
-            "subSectorDetails": convert_sector_structure(industry_and_forecast_structure.sub_sector_details),
+            "sectorDetails": convert_sector_structure(
+                industry_and_forecast_structure.sector_details
+            ),
+            "subSectorDetails": convert_sector_structure(
+                industry_and_forecast_structure.sub_sector_details
+            ),
             "totalAddressableMarket": convert_market_structure(
-                industry_and_forecast_structure.total_addressable_market),
+                industry_and_forecast_structure.total_addressable_market
+            ),
             "serviceableAddressableMarket": convert_market_structure(
-                industry_and_forecast_structure.serviceable_addressable_market),
+                industry_and_forecast_structure.serviceable_addressable_market
+            ),
             "serviceableObtainableMarket": convert_market_structure(
-                industry_and_forecast_structure.serviceable_obtainable_market),
-            "profitMargins": convert_market_structure(industry_and_forecast_structure.profit_margins)
+                industry_and_forecast_structure.serviceable_obtainable_market
+            ),
+            "profitMargins": convert_market_structure(
+                industry_and_forecast_structure.profit_margins
+            ),
         }
 
     elif field == RepopulatableFields.STARTUP_SUMMARY.value:
         print("Repopulating startup summary...")
         project_info_in_s3["startupSummary"] = get_startup_summary(
-            project_info_in_s3.get("contentOfCrowdfundingUrl", "") +
-            project_info_in_s3.get("contentOfWebsiteUrl", "")
+            project_info_in_s3.get("contentOfCrowdfundingUrl", "")
+            + project_info_in_s3.get("contentOfWebsiteUrl", "")
         )
 
     elif field == RepopulatableFields.SEC_INFO.value:
         print("Repopulating SEC info...")
-        sec_filing_url = project_file_contents.get("projectInfoInput", {}).get("secFilingUrl", "").strip()
+        sec_filing_url = (
+            project_file_contents.get("projectInfoInput", {})
+            .get("secFilingUrl", "")
+            .strip()
+        )
         project_info_in_s3["secInfo"] = get_sec_info(sec_filing_url)
 
     elif field == RepopulatableFields.CROWDFUNDING_CONTENT.value:
         print("Repopulating crowdfunding content...")
         project_input = project_file_contents.get("projectInfoInput", {})
-        project_info_in_s3["contentOfCrowdfundingUrl"] = scrape_and_clean_content_with_same_details(
-            project_input.get("crowdFundingUrl")
+        project_info_in_s3["contentOfCrowdfundingUrl"] = (
+            scrape_and_clean_content_with_same_details(
+                project_input.get("crowdFundingUrl")
+            )
         )
 
     elif field == RepopulatableFields.WEBSITE_CONTENT.value:
         print("Repopulating website content...")
         project_input = project_file_contents.get("projectInfoInput", {})
-        project_info_in_s3["contentOfWebsiteUrl"] = scrape_and_clean_content_with_same_details(
-            project_input.get("websiteUrl")
+        project_info_in_s3["contentOfWebsiteUrl"] = (
+            scrape_and_clean_content_with_same_details(project_input.get("websiteUrl"))
         )
 
     # Save back to S3
     project_file_contents["processedProjectInfo"] = project_info_in_s3
-    upload_to_s3(json.dumps(project_file_contents, indent=4), f"{project_id}/agent-status.json", "application/json")
+    upload_to_s3(
+        json.dumps(project_file_contents, indent=4),
+        f"{project_id}/agent-status.json",
+        "application/json",
+    )
 
     print(f"Repopulated '{field}' uploaded to S3 for project {project_id}.")
 
@@ -410,7 +495,7 @@ def is_industry_details_missing(project_info: ProcessedProjectInfoSchema) -> boo
         return True
 
     sector_details = industry_details.get("sectorDetails")
-    if sector_details is None or not  isinstance(sector_details, dict):
+    if sector_details is None or not isinstance(sector_details, dict):
         return True
 
     sector_basic_info = industry_details.get("sectorDetails").get("basicInfo")
@@ -429,7 +514,9 @@ def is_industry_details_missing(project_info: ProcessedProjectInfoSchema) -> boo
     if total_addressable_market is None:
         return True
 
-    serviceable_addressable_market = industry_details.get("serviceableAddressableMarket")
+    serviceable_addressable_market = industry_details.get(
+        "serviceableAddressableMarket"
+    )
     if serviceable_addressable_market is None:
         return True
 
@@ -442,8 +529,9 @@ def is_industry_details_missing(project_info: ProcessedProjectInfoSchema) -> boo
         return True
 
 
-def is_content_of_additional_urls_missing(project_input: ProjectInfoInputSchema,
-                                          project_info: ProcessedProjectInfoSchema) -> bool:
+def is_content_of_additional_urls_missing(
+    project_input: ProjectInfoInputSchema, project_info: ProcessedProjectInfoSchema
+) -> bool:
     """
     Check if 'contentOfAdditionalUrls' is missing in 'processedProjectInfo'.
     """
@@ -453,44 +541,55 @@ def is_content_of_additional_urls_missing(project_input: ProjectInfoInputSchema,
     if len(project_input.get("additionalUrls")) == 0:
         return False
 
-    if project_input.get("additionalUrls") == project_info.get("additionalUrlsUsed") and project_info.get(
-            "contentOfAdditionalUrls") is not None:
+    if (
+        project_input.get("additionalUrls") == project_info.get("additionalUrlsUsed")
+        and project_info.get("contentOfAdditionalUrls") is not None
+    ):
         return False
 
     return True
 
 
-def is_content_of_crowdfunding_url_missing(project_input: ProjectInfoInputSchema,
-                                           project_info: ProcessedProjectInfoSchema) -> bool:
+def is_content_of_crowdfunding_url_missing(
+    project_input: ProjectInfoInputSchema, project_info: ProcessedProjectInfoSchema
+) -> bool:
     """
     Check if 'contentOfCrowdfundingUrl' is missing in 'processedProjectInfo'.
     """
     if project_input.get("crowdFundingUrl") is None:
         return False
 
-    if project_input.get("crowdFundingUrl") == project_info.get("contentOfCrowdfundingUrl") and project_info.get(
-            "contentOfCrowdfundingUrl") is not None:
+    if (
+        project_input.get("crowdFundingUrl")
+        == project_info.get("contentOfCrowdfundingUrl")
+        and project_info.get("contentOfCrowdfundingUrl") is not None
+    ):
         return False
 
     return True
 
 
-def is_content_of_website_url_missing(project_input: ProjectInfoInputSchema,
-                                      project_info: ProcessedProjectInfoSchema) -> bool:
+def is_content_of_website_url_missing(
+    project_input: ProjectInfoInputSchema, project_info: ProcessedProjectInfoSchema
+) -> bool:
     """
     Check if 'contentOfWebsiteUrl' is missing in 'processedProjectInfo'.
     """
     if project_input.get("websiteUrl") is None:
         return False
 
-    if project_input.get("websiteUrl") == project_info.get("contentOfWebsiteUrl") and project_info.get(
-            "contentOfWebsiteUrl") is not None:
+    if (
+        project_input.get("websiteUrl") == project_info.get("contentOfWebsiteUrl")
+        and project_info.get("contentOfWebsiteUrl") is not None
+    ):
         return False
 
     return True
 
 
-def ensure_processed_project_info(project_id: str, generate_all: bool = False) -> ProcessedProjectInfo:
+def ensure_processed_project_info(
+    project_id: str, generate_all: bool = False
+) -> ProcessedProjectInfo:
     """
     Ensures that 'processed_project_info' is present in agent-status.json in S3.
     This function checks if the URLs have changed. If they haven't and 'processed_project_info'
@@ -504,7 +603,9 @@ def ensure_processed_project_info(project_id: str, generate_all: bool = False) -
     project_file_contents = get_agent_status_file_content(agent_status_file_path)
 
     # ----------------------- 2) Gather the current URLs -------------------------
-    project_input: ProjectInfoInputSchema = project_file_contents.get("projectInfoInput", {})
+    project_input: ProjectInfoInputSchema = project_file_contents.get(
+        "projectInfoInput", {}
+    )
     sec_filing_url = project_input.get("secFilingUrl", "").strip()
     additional_urls = project_input.get("additionalUrls", [])
 
@@ -516,25 +617,28 @@ def ensure_processed_project_info(project_id: str, generate_all: bool = False) -
     # Sort for stable comparison
     current_urls_sorted = sorted(set(current_urls))
 
-    project_info_in_s3: ProcessedProjectInfoSchema = project_file_contents.get("processedProjectInfo", {})
+    project_info_in_s3: ProcessedProjectInfoSchema = project_file_contents.get(
+        "processedProjectInfo", {}
+    )
     previous_urls = project_info_in_s3.get("additionalUrlsUsed") or []
 
     # Also sort for stable comparison
     previous_urls_sorted = sorted(set(previous_urls))
 
-    urls_changed = (current_urls_sorted != previous_urls_sorted)
+    urls_changed = current_urls_sorted != previous_urls_sorted
     print(f"URLs Changed: {urls_changed}")
-    needs_processing = (generate_all or
-                        project_info_in_s3 is None
-                        or urls_changed
-                        or project_info_in_s3.get("status") != ProcessingStatus.COMPLETED
-                        or is_content_of_crowdfunding_url_missing(project_input, project_info_in_s3)
-                        or is_content_of_website_url_missing(project_input, project_info_in_s3)
-                        or is_content_of_additional_urls_missing(project_input, project_info_in_s3)
-                        or project_info_in_s3.get("secInfo") is None
-                        or is_industry_details_missing(project_info_in_s3)
-                        or project_info_in_s3.get("startupSummary") is None
-                        )
+    needs_processing = (
+        generate_all
+        or project_info_in_s3 is None
+        or urls_changed
+        or project_info_in_s3.get("status") != ProcessingStatus.COMPLETED
+        or is_content_of_crowdfunding_url_missing(project_input, project_info_in_s3)
+        or is_content_of_website_url_missing(project_input, project_info_in_s3)
+        or is_content_of_additional_urls_missing(project_input, project_info_in_s3)
+        or project_info_in_s3.get("secInfo") is None
+        or is_industry_details_missing(project_info_in_s3)
+        or project_info_in_s3.get("startupSummary") is None
+    )
 
     print(f"Project Info Needs Processing: {needs_processing}")
 
@@ -544,13 +648,19 @@ def ensure_processed_project_info(project_id: str, generate_all: bool = False) -
             "project_info_in_s3": project_info_in_s3 is None,
             "urls_changed": urls_changed,
             "project_info_in_s3_status": project_info_in_s3.get("status"),
-            "is_content_of_crowdfunding_url_missing": is_content_of_crowdfunding_url_missing(project_input,
-                                                                                             project_info_in_s3),
-            "is_content_of_website_url_missing": is_content_of_website_url_missing(project_input, project_info_in_s3),
-            "is_content_of_additional_urls_missing": is_content_of_additional_urls_missing(project_input,
-                                                                                           project_info_in_s3),
-            "is_industry_details_missing": is_industry_details_missing(project_info_in_s3),
-            "startup_summary_missing": project_info_in_s3.get("startupSummary") is None
+            "is_content_of_crowdfunding_url_missing": is_content_of_crowdfunding_url_missing(
+                project_input, project_info_in_s3
+            ),
+            "is_content_of_website_url_missing": is_content_of_website_url_missing(
+                project_input, project_info_in_s3
+            ),
+            "is_content_of_additional_urls_missing": is_content_of_additional_urls_missing(
+                project_input, project_info_in_s3
+            ),
+            "is_industry_details_missing": is_industry_details_missing(
+                project_info_in_s3
+            ),
+            "startup_summary_missing": project_info_in_s3.get("startupSummary") is None,
         }
         print(f"Need Processing because of the following reasons: {changed_dict}")
 
@@ -558,71 +668,106 @@ def ensure_processed_project_info(project_id: str, generate_all: bool = False) -
         print("Project Info is up-to-date. No need to re-scrape project URLs.")
         return convert_s3_processed_info_to_state(project_info_in_s3)
 
-    if generate_all or (urls_changed
-                        or project_info_in_s3.get("status") != ProcessingStatus.COMPLETED
-                        or project_info_in_s3.get("contentOfAdditionalUrls") is None
-                        or project_info_in_s3.get("contentOfAdditionalUrls") == ""):
-        print("URLs have changed or 'processed_project_info' is incomplete. Re-scraping URLs.")
-        project_info_in_s3 = scrape_additional_links_and_update_project_info(project_info_in_s3)
+    if generate_all or (
+        urls_changed
+        or project_info_in_s3.get("status") != ProcessingStatus.COMPLETED
+        or project_info_in_s3.get("contentOfAdditionalUrls") is None
+        or project_info_in_s3.get("contentOfAdditionalUrls") == ""
+    ):
+        print(
+            "URLs have changed or 'processed_project_info' is incomplete. Re-scraping URLs."
+        )
+        project_info_in_s3 = scrape_additional_links_and_update_project_info(
+            project_info_in_s3
+        )
 
-    if generate_all or (project_info_in_s3.get("contentOfCrowdfundingUrl") is None or project_info_in_s3.get(
-            "contentOfCrowdfundingUrl") == ""):
+    if generate_all or (
+        project_info_in_s3.get("contentOfCrowdfundingUrl") is None
+        or project_info_in_s3.get("contentOfCrowdfundingUrl") == ""
+    ):
         print("Crowd Funding Website Content is missing. Scraping Crowd Funding URL.")
-        project_info_in_s3["contentOfCrowdfundingUrl"] = scrape_and_clean_content_with_same_details(
-            project_input.get("crowdFundingUrl"))
+        project_info_in_s3["contentOfCrowdfundingUrl"] = (
+            scrape_and_clean_content_with_same_details(
+                project_input.get("crowdFundingUrl")
+            )
+        )
 
-    if generate_all or project_info_in_s3.get("contentOfWebsiteUrl") is None or project_info_in_s3.get(
-            "contentOfWebsiteUrl") == "":
+    if (
+        generate_all
+        or project_info_in_s3.get("contentOfWebsiteUrl") is None
+        or project_info_in_s3.get("contentOfWebsiteUrl") == ""
+    ):
         print("Website Content is missing. Scraping Website URL.")
-        project_info_in_s3["contentOfWebsiteUrl"] = scrape_and_clean_content_with_same_details(
-            project_input.get("websiteUrl"))
+        project_info_in_s3["contentOfWebsiteUrl"] = (
+            scrape_and_clean_content_with_same_details(project_input.get("websiteUrl"))
+        )
 
-    if generate_all or project_info_in_s3.get("secInfo") is None or project_info_in_s3.get("secInfo").get(
-            "secMarkdownContent") is None or project_info_in_s3.get("secInfo").get("secMarkdownContent") == "":
+    if (
+        generate_all
+        or project_info_in_s3.get("secInfo") is None
+        or project_info_in_s3.get("secInfo").get("secMarkdownContent") is None
+        or project_info_in_s3.get("secInfo").get("secMarkdownContent") == ""
+    ):
         print("SEC Info is missing. Scraping SEC Filing URL.")
         project_info_in_s3["secInfo"] = get_sec_info(sec_filing_url)
 
-    crowd_funding_and_website_content = project_info_in_s3.get("contentOfCrowdfundingUrl") + project_info_in_s3.get(
-        "contentOfWebsiteUrl")
-    combined_text = crowd_funding_and_website_content + project_info_in_s3.get("secInfo").get("secMarkdownContent")
+    crowd_funding_and_website_content = project_info_in_s3.get(
+        "contentOfCrowdfundingUrl"
+    ) + project_info_in_s3.get("contentOfWebsiteUrl")
+    combined_text = crowd_funding_and_website_content + project_info_in_s3.get(
+        "secInfo"
+    ).get("secMarkdownContent")
 
     if generate_all or is_industry_details_missing(project_info_in_s3):
         print("Industry Details are missing. Scraping Industry Details.")
         industry_and_forecast_structure = get_project_industry_and_forecasts_info(
             combined_text
         )
-        sector_details: SectorDetailSchema = convert_sector_structure(industry_and_forecast_structure.sector_details)
+        sector_details: SectorDetailSchema = convert_sector_structure(
+            industry_and_forecast_structure.sector_details
+        )
         sub_sector_details: SectorDetailSchema = convert_sector_structure(
-            industry_and_forecast_structure.sub_sector_details)
+            industry_and_forecast_structure.sub_sector_details
+        )
         total_addressable_market: MarketDetailSchema = convert_market_structure(
-            industry_and_forecast_structure.total_addressable_market)
+            industry_and_forecast_structure.total_addressable_market
+        )
         serviceable_addressable_market: MarketDetailSchema = convert_market_structure(
-            industry_and_forecast_structure.serviceable_addressable_market)
+            industry_and_forecast_structure.serviceable_addressable_market
+        )
         serviceable_obtainable_market: MarketDetailSchema = convert_market_structure(
-            industry_and_forecast_structure.serviceable_obtainable_market)
-        profit_margins: MarketDetailSchema = convert_market_structure(industry_and_forecast_structure.profit_margins)
+            industry_and_forecast_structure.serviceable_obtainable_market
+        )
+        profit_margins: MarketDetailSchema = convert_market_structure(
+            industry_and_forecast_structure.profit_margins
+        )
         project_info_in_s3["industryDetails"] = {
             "sectorDetails": sector_details,
             "subSectorDetails": sub_sector_details,
             "totalAddressableMarket": total_addressable_market,
             "serviceableAddressableMarket": serviceable_addressable_market,
             "serviceableObtainableMarket": serviceable_obtainable_market,
-            "profitMargins": profit_margins
+            "profitMargins": profit_margins,
         }
 
     # or check any of the fields in none
     if generate_all or (
-            project_info_in_s3.get("startupSummary") is None or project_info_in_s3.get("startupSummary") == ""):
+        project_info_in_s3.get("startupSummary") is None
+        or project_info_in_s3.get("startupSummary") == ""
+    ):
         print("Startup Summary is missing. Generating Startup Summary.")
-        project_info_in_s3["startupSummary"] = get_startup_summary(crowd_funding_and_website_content)
+        project_info_in_s3["startupSummary"] = get_startup_summary(
+            crowd_funding_and_website_content
+        )
 
     project_file_contents["processedProjectInfo"] = project_info_in_s3
     upload_to_s3(
         content=json.dumps(project_file_contents, indent=4),
         s3_key=f"{project_id}/agent-status.json",
-        content_type="application/json"
+        content_type="application/json",
     )
     print(
-        f"Updated 'processed_project_info' uploaded to https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/crowd-fund-analysis/{agent_status_file_path}")
+        f"Updated 'processed_project_info' uploaded to https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/crowd-fund-analysis/{agent_status_file_path}"
+    )
 
     return convert_s3_processed_info_to_state(project_info_in_s3)

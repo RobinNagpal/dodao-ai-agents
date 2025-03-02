@@ -10,7 +10,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from typing_extensions import TypedDict
 
-from koala_gains.utils.env_variables import LINKEDIN_EMAIL, LINKEDIN_PASSWORD, PROXYCURL_API_KEY
+from koala_gains.utils.env_variables import (
+    LINKEDIN_EMAIL,
+    LINKEDIN_PASSWORD,
+    PROXYCURL_API_KEY,
+)
 from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
 
@@ -24,6 +28,7 @@ class RawLinkedinProfile(TypedDict):
     id: str
     name: str
     profile: Dict[str, Any]
+
 
 class ProxyCurlLinkedinProfile(TypedDict):
     public_identifier: str
@@ -39,18 +44,20 @@ class ProxyCurlLinkedinProfile(TypedDict):
     certifications: List[Dict[str, Any]]
 
 
-def scrape_single_linkedin_profiles_with_proxycurl(linkedin_url: str) -> ProxyCurlLinkedinProfile or None:
-    headers = {'Authorization': f'Bearer {PROXYCURL_API_KEY}'}
+def scrape_single_linkedin_profiles_with_proxycurl(
+    linkedin_url: str,
+) -> ProxyCurlLinkedinProfile or None:
+    headers = {"Authorization": f"Bearer {PROXYCURL_API_KEY}"}
 
     # API endpoint for retrieving a LinkedIn person profile
-    api_endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
+    api_endpoint = "https://nubela.co/proxycurl/api/v2/linkedin"
 
     # Set up the parameters. Note that you should include only one of:
     # 'linkedin_profile_url', 'twitter_profile_url', or 'facebook_profile_url'
     params = {
-        'linkedin_profile_url': linkedin_url,
-        'use_cache': 'if-present',
-        'fallback_to_cache': 'on-error',
+        "linkedin_profile_url": linkedin_url,
+        "use_cache": "if-present",
+        "fallback_to_cache": "on-error",
     }
 
     # Make the GET request to the API
@@ -61,25 +68,27 @@ def scrape_single_linkedin_profiles_with_proxycurl(linkedin_url: str) -> ProxyCu
         profile = response.json()
 
         relevant_profile = {
-            "public_identifier": profile.get('public_identifier'),
-            "profile_pic_url": profile.get('profile_pic_url'),
-            "first_name": profile.get('first_name'),
-            "last_name": profile.get('last_name'),
-            "full_name": profile.get('full_name'),
-            "headline": profile.get('headline'),
-            "occupation": profile.get('occupation'),
-            "summary": profile.get('summary'),
-            "experiences": profile.get('experiences'),
-            "educations": profile.get('educations'),
-            "certifications": profile.get('certifications'),
-
+            "public_identifier": profile.get("public_identifier"),
+            "profile_pic_url": profile.get("profile_pic_url"),
+            "first_name": profile.get("first_name"),
+            "last_name": profile.get("last_name"),
+            "full_name": profile.get("full_name"),
+            "headline": profile.get("headline"),
+            "occupation": profile.get("occupation"),
+            "summary": profile.get("summary"),
+            "experiences": profile.get("experiences"),
+            "educations": profile.get("educations"),
+            "certifications": profile.get("certifications"),
         }
 
         return relevant_profile
     else:
-        print(f"Failed to retrieve LinkedIn profile for {linkedin_url}. Status code: {response.status_code}")
+        print(
+            f"Failed to retrieve LinkedIn profile for {linkedin_url}. Status code: {response.status_code}"
+        )
         print(response.json())
         return None
+
 
 def get_identifier_from_linkedin_url(linkedin_url: str) -> str:
     """
@@ -93,6 +102,7 @@ def get_identifier_from_linkedin_url(linkedin_url: str) -> str:
         return parts[1]
     return hashlib.md5(linkedin_url.encode("utf-8")).hexdigest()
 
+
 def get_s3_profile_key(linkedin_url: str) -> str:
     """
     Creates a readable S3 key for storing the LinkedIn profile JSON.
@@ -100,12 +110,14 @@ def get_s3_profile_key(linkedin_url: str) -> str:
     identifier = get_identifier_from_linkedin_url(linkedin_url)
     return f"linkedin-profiles/{identifier}.json"
 
+
 def get_s3_pic_key(linkedin_url: str) -> str:
     """
     Creates a readable S3 key for storing the LinkedIn profile picture.
     """
     identifier = get_identifier_from_linkedin_url(linkedin_url)
     return f"linkedin-pics/{identifier}.jpg"
+
 
 def cache_profile_pic(linkedin_url: str, profile_pic_url: str) -> str:
     """
@@ -132,11 +144,14 @@ def cache_profile_pic(linkedin_url: str, profile_pic_url: str) -> str:
             )
             print(f"Profile picture cached in S3: {s3_pic_key}")
         else:
-            print(f"Failed to download profile picture from {profile_pic_url} - Status code: {response.status_code}")
+            print(
+                f"Failed to download profile picture from {profile_pic_url} - Status code: {response.status_code}"
+            )
 
     # Construct the public S3 URL (assuming the bucket is public-read)
     s3_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{s3_pic_key}"
     return s3_url
+
 
 def get_cached_linkedin_profile(linkedin_url: str):
     """
@@ -189,7 +204,10 @@ def get_cached_linkedin_profile(linkedin_url: str):
 
         return profile
 
-def scrape_linkedin_with_linkedin_scraper(linkedin_urls: list[TeamMemberLinkedinUrl]) -> list[RawLinkedinProfile]:
+
+def scrape_linkedin_with_linkedin_scraper(
+    linkedin_urls: list[TeamMemberLinkedinUrl],
+) -> list[RawLinkedinProfile]:
     """
     Uses linkedin_scraper to retrieve LinkedIn profile data based on the URLs
 
@@ -201,8 +219,12 @@ def scrape_linkedin_with_linkedin_scraper(linkedin_urls: list[TeamMemberLinkedin
     chrome_options.add_argument("--headless")  # Run in headless mode
     chrome_options.add_argument("--disable-gpu")  # Disable GPU for better compatibility
     chrome_options.add_argument("--window-size=1920,1080")  # Optional: Set window size
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resources in containerized environments
-    chrome_options.add_argument("--no-sandbox")  # Bypass OS security model (use with caution)
+    chrome_options.add_argument(
+        "--disable-dev-shm-usage"
+    )  # Overcome limited resources in containerized environments
+    chrome_options.add_argument(
+        "--no-sandbox"
+    )  # Bypass OS security model (use with caution)
 
     driver = webdriver.Chrome(options=chrome_options)
     actions.login(driver, LINKEDIN_EMAIL, LINKEDIN_PASSWORD)
@@ -230,11 +252,13 @@ def scrape_linkedin_with_linkedin_scraper(linkedin_urls: list[TeamMemberLinkedin
     raw_profiles: List[RawLinkedinProfile] = []
     for member in linkedin_urls:
         profile_data = scrape_linkedin_profile(member["url"])
-        raw_profiles.append({
-            "id": member.get('id'),
-            "name": member.get('name'),
-            "profile": profile_data
-        })
+        raw_profiles.append(
+            {
+                "id": member.get("id"),
+                "name": member.get("name"),
+                "profile": profile_data,
+            }
+        )
     # Close the driver
     driver.quit()
 

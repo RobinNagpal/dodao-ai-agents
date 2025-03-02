@@ -4,10 +4,15 @@ import json
 from koala_gains.utils.s3_utils import upload_to_s3
 from koala_gains.agent_state import AgentState
 from koala_gains.utils.llm_utils import get_llm
-from koala_gains.utils.report_utils import create_report_file_and_upload_to_s3, get_combined_reports_from_s3, update_report_status_failed, \
-    update_report_status_in_progress
+from koala_gains.utils.report_utils import (
+    create_report_file_and_upload_to_s3,
+    get_combined_reports_from_s3,
+    update_report_status_failed,
+    update_report_status_in_progress,
+)
 
 REPORT_NAME = "finalReport"
+
 
 def generate_project_info_report(state: AgentState, combined_reports: str):
     """
@@ -150,13 +155,13 @@ def generate_project_info_report(state: AgentState, combined_reports: str):
         }
         """
     )
-    
+
     llm = get_llm(state.get("config"))
 
     try:
         response = llm.invoke([HumanMessage(content=prompt)])
         raw_response = response.content.strip()
-        print(f'raw response: {raw_response}')
+        print(f"raw response: {raw_response}")
         # Ensure JSON validity
         evaluation_data = json.loads(raw_response)
 
@@ -170,6 +175,7 @@ def generate_project_info_report(state: AgentState, combined_reports: str):
         print(f"Unexpected error: {e}")
         return {"error": "An unexpected error occurred"}
 
+
 def create_final_report_test(state: AgentState) -> None:
     print("Generating final report")
     project_id = state.get("project_info").get("project_id")
@@ -180,7 +186,7 @@ def create_final_report_test(state: AgentState) -> None:
         upload_to_s3(
             content=json.dumps(report_content, indent=4),
             s3_key=f"{project_id}/spider-graph.json",
-            content_type="application/json"
+            content_type="application/json",
         )
         # create_report_file_and_upload_to_s3(project_id, REPORT_NAME, report_content)
     except Exception as e:
@@ -189,7 +195,5 @@ def create_final_report_test(state: AgentState) -> None:
         error_message = str(e)
         print(f"An error occurred:\n{error_message}")
         update_report_status_failed(
-            project_id,
-            REPORT_NAME,
-            error_message=error_message
+            project_id, REPORT_NAME, error_message=error_message
         )

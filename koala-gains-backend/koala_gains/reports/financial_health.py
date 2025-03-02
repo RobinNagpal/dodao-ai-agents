@@ -4,8 +4,11 @@ from koala_gains.agent_state import AgentState, get_combined_content, ReportType
 from koala_gains.structures.report_structures import StructuredReportResponse
 from koala_gains.utils.llm_utils import structured_report_response
 from koala_gains.utils.prompt_utils import create_prompt_for_checklist
-from koala_gains.utils.report_utils import update_report_status_failed, \
-    update_report_status_in_progress, update_report_with_structured_output
+from koala_gains.utils.report_utils import (
+    update_report_status_failed,
+    update_report_status_in_progress,
+    update_report_with_structured_output,
+)
 
 
 def generate_financial_health_report(state: AgentState) -> StructuredReportResponse:
@@ -19,9 +22,19 @@ def generate_financial_health_report(state: AgentState) -> StructuredReportRespo
     """
     combined_content = get_combined_content(state)
 
-    sector_info = state.get("processed_project_info").get('industry_details').get('sector_details').get('basic_info')
-    sub_sector_info = state.get("processed_project_info").get('industry_details').get('sub_sector_details').get('basic_info')
-    
+    sector_info = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("sector_details")
+        .get("basic_info")
+    )
+    sub_sector_info = (
+        state.get("processed_project_info")
+        .get("industry_details")
+        .get("sub_sector_details")
+        .get("basic_info")
+    )
+
     prompt = f"""
     You are an expert startup valuation analyst. Analyze that the financial health claimed by the startup is good or not:
 
@@ -51,9 +64,7 @@ def generate_financial_health_report(state: AgentState) -> StructuredReportRespo
     """
 
     return structured_report_response(
-        state.get("config"),
-        "detailed_financial_health_report",
-        prompt
+        state.get("config"), "detailed_financial_health_report", prompt
     )
 
 
@@ -63,13 +74,13 @@ def create_financial_health_report(state: AgentState) -> None:
     try:
         update_report_status_in_progress(project_id, ReportType.FINANCIAL_HEALTH)
         report_output = generate_financial_health_report(state)
-        update_report_with_structured_output(project_id, ReportType.FINANCIAL_HEALTH, report_output)
+        update_report_with_structured_output(
+            project_id, ReportType.FINANCIAL_HEALTH, report_output
+        )
     except Exception as e:
         print(traceback.format_exc())
         error_message = str(e)
         print(f"An error occurred:\n{error_message}")
         update_report_status_failed(
-            project_id,
-            ReportType.FINANCIAL_HEALTH,
-            error_message=error_message
+            project_id, ReportType.FINANCIAL_HEALTH, error_message=error_message
         )

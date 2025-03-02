@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)  # Allow all origins by default
 
 app.register_blueprint(crowdfunding_api)
-app.register_blueprint(public_equity_api,url_prefix="/api/public-equities/US")
+app.register_blueprint(public_equity_api, url_prefix="/api/public-equities/US")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -3,8 +3,11 @@ import traceback
 from koala_gains.agent_state import AgentState, get_combined_content, ReportType
 from koala_gains.structures.report_structures import StructuredReportResponse
 from koala_gains.utils.llm_utils import structured_report_response
-from koala_gains.utils.report_utils import update_report_status_failed, \
-    update_report_status_in_progress, update_report_with_structured_output
+from koala_gains.utils.report_utils import (
+    update_report_status_failed,
+    update_report_status_in_progress,
+    update_report_with_structured_output,
+)
 
 REPORT_NAME = "general_info"
 
@@ -17,9 +20,7 @@ def generate_project_info_report(state: AgentState) -> StructuredReportResponse:
     """
     combined_content = get_combined_content(state)
 
-
-    prompt = (
-        f"""
+    prompt = f"""
         Below are the details of the project. We need to show all the important information to the crowd-funding investors.
         The report should tell what does the startup do and capture the details about each of the headings below. You can skip some headings if they dont apply.
 
@@ -40,8 +41,9 @@ def generate_project_info_report(state: AgentState) -> StructuredReportResponse:
   
         Return only the textual report of these details.
         """
+    return structured_report_response(
+        state.get("config"), "generate_project_info_report", prompt
     )
-    return structured_report_response(state.get("config"), "generate_project_info_report", prompt)
 
 
 def create_general_info_report(state: AgentState) -> None:
@@ -50,14 +52,14 @@ def create_general_info_report(state: AgentState) -> None:
     try:
         update_report_status_in_progress(project_id, ReportType.GENERAL_INFO)
         report_content = generate_project_info_report(state)
-        update_report_with_structured_output(project_id, ReportType.GENERAL_INFO, report_content)
+        update_report_with_structured_output(
+            project_id, ReportType.GENERAL_INFO, report_content
+        )
     except Exception as e:
         # Capture full stack trace
         print(traceback.format_exc())
         error_message = str(e)
         print(f"An error occurred:\n{error_message}")
         update_report_status_failed(
-            project_id,
-            ReportType.GENERAL_INFO,
-            error_message=error_message
+            project_id, ReportType.GENERAL_INFO, error_message=error_message
         )

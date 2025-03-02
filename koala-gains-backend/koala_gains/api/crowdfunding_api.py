@@ -6,9 +6,20 @@ from flask import render_template, redirect, url_for
 
 from koala_gains.api.api_helper import handle_exception
 from koala_gains.controller import prepare_processing_command
-from koala_gains.utils.agent_utils import generate_hashed_key, get_admin_name_from_request
-from koala_gains.utils.env_variables import BUCKET_NAME, OPEN_AI_DEFAULT_MODEL, REGION, ADMIN_CODES
-from koala_gains.utils.process_project_utils import repopulate_project_field, ensure_processed_project_info
+from koala_gains.utils.agent_utils import (
+    generate_hashed_key,
+    get_admin_name_from_request,
+)
+from koala_gains.utils.env_variables import (
+    BUCKET_NAME,
+    OPEN_AI_DEFAULT_MODEL,
+    REGION,
+    ADMIN_CODES,
+)
+from koala_gains.utils.process_project_utils import (
+    repopulate_project_field,
+    ensure_processed_project_info,
+)
 from koala_gains.utils.report_utils import (
     RepopulatableFields,
     update_status_to_not_started_for_all_reports,
@@ -18,10 +29,22 @@ from koala_gains.utils.report_utils import (
 
 crowdfunding_api = Blueprint("crowdfunding_api", __name__)
 
-def build_processing_command(project_id, project_name, crowdfunding_link, website_url, latest_sec_filing_link, additional_links, model=OPEN_AI_DEFAULT_MODEL):
+
+def build_processing_command(
+    project_id,
+    project_name,
+    crowdfunding_link,
+    website_url,
+    latest_sec_filing_link,
+    additional_links,
+    model=OPEN_AI_DEFAULT_MODEL,
+):
     """Helper to build the processing command."""
     command = [
-        "poetry", "run", "python", "koala_gains/controller.py",
+        "poetry",
+        "run",
+        "python",
+        "koala_gains/controller.py",
         project_id,
         project_name,
         crowdfunding_link,
@@ -32,7 +55,6 @@ def build_processing_command(project_id, project_name, crowdfunding_link, websit
         command.extend(["--additional_links", ",".join(additional_links)])
     command.extend(["--model", model])
     return command
-
 
 
 @crowdfunding_api.route("/")
@@ -52,7 +74,9 @@ def submit():
     crowdfunding_link = request.form.get("crowdfunding_link").strip()
     website_url = request.form.get("website_url").strip()
     latest_sec_filing_link = request.form.get("latest_sec_filing_link").strip()
-    additional_links = request.form.getlist("additional_links")  # Collect additional links
+    additional_links = request.form.getlist(
+        "additional_links"
+    )  # Collect additional links
 
     project_details = {
         "project_id": project_id,
@@ -66,7 +90,14 @@ def submit():
     initialize_project_in_s3(project_id=project_id, project_details=project_details)
 
     # Build and run the processing command asynchronously
-    command = build_processing_command(project_id, project_name, crowdfunding_link, website_url, latest_sec_filing_link, additional_links)
+    command = build_processing_command(
+        project_id,
+        project_name,
+        crowdfunding_link,
+        website_url,
+        latest_sec_filing_link,
+        additional_links,
+    )
     subprocess.Popen(command)
 
     # Redirect to the status page with the project ID
@@ -108,13 +139,31 @@ def api_submit():
         "additional_links": additional_links,
     }
     # Initialize project (store in S3 or DB)
-    initialize_project_in_s3(project_id=project_id, project_details=project_details, triggered_by=admin_name)
+    initialize_project_in_s3(
+        project_id=project_id, project_details=project_details, triggered_by=admin_name
+    )
 
     # Build and run the processing command asynchronously
-    command = build_processing_command(project_id, project_name, crowdfunding_link, website_url, latest_sec_filing_link, additional_links)
+    command = build_processing_command(
+        project_id,
+        project_name,
+        crowdfunding_link,
+        website_url,
+        latest_sec_filing_link,
+        additional_links,
+    )
     subprocess.Popen(command)
 
-    return jsonify({"status": "success", "project_id": project_id, "message": "Project processing started"}), 200
+    return (
+        jsonify(
+            {
+                "status": "success",
+                "project_id": project_id,
+                "message": "Project processing started",
+            }
+        ),
+        200,
+    )
 
 
 @crowdfunding_api.route("/status/<project_id>")
@@ -136,15 +185,23 @@ def commit_info():
     if os.path.exists(commit_file_path):
         with open(commit_file_path, "r") as file:
             lines = file.readlines()
-        commit_hash = lines[0].strip().split("=")[1] if len(lines) > 0 else "Unavailable"
-        commit_message = lines[1].strip().split("=")[1] if len(lines) > 1 else "Unavailable"
+        commit_hash = (
+            lines[0].strip().split("=")[1] if len(lines) > 0 else "Unavailable"
+        )
+        commit_message = (
+            lines[1].strip().split("=")[1] if len(lines) > 1 else "Unavailable"
+        )
     else:
         commit_hash = "Unavailable"
         commit_message = "Unavailable"
-    return render_template("commit_info.html", commit_hash=commit_hash, commit_message=commit_message)
+    return render_template(
+        "commit_info.html", commit_hash=commit_hash, commit_message=commit_message
+    )
 
 
-@crowdfunding_api.route('/api/projects/<projectId>/reports/regenerate', methods=['POST'])
+@crowdfunding_api.route(
+    "/api/projects/<projectId>/reports/regenerate", methods=["POST"]
+)
 def regenerate_reports(projectId):
     """
     Regenerates reports for a given project using values from agent-status.json in S3.
@@ -157,20 +214,29 @@ def regenerate_reports(projectId):
         data = request.get_json(silent=True) or {}
         model = data.get("model", OPEN_AI_DEFAULT_MODEL)
 
-        update_status_to_not_started_for_all_reports(project_id=projectId, triggered_by=admin_name)
+        update_status_to_not_started_for_all_reports(
+            project_id=projectId, triggered_by=admin_name
+        )
         command = prepare_processing_command(projectId, model)
         subprocess.Popen(command)
 
-        return jsonify({
-            "status": "success",
-            "message": f"Regeneration of reports for {projectId} has started successfully."
-        }), 200
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": f"Regeneration of reports for {projectId} has started successfully.",
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return handle_exception(e)
 
 
-@crowdfunding_api.route('/api/projects/<projectId>/reports/<report_type>/regenerate', methods=['POST'])
+@crowdfunding_api.route(
+    "/api/projects/<projectId>/reports/<report_type>/regenerate", methods=["POST"]
+)
 def regenerate_specific_report(projectId, report_type):
     """
     Regenerates a specific report for a given project.
@@ -183,21 +249,30 @@ def regenerate_specific_report(projectId, report_type):
         data = request.get_json(silent=True) or {}
         model = data.get("model", OPEN_AI_DEFAULT_MODEL)
 
-        update_report_status_in_progress(project_id=projectId, report_type=report_type, triggered_by=admin_name)
+        update_report_status_in_progress(
+            project_id=projectId, report_type=report_type, triggered_by=admin_name
+        )
         command = prepare_processing_command(projectId, model)
         command.extend(["--report_type", report_type])
         subprocess.Popen(command)
 
-        return jsonify({
-            "status": "success",
-            "message": f"Regeneration of {report_type} report for {projectId} has started successfully."
-        }), 200
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": f"Regeneration of {report_type} report for {projectId} has started successfully.",
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return handle_exception(e)
 
 
-@crowdfunding_api.route('/api/projects/reports/<report_type>/regenerate', methods=['POST'])
+@crowdfunding_api.route(
+    "/api/projects/reports/<report_type>/regenerate", methods=["POST"]
+)
 def regenerate_specific_report_for_multiple_projects(report_type):
     """
     Regenerates a specific report for multiple projects sequentially.
@@ -212,32 +287,48 @@ def regenerate_specific_report_for_multiple_projects(report_type):
         model = data.get("model", OPEN_AI_DEFAULT_MODEL)
 
         if not isinstance(project_ids, list) or not project_ids:
-            return jsonify({
-                "status": "error",
-                "message": "Invalid or missing 'projectIds'. It should be a non-empty list."
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Invalid or missing 'projectIds'. It should be a non-empty list.",
+                    }
+                ),
+                400,
+            )
 
         for project_id in project_ids:
             try:
-                update_report_status_in_progress(project_id=project_id, report_type=report_type, triggered_by=admin_name)
+                update_report_status_in_progress(
+                    project_id=project_id,
+                    report_type=report_type,
+                    triggered_by=admin_name,
+                )
                 command = prepare_processing_command(project_id, model)
                 command.extend(["--report_type", report_type])
                 subprocess.run(command, check=True)
                 print(f"Successfully regenerated {report_type} report for {project_id}")
             except Exception as e:
-                print(f"Failed to regenerate {report_type} report for {project_id}: {str(e)}")
+                print(
+                    f"Failed to regenerate {report_type} report for {project_id}: {str(e)}"
+                )
                 continue
 
-        return jsonify({
-            "status": "success",
-            "message": f"Regeneration of {report_type} report for multiple projects has completed."
-        }), 200
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": f"Regeneration of {report_type} report for multiple projects has completed.",
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return handle_exception(e)
 
 
-@crowdfunding_api.route('/api/authenticate', methods=['POST'])
+@crowdfunding_api.route("/api/authenticate", methods=["POST"])
 def authenticate():
     data = request.get_json()
     code = data.get("code")
@@ -247,16 +338,23 @@ def authenticate():
 
     if code in ADMIN_CODES:
         hashed_key = generate_hashed_key(code)
-        return jsonify({
-            "status": "success",
-            "message": "Authenticated successfully.",
-            "key": hashed_key
-        }), 200
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Authenticated successfully.",
+                    "key": hashed_key,
+                }
+            ),
+            200,
+        )
 
     return jsonify({"status": "error", "message": "Invalid code"}), 401
 
 
-@crowdfunding_api.route('/api/projects/<projectId>/repopulate/<projectField>', methods=['POST'])
+@crowdfunding_api.route(
+    "/api/projects/<projectId>/repopulate/<projectField>", methods=["POST"]
+)
 def populate_project_info_field(projectId, projectField):
     try:
         admin_name, error_response = get_admin_name_from_request()
@@ -264,21 +362,34 @@ def populate_project_info_field(projectId, projectField):
             return error_response
 
         if projectField not in RepopulatableFields.list():
-            return jsonify({
-                "status": "error",
-                "message": f"Invalid field '{projectField}'. Allowed fields: {RepopulatableFields.list()}"
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": f"Invalid field '{projectField}'. Allowed fields: {RepopulatableFields.list()}",
+                    }
+                ),
+                400,
+            )
 
         repopulate_project_field(projectId, projectField)
-        return jsonify({
-            "status": "success",
-            "message": f"Repopulation of '{projectField}' for project {projectId} has started successfully."
-        }), 200
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": f"Repopulation of '{projectField}' for project {projectId} has started successfully.",
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return handle_exception(e)
 
-@crowdfunding_api.route('/api/projects/<projectId>/repopulate-project-info', methods=['POST'])
+
+@crowdfunding_api.route(
+    "/api/projects/<projectId>/repopulate-project-info", methods=["POST"]
+)
 def re_populate_project_info(projectId):
     try:
         admin_name, error_response = get_admin_name_from_request()
@@ -287,10 +398,15 @@ def re_populate_project_info(projectId):
 
         ensure_processed_project_info(projectId, True)
 
-        return jsonify({
-            "status": "success",
-            "message": f"Repopulation of project-info for project {projectId} has started successfully."
-        }), 200
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": f"Repopulation of project-info for project {projectId} has started successfully.",
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return handle_exception(e)
