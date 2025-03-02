@@ -70,12 +70,12 @@ jobs:
                   "5000": "HTTP"
                 },
                 "environment": {
-                  "OPENAI_API_KEY": "${{ secrets.AI_AGENT_OPENAI_API_KEY }}",
-                  "SCRAPINGANT_API_KEY": "${{ secrets.AI_AGENT_SCRAPINGANT_API_KEY }}",
-                  "SERPER_API_KEY": "${{ secrets.AI_AGENT_SERPER_API_KEY }}",
-                  "SCRAPIN_API_KEY": "${{ secrets.AI_AGENT_SCRAPIN_API_KEY }}",
-                  "GOOGLE_CSE_ID": "${{ secrets.AI_AGENT_GOOGLE_CSE_ID }}",
-                  "GOOGLE_API_KEY": "${{ secrets.AI_AGENT_GOOGLE_API_KEY }}",
+                  "OPENAI_API_KEY": "${{ secrets.OPENAI_API_KEY }}",
+                  "SCRAPINGANT_API_KEY": "${{ secrets.SCRAPINGANT_API_KEY }}",
+                  "SERPER_API_KEY": "${{ secrets.SERPER_API_KEY }}",
+                  "SCRAPIN_API_KEY": "${{ secrets.SCRAPIN_API_KEY }}",
+                  "GOOGLE_CSE_ID": "${{ secrets.GOOGLE_CSE_ID }}",
+                  "GOOGLE_API_KEY": "${{ secrets.GOOGLE_API_KEY }}",
                   "AWS_ACCESS_KEY_ID": "${{ secrets.AI_AGENT_AWS_ACCESS_KEY_ID }}",
                   "AWS_SECRET_ACCESS_KEY": "${{ secrets.AI_AGENT_AWS_SECRET_ACCESS_KEY }}",
                   "S3_BUCKET_NAME": "dodao-ai-insights-agent",
