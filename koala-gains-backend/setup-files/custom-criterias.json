@@ -1,0 +1,158 @@
+{
+  "criteria": [
+    {
+      "sectorId": 10,
+      "sectorName": "Energy",
+      "industryGroupId": 1010,
+      "industryGroupName": "Energy",
+      "aiCriteriaFileUrl": "https://dodao-ai-insights-agent.s3.us-east-1.amazonaws.com/public-equities/US/gics/energy/energy/ai-criteria.json",
+      "customCriteriaFileUrl": "https://dodao-ai-insights-agent.s3.us-east-1.amazonaws.com/public-equities/US/gics/energy/energy/custom-criteria.json"
+    },
+    {
+      "sectorId": 15,
+      "sectorName": "Materials",
+      "industryGroupId": 1510,
+      "industryGroupName": "Materials"
+    },
+    {
+      "sectorId": 20,
+      "sectorName": "Industrials",
+      "industryGroupId": 2010,
+      "industryGroupName": "Capital Goods"
+    },
+    {
+      "sectorId": 20,
+      "sectorName": "Industrials",
+      "industryGroupId": 2020,
+      "industryGroupName": "Commercial  & Professional Services"
+    },
+    {
+      "sectorId": 20,
+      "sectorName": "Industrials",
+      "industryGroupId": 2030,
+      "industryGroupName": "Transportation"
+    },
+    {
+      "sectorId": 25,
+      "sectorName": "Consumer Discretionary",
+      "industryGroupId": 2510,
+      "industryGroupName": "Automobiles & Components"
+    },
+    {
+      "sectorId": 25,
+      "sectorName": "Consumer Discretionary",
+      "industryGroupId": 2520,
+      "industryGroupName": "Consumer Durables & Apparel"
+    },
+    {
+      "sectorId": 25,
+      "sectorName": "Consumer Discretionary",
+      "industryGroupId": 2530,
+      "industryGroupName": "Consumer Services"
+    },
+    {
+      "sectorId": 25,
+      "sectorName": "Consumer Discretionary",
+      "industryGroupId": 2550,
+      "industryGroupName": "Consumer Discretionary Distribution & Retail "
+    },
+    {
+      "sectorId": 30,
+      "sectorName": "Consumer Staples",
+      "industryGroupId": 3010,
+      "industryGroupName": "Consumer Staples Distribution & Retail"
+    },
+    {
+      "sectorId": 30,
+      "sectorName": "Consumer Staples",
+      "industryGroupId": 3020,
+      "industryGroupName": "Food, Beverage & Tobacco"
+    },
+    {
+      "sectorId": 30,
+      "sectorName": "Consumer Staples",
+      "industryGroupId": 3030,
+      "industryGroupName": "Household & Personal Products"
+    },
+    {
+      "sectorId": 35,
+      "sectorName": "Health Care",
+      "industryGroupId": 3510,
+      "industryGroupName": "Health Care Equipment & Services"
+    },
+    {
+      "sectorId": 35,
+      "sectorName": "Health Care",
+      "industryGroupId": 3520,
+      "industryGroupName": "Pharmaceuticals, Biotechnology & Life Sciences"
+    },
+    {
+      "sectorId": 40,
+      "sectorName": "Financials",
+      "industryGroupId": 4010,
+      "industryGroupName": "Banks"
+    },
+    {
+      "sectorId": 40,
+      "sectorName": "Financials",
+      "industryGroupId": 4020,
+      "industryGroupName": "Financial Services "
+    },
+    {
+      "sectorId": 40,
+      "sectorName": "Financials",
+      "industryGroupId": 4030,
+      "industryGroupName": "Insurance"
+    },
+    {
+      "sectorId": 45,
+      "sectorName": "Information Technology",
+      "industryGroupId": 4510,
+      "industryGroupName": "Software & Services"
+    },
+    {
+      "sectorId": 45,
+      "sectorName": "Information Technology",
+      "industryGroupId": 4520,
+      "industryGroupName": "Technology Hardware & Equipment"
+    },
+    {
+      "sectorId": 45,
+      "sectorName": "Information Technology",
+      "industryGroupId": 4530,
+      "industryGroupName": "Semiconductors & Semiconductor Equipment"
+    },
+    {
+      "sectorId": 50,
+      "sectorName": "Communication Services",
+      "industryGroupId": 5010,
+      "industryGroupName": "Telecommunication Services"
+    },
+    {
+      "sectorId": 50,
+      "sectorName": "Communication Services",
+      "industryGroupId": 5020,
+      "industryGroupName": "Media & Entertainment"
+    },
+    {
+      "sectorId": 55,
+      "sectorName": "Utilities",
+      "industryGroupId": 5510,
+      "industryGroupName": "Utilities"
+    },
+    {
+      "sectorId": 60,
+      "sectorName": "Real Estate",
+      "industryGroupId": 6010,
+      "industryGroupName": "Equity Real Estate Investment Trusts (REITs)",
+      "aiCriteriaFileUrl": "https://dodao-ai-insights-agent.s3.us-east-1.amazonaws.com/public-equities/US/gics/real-estate/equity-real-estate-investment-trusts-reits/ai-criteria.json",
+      "customCriteriaFileUrl": "https://dodao-ai-insights-agent.s3.us-east-1.amazonaws.com/public-equities/US/gics/real-estate/equity-real-estate-investment-trusts-reits/custom-criteria.json"
+    },
+    {
+      "sectorId": 60,
+      "sectorName": "Real Estate",
+      "industryGroupId": 6020,
+      "industryGroupName": "Real Estate Management & Development"
+    }
+  ]
+}
