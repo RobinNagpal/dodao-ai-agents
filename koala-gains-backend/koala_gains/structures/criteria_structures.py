@@ -66,14 +66,14 @@ class IndustryGroupCriteria(BaseModel):
     )
 
 
-    
-class CriteriaLookupItem(BaseModel):
-    sectorId: int = Field(description="ID of the sector.", alias="sectorId")
-    sectorName: str = Field(description="Name of the sector.", alias="sectorName")
-    industryGroupId: int = Field(description="ID of the industry group.", alias="industryGroupId")
-    industryGroupName: str = Field(description="Name of the industry group.", alias="industryGroupName")
-    aiCriteriaFileLocation: Optional[str] = Field(default=None, description="Location of the AI criteria file.", alias="aiCriteriaFileLocation")
-    customCriteriaFileLocation: Optional[str] = Field(default=None, description="Location of the custom criteria file.", alias="customCriteriaFileLocation")
+
+class CriteriaLookupItem(TypedDict):
+    sectorId: int
+    sectorName: str
+    industryGroupId: int
+    industryGroupName: str
+    aiCriteriaFileLocation: Optional[str]
+    customCriteriaFileLocation: Optional[str]
 
 class CriteriaLookupList(TypedDict):
     criteria: List[CriteriaLookupItem]
