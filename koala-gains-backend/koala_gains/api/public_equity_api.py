@@ -1,8 +1,7 @@
-import json
 from flask import Blueprint, request, jsonify
-from cf_analysis_agent.utils.criteria_utils import generate_ai_criteria ,upload_ai_criteria_to_s3, update_custom_criteria,fetch_criteria_file
-from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse, EquityDeatils, IndustryGroupData
 
+from koala_gains.utils.criteria_utils import generate_ai_criteria, upload_ai_criteria_to_s3, update_custom_criteria, \
+    fetch_criteria_file
 
 public_equity_api = Blueprint("public_equity_api", __name__)
 

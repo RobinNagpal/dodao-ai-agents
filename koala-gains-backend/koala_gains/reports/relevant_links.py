@@ -10,9 +10,9 @@ from langchain_core.messages import HumanMessage
 from langchain_google_community import GoogleSearchAPIWrapper
 from typing_extensions import TypedDict
 
-from cf_analysis_agent.agent_state import AgentState, Config
-from cf_analysis_agent.utils.llm_utils import get_llm
-from cf_analysis_agent.utils.report_utils import create_report_file_and_upload_to_s3, update_report_status_failed, \
+from koala_gains.agent_state import AgentState, Config
+from koala_gains.utils.llm_utils import get_llm
+from koala_gains.utils.report_utils import create_report_file_and_upload_to_s3, update_report_status_failed, \
     update_report_status_in_progress
 
 load_dotenv()

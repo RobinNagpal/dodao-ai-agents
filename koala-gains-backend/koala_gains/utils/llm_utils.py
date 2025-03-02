@@ -3,11 +3,11 @@ from langchain_core.messages import HumanMessage
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 
-from cf_analysis_agent.agent_state import Config
-from cf_analysis_agent.structures.report_structures import StructuredLLMResponse, StructuredReportResponse
-from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse
-from cf_analysis_agent.utils.env_variables import OPEN_AI_DEFAULT_MODEL
-from cf_analysis_agent.utils.project_utils import scrape_url
+from koala_gains.agent_state import Config
+from koala_gains.structures.report_structures import StructuredLLMResponse, StructuredReportResponse
+from koala_gains.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse
+from koala_gains.utils.env_variables import OPEN_AI_DEFAULT_MODEL
+from koala_gains.utils.project_utils import scrape_url
 
 # Cache for storing initialized LLMs (prevents re-initialization)
 _llm_cache: dict[str, BaseChatModel] = {}

@@ -4,19 +4,19 @@ from typing import List
 
 from langchain_core.messages import HumanMessage
 
-from cf_analysis_agent.agent_state import MarketDetailPoints, ProcessingStatus, ProcessedProjectInfo, ProcessedSecInfo, \
+from koala_gains.agent_state import MarketDetailPoints, ProcessingStatus, ProcessedProjectInfo, ProcessedSecInfo, \
     SectorDetailPoints, \
     IndustryDetailsAndForecast
-from cf_analysis_agent.structures.form_c_structures import StructuredFormCResponse
-from cf_analysis_agent.structures.industry_details import MarketDetailStructure, SectorDetailStructure, \
+from koala_gains.structures.form_c_structures import StructuredFormCResponse
+from koala_gains.structures.industry_details import MarketDetailStructure, SectorDetailStructure, \
     IndustryDetailsAndForecastStructure
-from cf_analysis_agent.utils.llm_utils import get_startup_summary, structured_llm_response, MINI_4_0_CONFIG, \
+from koala_gains.utils.llm_utils import get_startup_summary, structured_llm_response, MINI_4_0_CONFIG, \
     scrape_and_clean_content_with_same_details, get_llm, NORMAL_4_0_CONFIG
-from cf_analysis_agent.utils.project_utils import scrape_urls
-from cf_analysis_agent.utils.report_utils import MarketDetailSchema, RepopulatableFields, SectorDetailSchema, \
+from koala_gains.utils.project_utils import scrape_urls
+from koala_gains.utils.report_utils import MarketDetailSchema, RepopulatableFields, SectorDetailSchema, \
     get_project_status_file_path, ProcessedProjectInfoSchema, \
     ProjectStatusFileSchema, ProjectInfoInputSchema, ProcessedSecInfoSchema, ProcessedIndustryAndForecastsSchema
-from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
+from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
 
 def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:

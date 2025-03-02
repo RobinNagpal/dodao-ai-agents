@@ -1,10 +1,10 @@
 import traceback
 from langchain_core.messages import HumanMessage
 import json
-from cf_analysis_agent.utils.s3_utils import upload_to_s3
-from cf_analysis_agent.agent_state import AgentState
-from cf_analysis_agent.utils.llm_utils import get_llm
-from cf_analysis_agent.utils.report_utils import create_report_file_and_upload_to_s3, get_combined_reports_from_s3, update_report_status_failed, \
+from koala_gains.utils.s3_utils import upload_to_s3
+from koala_gains.agent_state import AgentState
+from koala_gains.utils.llm_utils import get_llm
+from koala_gains.utils.report_utils import create_report_file_and_upload_to_s3, get_combined_reports_from_s3, update_report_status_failed, \
     update_report_status_in_progress
 
 REPORT_NAME = "finalReport"

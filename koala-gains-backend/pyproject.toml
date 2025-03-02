@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["DoDAO"]
 readme = "README.md"
+package-mode = false
 
 [virtualenvs]
 create = true

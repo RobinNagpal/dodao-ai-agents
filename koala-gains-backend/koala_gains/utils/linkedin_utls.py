@@ -10,8 +10,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from typing_extensions import TypedDict
 
-from cf_analysis_agent.utils.env_variables import LINKEDIN_EMAIL, LINKEDIN_PASSWORD, PROXYCURL_API_KEY
-from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
+from koala_gains.utils.env_variables import LINKEDIN_EMAIL, LINKEDIN_PASSWORD, PROXYCURL_API_KEY
+from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
 
 class TeamMemberLinkedinUrl(TypedDict):

@@ -4,12 +4,12 @@ import subprocess
 from flask import Blueprint, jsonify, request
 from flask import render_template, redirect, url_for
 
-from cf_analysis_agent.api.api_helper import handle_exception
-from cf_analysis_agent.controller import prepare_processing_command
-from cf_analysis_agent.utils.agent_utils import generate_hashed_key, get_admin_name_from_request
-from cf_analysis_agent.utils.env_variables import BUCKET_NAME, OPEN_AI_DEFAULT_MODEL, REGION, ADMIN_CODES
-from cf_analysis_agent.utils.process_project_utils import repopulate_project_field, ensure_processed_project_info
-from cf_analysis_agent.utils.report_utils import (
+from koala_gains.api.api_helper import handle_exception
+from koala_gains.controller import prepare_processing_command
+from koala_gains.utils.agent_utils import generate_hashed_key, get_admin_name_from_request
+from koala_gains.utils.env_variables import BUCKET_NAME, OPEN_AI_DEFAULT_MODEL, REGION, ADMIN_CODES
+from koala_gains.utils.process_project_utils import repopulate_project_field, ensure_processed_project_info
+from koala_gains.utils.report_utils import (
     RepopulatableFields,
     update_status_to_not_started_for_all_reports,
     initialize_project_in_s3,
@@ -21,7 +21,7 @@ crowdfunding_api = Blueprint("crowdfunding_api", __name__)
 def build_processing_command(project_id, project_name, crowdfunding_link, website_url, latest_sec_filing_link, additional_links, model=OPEN_AI_DEFAULT_MODEL):
     """Helper to build the processing command."""
     command = [
-        "poetry", "run", "python", "cf_analysis_agent/controller.py",
+        "poetry", "run", "python", "koala_gains/controller.py",
         project_id,
         project_name,
         crowdfunding_link,

@@ -1,6 +1,6 @@
 import hashlib
 from flask import request, jsonify
-from cf_analysis_agent.utils.env_variables import ADMIN_CODES
+from koala_gains.utils.env_variables import ADMIN_CODES
 
 def combine_partial_state(state: dict, partial: dict) -> dict:
     """

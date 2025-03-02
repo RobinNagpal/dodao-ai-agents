@@ -1,17 +1,17 @@
 from typing import Sequence
 from langgraph.graph import END, START, StateGraph
-from cf_analysis_agent.agent_state import AgentState, ReportType
-from cf_analysis_agent.reports.execution_and_speed import create_execution_and_speed_report
-from cf_analysis_agent.reports.financial_health import create_financial_health_report
-from cf_analysis_agent.reports.general_info import create_general_info_report
-from cf_analysis_agent.reports.market_opportunity import create_market_opportunity_report
-from cf_analysis_agent.reports.relevant_links import create_relevant_links_report
-from cf_analysis_agent.reports.founder_and_team import create_founder_and_team_report
-from cf_analysis_agent.reports.final_report import create_final_report_test
+from koala_gains.agent_state import AgentState, ReportType
+from koala_gains.reports.execution_and_speed import create_execution_and_speed_report
+from koala_gains.reports.financial_health import create_financial_health_report
+from koala_gains.reports.general_info import create_general_info_report
+from koala_gains.reports.market_opportunity import create_market_opportunity_report
+from koala_gains.reports.relevant_links import create_relevant_links_report
+from koala_gains.reports.founder_and_team import create_founder_and_team_report
+from koala_gains.reports.final_report import create_final_report_test
 from enum import Enum
 
-from cf_analysis_agent.reports.traction import create_traction_report
-from cf_analysis_agent.reports.valuation import create_valuation_report
+from koala_gains.reports.traction import create_traction_report
+from koala_gains.reports.valuation import create_valuation_report
 
 # ------------------- REPORT MAPPING ------------------- #
 report_keys = ["general_info", "red_flags", "green_flags", "relevant_links", "team_info","financial_review"]

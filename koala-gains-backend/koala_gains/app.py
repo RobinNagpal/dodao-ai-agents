@@ -4,8 +4,8 @@ import sys
 from flask import Flask
 from flask_cors import CORS
 
-from cf_analysis_agent.api.crowdfunding_api import crowdfunding_api
-from cf_analysis_agent.api.public_equity_api import public_equity_api
+from koala_gains.api.crowdfunding_api import crowdfunding_api
+from koala_gains.api.public_equity_api import public_equity_api
 
 # Add the parent directory of app.py to the Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

@@ -1,9 +1,9 @@
 import json
 from typing import List
-from cf_analysis_agent.utils.s3_utils import s3_client, upload_equity_project_to_s3
-from cf_analysis_agent.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse,IndustryGroupData,IndustryGroupCriteria
-from cf_analysis_agent.utils.llm_utils import structured_criteria_response
-from cf_analysis_agent.utils.env_variables import BUCKET_NAME, REGION
+from koala_gains.utils.s3_utils import s3_client, upload_equity_project_to_s3
+from koala_gains.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse,IndustryGroupData,IndustryGroupCriteria
+from koala_gains.utils.llm_utils import structured_criteria_response
+from koala_gains.utils.env_variables import BUCKET_NAME, REGION
 
 def get_industry_group_criteria(sector: str, industry_group: str) -> StructuredIndustryGroupCriteriaResponse:
     """

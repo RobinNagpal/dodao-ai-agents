@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 from typing_extensions import TypedDict, NotRequired
 
 from enum import Enum
-from cf_analysis_agent.agent_state import ProjectInfo, ProcessingStatus, ReportType
-from cf_analysis_agent.structures.report_structures import StructuredReportResponse
-from cf_analysis_agent.utils.env_variables import REGION
-from cf_analysis_agent.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
+from koala_gains.agent_state import ProjectInfo, ProcessingStatus, ReportType
+from koala_gains.structures.report_structures import StructuredReportResponse
+from koala_gains.utils.env_variables import REGION
+from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
 
 load_dotenv()
 
