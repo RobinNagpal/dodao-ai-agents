@@ -8,7 +8,7 @@ WORKDIR /app
 COPY poetry.lock pyproject.toml README.md /app/
 
 # Copy the application files, including .env
-COPY cf_analysis_agent /app/koala_gains
+COPY koala_gains /app/koala_gains
 
 # Install Poetry
 RUN pip install poetry
