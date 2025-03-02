@@ -63,11 +63,12 @@ def get_criteria_lookup_list() -> CriteriaLookupList:
     return json.loads(response["Body"].read().decode("utf-8"))
 
 
-def get_matching_criteria(sector_id: int, industry_group_id: int) -> CriteriaLookupItem:
+def get_matching_criteria(
+    custom_criteria_list: CriteriaLookupList, sector_id: int, industry_group_id: int
+) -> CriteriaLookupItem:
     """
     Fetches the matching criteria for the given sector and industry group.
     """
-    custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
     matching_criteria = next(
         (
             x
@@ -114,11 +115,12 @@ def update_criteria_lookup_list(
 
     # Find criteria for the given sector and industry group in the list
     matching_criteria = get_matching_criteria(
+        custom_criteria_list,
         criteria_lookup_item.get("sectorId"),
         criteria_lookup_item.get("industryGroupId"),
     )
 
-    matching_criteria["aiCriteriaFileLocation"] = ai_criteria_url
+    matching_criteria["aiCriteriaFileUrl"] = ai_criteria_url
     upload_to_s3_public_equities(
         json.dumps(custom_criteria_list, indent=2),
         "gics/custom-criterias.json",

@@ -71,8 +71,8 @@ class CriteriaLookupItem(TypedDict):
     sectorName: str
     industryGroupId: int
     industryGroupName: str
-    aiCriteriaFileLocation: Optional[str]
-    customCriteriaFileLocation: Optional[str]
+    aiCriteriaFileUrl: Optional[str]
+    customCriteriaFileUrl: Optional[str]
 
 
 class CriteriaLookupList(TypedDict):

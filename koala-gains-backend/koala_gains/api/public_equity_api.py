@@ -3,12 +3,16 @@ from typing import TypedDict
 import traceback
 from flask import Blueprint, request, jsonify
 
-from koala_gains.structures.criteria_structures import IndustryGroupCriteria
+from koala_gains.structures.criteria_structures import (
+    IndustryGroupCriteria,
+    CriteriaLookupList,
+)
 from koala_gains.utils.criteria_utils import (
     generate_ai_criteria,
     upload_ai_criteria_to_s3,
     update_criteria_lookup_list,
     get_matching_criteria,
+    get_criteria_lookup_list,
 )
 
 
@@ -26,8 +30,11 @@ def create_ai_criteria():
         # It is assumed that request.json matches the EquityDetailsDict type.
         criteria_request: CreateCriteriaRequest = request.json
         print(f"Creating AI criteria for: {criteria_request}")
+        custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
         mathing_criteria = get_matching_criteria(
-            criteria_request.get("sectorId"), criteria_request.get("industryGroupId")
+            custom_criteria_list,
+            criteria_request.get("sectorId"),
+            criteria_request.get("industryGroupId"),
         )
 
         final_data: IndustryGroupCriteria = generate_ai_criteria(mathing_criteria)

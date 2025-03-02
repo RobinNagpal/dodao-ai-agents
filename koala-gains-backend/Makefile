@@ -16,3 +16,6 @@ run-project:
 setup:
 	poetry env use 3.11
 	poetry install
+
+fmt:
+	black koala_gains
