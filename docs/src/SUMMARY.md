@@ -10,6 +10,7 @@
     - [Langflow Agent](./002_z05_z03_langflow_agent.md)
     - [Save Report](./002_z05_z03_save_report.md)
     - [Ticker Debug Page](./002_z05_z04_ticker_debug_page.md)
+    - [Paths and JSON Structures](./002_z05_z05_paths_and_json_structures.md)
     - [Sample Report JSON](./002_z05_z07_sample_report_json)
   - [REITs](./002_z02_reits.md)
   - [SEC Filings](./002_z03_sec_filings.md)

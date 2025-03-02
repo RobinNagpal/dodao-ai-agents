@@ -47,7 +47,7 @@ class IndustryGroupData(BaseModel):
     industryGroup: IndustryGroup 
     processedInformation: ProcessedInformation 
 
-class EquityDeatils(BaseModel):
+class EquityDetails(BaseModel):
     sectorId: int
     sectorName: str
     industryGroupId: int

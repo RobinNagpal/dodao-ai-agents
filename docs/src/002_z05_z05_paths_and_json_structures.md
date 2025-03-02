@@ -27,22 +27,30 @@ Contents of the file can look like this
 
 ```json
 {
-  "sector": {
-    "id": 60,
-    "name": "Real Estate",
-    "industryGroups": [
+
+   "criteria": [
       {
-        "id": 60,
-        "name": "Equity REITs",
-        "sectorName": "Real Estate",
-        "aiCriteriaFileUrl": "https://<BUCKET>/public-equities/US/gics/Real-Estate/Equity-REITs/ai-criteria.json",
-        "customCriteriaFileUrl": "https://<BUCKET>/public-equities/US/gics/Real-Estate/Equity-REITs/custom-criteria.json"
+         "sectorId": 10,
+         "sectorName": "Energy",
+         "industryGroupId": 1010,
+         "industryGroupName": "Energy",
+         "aiCriteriaFileLocation": "https://dodao-ai-insights-agent.s3.us-east-1.amazonaws.com/public-equities/US/gics/energy/energy/ai-criteria.json"
       },
       {
-        ...
-      }  
-    ]
-  }
+         "sectorId": 15,
+         "sectorName": "Materials",
+         "industryGroupId": 1510,
+         "industryGroupName": "Materials",
+         "aiCriteriaFileLocation": "https://dodao-ai-insights-agent.s3.us-east-1.amazonaws.com/public-equities/US/gics/materials/materials/ai-criteria.json"
+      },
+      {
+         "sectorId": 20,
+         "sectorName": "Industrials",
+         "industryGroupId": 2010,
+         "industryGroupName": "Capital Goods",
+         "aiCriteriaFileLocation": "https://dodao-ai-insights-agent.s3.us-east-1.amazonaws.com/public-equities/US/gics/industrials/capital-goods/ai-criteria.json"
+      }
+   ]
 }
 ```
 This array will have an entry when we generate an ai-criteria file, or a custom-criteria file, or both.

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "koala_gains_backend"
+name = "koala_gains"
 version = "0.1.0"
 description = ""
 authors = ["DoDAO"]
