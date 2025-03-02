@@ -11,7 +11,7 @@ activate-venv:
 	.venv/bin/activate
 
 run-project:
-	poetry run python cf_analysis_agent/app.py
+	poetry run python koala_gains/app.py
 
 setup:
 	poetry env use 3.11

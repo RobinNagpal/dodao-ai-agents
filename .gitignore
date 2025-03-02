@@ -42,7 +42,7 @@ academy-ui/.env
 data
 
 # langgraph ai agent
-langgraph-poetry/cf_analysis_agent/.env
+langgraph-poetry/koala_gains/.env
 
 # Sentry Config File
 .envrc
@@ -51,7 +51,7 @@ crew_ai_agent/.venv
 crew_ai_agent/.env
 crew_ai_agent/src/crew_ai_agent/__pycache__/
 crew_ai_agent/src/crew_ai_agent/tools/__pycache__/
-koala-gains-backend/cf_analysis_agent/.env
+koala-gains-backend/koala_gains/.env
 
 clickable-demos/node_modules
 venv/

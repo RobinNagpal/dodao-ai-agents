@@ -38,8 +38,8 @@ jobs:
           echo "Writing Git commit info to file..."
           GIT_COMMIT_HASH=$(git rev-parse HEAD)
           GIT_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          echo "COMMIT_HASH=${GIT_COMMIT_HASH}" > cf_analysis_agent/commit_info.txt
-          echo "COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE}" >> cf_analysis_agent/commit_info.txt
+          echo "COMMIT_HASH=${GIT_COMMIT_HASH}" > koala_gains/commit_info.txt
+          echo "COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE}" >> koala_gains/commit_info.txt
 
       - name: Build Docker Image
         working-directory: koala-gains-backend
