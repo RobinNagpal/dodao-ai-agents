@@ -15,23 +15,44 @@ Based on the type of company we can ask AI to give us 6-8 right criteria to eval
 - Criterion - A single parameter or topic or area that can be used to evaluate a company in a Industry Group. example `founderAndTeam`, `traction`, `marketOpportunity`, `executionSpeed` etc. See example of six criterion here - https://koalagains.com/crowd-funding/projects/nightware
     - For each criterion, need to calculate a score. We can use our current pattern for this
     - So corresponding to each criterion, we can have a `performanceChecklist: List[ChecklistItem]` of size 5
-      ```python
-      from pydantic import BaseModel, Field
-      
-      class ChecklistItem(BaseModel):
-          """Checklist item with a score and comment."""
-          checklist_item: str = Field(description="The item to be checked. Explain in 7-10 words.")
-          one_line_explanation: str = Field(description="A brief explanation of how the item was evaluated.")
-          information_used: str = Field(description="All the information used to evaluate the item.")
-          detailed_explanation: str = Field(description="A very detailed explanation of how the item was evaluated. "
-                                                        "Use numbers whenever possible like the numbers shared by startup or by industry standards. "
-                                                        "Explain in at least 4-5 sentences.")
-          evaluation_logic: str = Field(description="Explain in detail on how did you make an opinion. "
-                                                    "What type of startup's data did you use, what industry standards did you take. "
-                                                    "Explain by using the numbers shared by startup or by industry standards"
-                                                    "Explain in at least 4-5 sentences.")
-          score: Literal[0, 1] = Field(description="The score given for this item 0 or 1.")
-      ```
+
+```python
+from typing import Literal
+from pydantic import BaseModel, Field
+
+
+class ChecklistItem(BaseModel):
+    """Checklist item with a score and comment."""
+
+    checklist_item: str = Field(
+        description="The item to be checked. Explain in 7-10 words."
+    )
+    one_line_explanation: str = Field(
+        description="A brief explanation of how the item was evaluated."
+    )
+    information_used: str = Field(
+        description="All the information used to evaluate the item."
+    )
+    detailed_explanation: str = Field(
+        description=(
+            "A very detailed explanation of how the item was evaluated. "
+            "Use numbers whenever possible like the numbers shared by startup "
+            "or by industry standards. Explain in at least 4-5 sentences."
+        )
+    )
+    evaluation_logic: str = Field(
+        description=(
+            "Explain in detail on how you formed your opinion. What type of startup's "
+            "data did you use, and what industry standards did you consider? Explain "
+            "using the numbers shared by the startup or by industry standards in at least "
+            "4-5 sentences."
+        )
+    )
+    score: Literal[0, 1] = Field(
+        description="The score given for this item: 0 or 1."
+    )
+```
+
 - Metric - Under a criterion, a metric is a specific numerical value that will show how well a company is doing in that criterion.
   The reason to define these metrics is to have a common set of metrics when we compare different companies in a Industry Group. Will be implemented later.
 - Report - For each criterion, we can have a report that can be generated.

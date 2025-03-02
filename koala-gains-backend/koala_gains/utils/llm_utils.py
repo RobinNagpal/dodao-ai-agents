@@ -5,7 +5,7 @@ from langchain_openai import ChatOpenAI
 
 from koala_gains.agent_state import Config
 from koala_gains.structures.report_structures import StructuredLLMResponse, StructuredReportResponse
-from koala_gains.structures.criteria_structures import StructuredIndustryGroupCriteriaResponse
+from koala_gains.structures.criteria_structures import IndustryGroupCriteria
 from koala_gains.utils.env_variables import OPEN_AI_DEFAULT_MODEL
 from koala_gains.utils.project_utils import scrape_url
 
@@ -81,11 +81,11 @@ def structured_llm_response(config: Config, operation_name: str, prompt: str) ->
     return validate_structured_output(operation_name, response)
 
 
-def structured_criteria_response(config: Config, operation_name: str, prompt: str) -> StructuredIndustryGroupCriteriaResponse:
+def structured_criteria_response(config: Config, operation_name: str, prompt: str) -> IndustryGroupCriteria:
     """Get the response from the LLM"""
     print(f'Fetching response from LLM for operation: {operation_name}')
-    structured_llm = get_llm(config).with_structured_output(StructuredIndustryGroupCriteriaResponse)
-    response: StructuredIndustryGroupCriteriaResponse = structured_llm.invoke([HumanMessage(content=prompt)])
+    structured_llm = get_llm(config).with_structured_output(IndustryGroupCriteria)
+    response: IndustryGroupCriteria = structured_llm.invoke([HumanMessage(content=prompt)])
     return response
 
 

@@ -24,7 +24,7 @@ def upload_to_s3(content, s3_key, content_type="text/plain"):
     )
     print(f"Uploaded to s3://{BUCKET_NAME}/{s3_key}")
 
-def upload_equity_project_to_s3(content, s3_key, content_type="text/plain"):
+def upload_to_s3_public_equities(content, s3_key: str, content_type="text/plain"):
     """
     Uploads content to S3.
     """
