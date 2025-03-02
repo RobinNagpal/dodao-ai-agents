@@ -8,7 +8,7 @@ WORKDIR /app
 COPY poetry.lock pyproject.toml README.md /app/
 
 # Copy the application files, including .env
-COPY cf_analysis_agent /app/cf_analysis_agent
+COPY cf_analysis_agent /app/koala_gains
 
 # Install Poetry
 RUN pip install poetry
@@ -19,7 +19,7 @@ RUN poetry config virtualenvs.create false \
 
 
 # Copy commit info file
-COPY cf_analysis_agent/commit_info.txt /app/cf_analysis_agent/
+COPY koala_gains/commit_info.txt /app/koala_gains/
 
 # Expose Flask's default port
 EXPOSE 5000
@@ -28,4 +28,4 @@ EXPOSE 5000
 ENV FLASK_ENV=development
 
 # Command to run the Flask app
-ENTRYPOINT ["poetry", "run", "python", "cf_analysis_agent/app.py"]
+ENTRYPOINT ["poetry", "run", "python", "koala_gains/app.py"]

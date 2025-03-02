@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "cf_analysis_agent"
+name = "koala_gains_backend"
 version = "0.1.0"
 description = ""
 authors = ["DoDAO"]
