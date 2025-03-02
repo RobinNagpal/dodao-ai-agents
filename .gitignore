@@ -65,6 +65,7 @@ koala-gains-backend/terraform/terraform.tfstate
 koala-gains-backend/terraform/terraform.tfstate.backup
 koala-gains-backend/terraform/terraform.tfvars
 koala-gains-backend/terraform/.terraform/providers/
+koala-gains-backend/.env
 
 
 agent-tools/cdk/node_modules

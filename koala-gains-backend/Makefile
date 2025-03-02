@@ -11,7 +11,7 @@ activate-venv:
 	.venv/bin/activate
 
 run-project:
-	poetry run python koala_gains/app.py
+	poetry run python -m koala_gains.app
 
 setup:
 	poetry env use 3.11

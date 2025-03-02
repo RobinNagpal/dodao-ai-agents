@@ -2,7 +2,7 @@ import argparse
 
 import asyncio
 
-from agent import graph as parent_graph
+from koala_gains.agent import graph as parent_graph
 from koala_gains.agent_state import AgentState, ProjectInfo
 from koala_gains.utils.report_utils import get_project_info_from_s3
 from koala_gains.utils.process_project_utils import ensure_processed_project_info

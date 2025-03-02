@@ -28,4 +28,4 @@ EXPOSE 5000
 ENV FLASK_ENV=development
 
 # Command to run the Flask app
-ENTRYPOINT ["poetry", "run", "python", "koala_gains/app.py"]
+ENTRYPOINT ["poetry", "run", "python", "-m", "koala_gains.app"]

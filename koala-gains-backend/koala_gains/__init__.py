@@ -1,17 +1,13 @@
 import traceback
-
+from dotenv import load_dotenv
+from langchain_community.document_loaders import ScrapingAntLoader
 from langchain_core.tools import tool
-from langchain_core.messages import BaseMessage
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START
 from langgraph.graph.message import add_messages
-from langchain_openai import ChatOpenAI
-from langchain_community.document_loaders import ScrapingAntLoader
-from langchain_core.messages import HumanMessage
 from langgraph.prebuilt import ToolNode, tools_condition
-
+from typing import Annotated
 from typing_extensions import TypedDict
-from typing import Annotated, List
-from dotenv import load_dotenv
 
 # Load environment variables from .env
 load_dotenv()
