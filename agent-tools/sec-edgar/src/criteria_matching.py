@@ -31,10 +31,10 @@ import os
 from edgar import *
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
-from typing import Optional, Literal, List, Union, TypedDict
+from typing import Optional, Literal, List, TypedDict
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-from public_equity_structures import IndustryGroupCriteria, CriterionMatchesOfLatest10Q, get_criteria_file_key, \
+from src.public_equity_structures import IndustryGroupCriteria, CriterionMatchesOfLatest10Q, get_criteria_file_key, \
     TickerReport, CriterionMatch, get_ticker_file_key, Sector, IndustryGroup, IndustryGroupCriterion, \
     SecFilingAttachment
 from collections import defaultdict
@@ -413,9 +413,8 @@ def get_matched_attachments(
             )
 
             if match_analysis and match_analysis.status == "failure":
-                raise Exception(f"Error: LLM analysis failed for attachment {attachment_document_name}.")
-
-
+                print(f"Error: LLM analysis failed for attachment {attachment_document_name}.")
+                continue
 
             for item in match_analysis.criterion_matches:
                 if item.matched:
@@ -434,12 +433,12 @@ def get_matched_attachments(
     for c_key, matched_list in attachments_by_criterion_map.items():
         top_attachments = sorted(
             matched_list,
-            key=lambda x: x.matched_amount,
+            key=lambda x: x.get('matchedPercentage'),
             reverse=True,
         )[:5]
 
         refined_texts = [
-            filter_text_to_latest_quarter(attachment.content) for attachment in top_attachments
+            filter_text_to_latest_quarter(attachment.get('attachmentContent')) for attachment in top_attachments
         ]
 
         criterion_to_matched_attachments.append(
