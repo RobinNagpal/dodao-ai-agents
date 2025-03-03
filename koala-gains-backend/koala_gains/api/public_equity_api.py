@@ -119,17 +119,17 @@ def create_custom_criteria():
         return handle_exception(e)
 
 
-@public_equity_api.route("/re-populate-matching-attachments", methods=["GET"])
+@public_equity_api.route("/re-populate-matching-attachments", methods=["POST"])
 def process_ticker():
     # Step 1 - Populate matching criteria for the ticker if it does not exist
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
 
-@public_equity_api.route("/create-all-reports", methods=["GET"])
+@public_equity_api.route("/create-all-reports", methods=["POST"])
 def process_ticker():
     # Step 1 - Create a ticker report file if it does not exist
     # Step 2 - Populate matching criteria for the ticker if it does not exist
     # Step 3 - Generate report for the ticker using the criteria
-        # Loop through all criteria and generate reports one by one by calling the flow
+        # For the first criterion, trigger the report, and pass shouldTriggerNext as True
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
 
 
@@ -138,4 +138,14 @@ def process_single_ticker():
     # Step 1 - Create a ticker report file if it does not exist
     # Step 2 - Populate matching criteria for the ticker if it does not exist
     # Step 3 - Generate report for the ticker using the criteria
+    # Trigger the next criterion report. and pass shouldTriggerNext as False
+    return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
+
+
+@public_equity_api.route("/save-criterion-report-and-trigger-next", methods=["POST"])
+def process_single_ticker():
+    # This will send ticker, criterionKey, and reportKey
+    # Save the report in s3
+    # Trigger the next criterion report if not last. Then pass shouldTriggerNext as True
+    # IF last in the list - Then pass shouldTriggerNext as False
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
