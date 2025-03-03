@@ -1,18 +1,12 @@
 import json
 from typing import Any
 
-from koala_gains.structures.criteria_structures import (
-    IndustryGroupCriteriaStructure,
+from koala_gains.structures.public_equity_structures import (
+    IndustryGroupCriteria,
     CriteriaLookupItem,
     CriteriaLookupList,
 )
-from koala_gains.structures.public_equity_structures import (
-    slugify,
-    IndustryGroupCriteria,
-    Sector,
-    IndustryGroup,
-    IndustryGroupCriterion,
-)
+from koala_gains.structures.public_equity_structures import slugify
 from koala_gains.utils.env_variables import BUCKET_NAME, REGION
 from koala_gains.utils.llm_utils import structured_criteria_response, NORMAL_4_0_CONFIG
 from koala_gains.utils.s3_utils import s3_client, upload_to_s3_public_equities
@@ -20,7 +14,7 @@ from koala_gains.utils.s3_utils import s3_client, upload_to_s3_public_equities
 
 def get_industry_group_criteria(
     criteria_lookup: CriteriaLookupItem,
-) -> IndustryGroupCriteriaStructure:
+) -> IndustryGroupCriteria:
     """
     Generates a structured report with 6-8 evaluation criteria for a company operating in a specific sector and industry group.
     """
@@ -88,10 +82,27 @@ def get_matching_criteria(
         raise ValueError("Criteria not found for the given sector and industry group.")
     return matching_criteria
 
+def get_matching_criteria_using_slugs(
+    custom_criteria_list: CriteriaLookupList, sector_id: int, industry_group_id: int
+) -> CriteriaLookupItem:
+    """
+    Fetches the matching criteria for the given sector and industry group.
+    """
+    matching_criteria = next(
+        (
+            x
+            for x in custom_criteria_list["criteria"]
+            if slugify(x.get("sectorName")) == sector_id
+            and slugify(x.get("industryGroupName")) == industry_group_id
+        ),
+        None,
+    )
+    if matching_criteria is None:
+        raise ValueError("Criteria not found for the given sector and industry group.")
+    return matching_criteria
 
-def generate_ai_criteria(
-    criteria_lookup: CriteriaLookupItem,
-) -> IndustryGroupCriteriaStructure:
+
+def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCriteria:
     """
     Generate AI criteria data using industry group information.
     """
@@ -99,36 +110,32 @@ def generate_ai_criteria(
 
 
 def upload_ai_criteria_to_s3(
-    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteriaStructure
+    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteria
 ) -> str:
     """
     Upload AI criteria data to S3 and return the S3 URL.
     """
     s3_key: str = (
-        f"{get_s3_base_path_for_criteria_lookup(criteria_lookup)}/ai-criteria.json"
-    )
-
-    criteria: list[IndustryGroupCriterion] = list(
-        map(lambda x: IndustryGroupCriterion(**x), final_data.criteria)
-    )
-    industry_group_criteria = IndustryGroupCriteria(
-        tickers=final_data.tickers,
-        selectedSector=Sector(
-            id=criteria_lookup.get("sectorId"),
-            name=criteria_lookup.get("sectorName"),
-        ),
-        selectedIndustryGroup=IndustryGroup(
-            id=criteria_lookup.get("industryGroupId"),
-            name=criteria_lookup.get("industryGroupName"),
-        ),
-        criteria=criteria,
+        f"gics/{get_s3_base_path_for_criteria_lookup(criteria_lookup)}/ai-criteria.json"
     )
     upload_to_s3_public_equities(
-        json.dumps(industry_group_criteria, indent=2),
-        s3_key,
-        content_type="application/json",
+        json.dumps(final_data,indent=2), s3_key, content_type="application/json"
     )
-    return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/gics/{s3_key}"
+    return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/{s3_key}"
+
+def upload_custom_criteria_to_s3(
+    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteria
+) -> str:
+    """
+    Upload custom criteria data to S3 and return the S3 URL.
+    """
+    s3_key: str = (
+        f"gics/{get_s3_base_path_for_criteria_lookup(criteria_lookup)}/custom-criteria.json"
+    )
+    upload_to_s3_public_equities(
+        json.dumps(final_data,indent=2), s3_key, content_type="application/json"
+    )
+    return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/{s3_key}"
 
 
 def update_criteria_lookup_list(
@@ -153,6 +160,27 @@ def update_criteria_lookup_list(
         content_type="application/json",
     )
 
+def update_criteria_lookup_list_for_custom_criteria(
+    criteria_lookup_item: CriteriaLookupItem, ai_criteria_url: str
+) -> None:
+    """
+    Update the custom criteria file with AI criteria information.
+    """
+    custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
+
+    # Find criteria for the given sector and industry group in the list
+    matching_criteria = get_matching_criteria(
+        custom_criteria_list,
+        criteria_lookup_item.get("sectorId"),
+        criteria_lookup_item.get("industryGroupId"),
+    )
+
+    matching_criteria["customCriteriaFileUrl"] = ai_criteria_url
+    upload_to_s3_public_equities(
+        json.dumps(custom_criteria_list, indent=2),
+        "gics/custom-criterias.json",
+        content_type="application/json",
+    )
 
 def get_s3_base_path_for_criteria_lookup(criteria_lookup: CriteriaLookupItem):
     """
