@@ -119,13 +119,23 @@ def create_custom_criteria():
         return handle_exception(e)
 
 
+@public_equity_api.route("/re-populate-matching-attachments", methods=["GET"])
+def process_ticker():
+    # Step 1 - Populate matching criteria for the ticker if it does not exist
+    return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
+
 @public_equity_api.route("/create-all-reports", methods=["GET"])
 def process_ticker():
-
+    # Step 1 - Create a ticker report file if it does not exist
+    # Step 2 - Populate matching criteria for the ticker if it does not exist
+    # Step 3 - Generate report for the ticker using the criteria
+        # Loop through all criteria and generate reports one by one by calling the flow
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
 
 
 @public_equity_api.route("/create-single-reports", methods=["GET"])
 def process_single_ticker():
-
+    # Step 1 - Create a ticker report file if it does not exist
+    # Step 2 - Populate matching criteria for the ticker if it does not exist
+    # Step 3 - Generate report for the ticker using the criteria
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200

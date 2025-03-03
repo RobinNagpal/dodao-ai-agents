@@ -1,6 +1,7 @@
 import json
 from typing import Any
 
+from koala_gains.structures.criteria_structures import IndustryGroupCriteriaStructure
 from koala_gains.structures.public_equity_structures import (
     IndustryGroupCriteria,
     CriteriaLookupItem,
@@ -14,7 +15,7 @@ from koala_gains.utils.s3_utils import s3_client, upload_to_s3_public_equities
 
 def get_industry_group_criteria(
     criteria_lookup: CriteriaLookupItem,
-) -> IndustryGroupCriteria:
+) -> IndustryGroupCriteriaStructure:
     """
     Generates a structured report with 6-8 evaluation criteria for a company operating in a specific sector and industry group.
     """
@@ -102,7 +103,7 @@ def get_matching_criteria_using_slugs(
     return matching_criteria
 
 
-def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCriteria:
+def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCriteriaStructure:
     """
     Generate AI criteria data using industry group information.
     """
@@ -110,7 +111,7 @@ def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCr
 
 
 def upload_ai_criteria_to_s3(
-    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteria
+    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteriaStructure
 ) -> str:
     """
     Upload AI criteria data to S3 and return the S3 URL.

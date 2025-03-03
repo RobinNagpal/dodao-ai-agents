@@ -35,7 +35,7 @@ from typing import Optional, Literal, List, Union, TypedDict
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from public_equity_structures import IndustryGroupCriteria, CriterionMatchesOfLatest10Q, get_criteria_file_key, \
-    PubicEquityReport, CriterionMatch, get_ticker_file_key, Sector, IndustryGroup, IndustryGroupCriterion, \
+    TickerReport, CriterionMatch, get_ticker_file_key, Sector, IndustryGroup, IndustryGroupCriterion, \
     SecFilingAttachment
 from collections import defaultdict
 
@@ -246,26 +246,18 @@ def get_object_from_s3(key: str) -> dict:
 
 
 def get_criteria(sector_name: str, industry_group_name: str) -> IndustryGroupCriteria:
-    """
-    Attempts to load <bucket>/public-equities/US/{ticker}/latest-10q-criterial-info.json
-    If not found, creates a new record with 'processing' status.
-    """
     key = get_criteria_file_key(sector_name, industry_group_name)
     data = get_object_from_s3(key)
     return IndustryGroupCriteria(**data)
 
 
-def get_ticker_report(ticker: str) -> PubicEquityReport:
-    """
-    Attempts to load <bucket>/public-equities/US/{ticker}/latest-10q-criterial-info.json
-    If not found, creates a new record with 'processing' status.
-    """
+def get_ticker_report(ticker: str) -> TickerReport:
     key = get_ticker_file_key(ticker)
     data = get_object_from_s3(key)
-    return PubicEquityReport(**data)
+    return TickerReport(**data)
 
 
-def put_ticker_report_to_s3(ticker: str, report: PubicEquityReport):
+def put_ticker_report_to_s3(ticker: str, report: TickerReport):
     """Writes the updated info JSON to S3."""
     key = get_ticker_file_key(ticker)
     data = json.dumps(report, indent=2)
@@ -498,7 +490,7 @@ def filter_text_to_latest_quarter(raw_text: str) -> str:
     return response.content
 
 def populate_criteria_matches(ticker: str):
-    report: PubicEquityReport = get_ticker_report(ticker)
+    report: TickerReport = get_ticker_report(ticker)
     try:
         sector: Sector = report.get('selectedSector')
         industry_group: IndustryGroup = report.get('selectedIndustryGroup')
@@ -526,7 +518,7 @@ def get_criterion_attachments_content(
       - Calls GPT-4o-mini to keep only the latest quarter's content.
       - If data is missing, runs the full process and then returns results.
     """
-    public_equity_report: PubicEquityReport = get_ticker_report(ticker)
+    public_equity_report: TickerReport = get_ticker_report(ticker)
     criteria_matches: Optional[CriterionMatchesOfLatest10Q] = public_equity_report.get("criteriaMatchesOfLatest10Q")
     if criteria_matches is None:
         raise Exception(f"Error: No criterion matches found for {ticker}.")
