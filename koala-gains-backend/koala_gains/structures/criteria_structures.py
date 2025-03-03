@@ -2,17 +2,7 @@ from typing import List, TypedDict, Optional, Literal
 from pydantic import BaseModel, Field
 
 
-class Sector(BaseModel):
-    id: int = Field(description="ID of the sector.")
-    name: str = Field(description="Name of the sector.")
-
-
-class IndustryGroup(BaseModel):
-    id: int = Field(description="ID of the industry group.")
-    name: str = Field(description="Name of the industry group.")
-
-
-class ImportantMetric(BaseModel):
+class CriterionImportantMetricDefinitionStructure(BaseModel):
     key: str = Field(
         description="Unique identifier for the metric, formatted in lower case with underscores."
     )
@@ -25,7 +15,7 @@ class ImportantMetric(BaseModel):
     )
 
 
-class Report(BaseModel):
+class CriterionReportDefinitionStructure(BaseModel):
     key: str = Field(
         description="Unique identifier for the report associated with the criteria."
     )
@@ -38,7 +28,7 @@ class Report(BaseModel):
     )
 
 
-class Criteria(BaseModel):
+class CriteriaStructure(BaseModel):
     key: str = Field(
         description="Unique identifier for the criteria, formatted in lower case with underscores."
     )
@@ -46,22 +36,19 @@ class Criteria(BaseModel):
     shortDescription: str = Field(
         description="Brief overview of the criteria and its intended evaluation purpose."
     )
-    importantMetrics: List[ImportantMetric] = Field(
+    importantMetrics: List[CriterionImportantMetricDefinitionStructure] = Field(
         description="List of key metrics that are used to evaluate this criteria."
     )
-    reports: List[Report] = Field(
+    reports: List[CriterionReportDefinitionStructure] = Field(
         description="List of reports generated based on the criteria's evaluation."
     )
 
 
-class IndustryGroupCriteria(BaseModel):
+class IndustryGroupCriteriaStructure(BaseModel):
     tickers: List[str] = Field(
         description="List of ticker symbols representing the companies."
     )
-    selectedIndustryGroup: IndustryGroup = Field(
-        description="Information about the selected industry group."
-    )
-    criteria: List[Criteria] = Field(
+    criteria: List[CriteriaStructure] = Field(
         description="Collection of evaluation criteria, including their metrics and reports."
     )
 

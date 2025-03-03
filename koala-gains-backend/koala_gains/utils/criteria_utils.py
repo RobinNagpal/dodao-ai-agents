@@ -2,11 +2,17 @@ import json
 from typing import Any
 
 from koala_gains.structures.criteria_structures import (
-    IndustryGroupCriteria,
+    IndustryGroupCriteriaStructure,
     CriteriaLookupItem,
     CriteriaLookupList,
 )
-from koala_gains.structures.public_equity_structures import slugify
+from koala_gains.structures.public_equity_structures import (
+    slugify,
+    IndustryGroupCriteria,
+    Sector,
+    IndustryGroup,
+    IndustryGroupCriterion,
+)
 from koala_gains.utils.env_variables import BUCKET_NAME, REGION
 from koala_gains.utils.llm_utils import structured_criteria_response, NORMAL_4_0_CONFIG
 from koala_gains.utils.s3_utils import s3_client, upload_to_s3_public_equities
@@ -14,7 +20,7 @@ from koala_gains.utils.s3_utils import s3_client, upload_to_s3_public_equities
 
 def get_industry_group_criteria(
     criteria_lookup: CriteriaLookupItem,
-) -> IndustryGroupCriteria:
+) -> IndustryGroupCriteriaStructure:
     """
     Generates a structured report with 6-8 evaluation criteria for a company operating in a specific sector and industry group.
     """
@@ -83,7 +89,9 @@ def get_matching_criteria(
     return matching_criteria
 
 
-def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCriteria:
+def generate_ai_criteria(
+    criteria_lookup: CriteriaLookupItem,
+) -> IndustryGroupCriteriaStructure:
     """
     Generate AI criteria data using industry group information.
     """
@@ -91,7 +99,7 @@ def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCr
 
 
 def upload_ai_criteria_to_s3(
-    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteria
+    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteriaStructure
 ) -> str:
     """
     Upload AI criteria data to S3 and return the S3 URL.
@@ -99,8 +107,26 @@ def upload_ai_criteria_to_s3(
     s3_key: str = (
         f"{get_s3_base_path_for_criteria_lookup(criteria_lookup)}/ai-criteria.json"
     )
+
+    criteria: list[IndustryGroupCriterion] = list(
+        map(lambda x: IndustryGroupCriterion(**x), final_data.criteria)
+    )
+    industry_group_criteria = IndustryGroupCriteria(
+        tickers=final_data.tickers,
+        selectedSector=Sector(
+            id=criteria_lookup.get("sectorId"),
+            name=criteria_lookup.get("sectorName"),
+        ),
+        selectedIndustryGroup=IndustryGroup(
+            id=criteria_lookup.get("industryGroupId"),
+            name=criteria_lookup.get("industryGroupName"),
+        ),
+        criteria=criteria,
+    )
     upload_to_s3_public_equities(
-        final_data.model_dump_json(indent=2), s3_key, content_type="application/json"
+        json.dumps(industry_group_criteria, indent=2),
+        s3_key,
+        content_type="application/json",
     )
     return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/gics/{s3_key}"
 

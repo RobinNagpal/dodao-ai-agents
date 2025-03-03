@@ -6,9 +6,11 @@ ProcessingStatus = Literal["Completed", "Failed", "InProgress"]
 
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
+
 class IndustryGroup(TypedDict):
     id: int
     name: str
+
 
 class Sector(TypedDict):
     id: int  # ID of the sector.
@@ -20,17 +22,20 @@ class Metric(TypedDict):
     value: float  # Use float; adjust if integers are expected sometimes.
     calculationExplanation: str
 
+
 class ImportantMetrics(TypedDict):
     status: str
     metrics: List[List[Metric]]  # Nested list structure as provided.
+
 
 class Report(TypedDict, total=False):
     key: str
     name: str
     outputType: str
     status: str
-    outputFile: Optional[str]      # Optional since some reports use "outputFileUrl"
-    outputFileUrl: Optional[str]   # Optional field.
+    outputFile: Optional[str]  # Optional since some reports use "outputFileUrl"
+    outputFileUrl: Optional[str]  # Optional field.
+
 
 class PerformanceChecklistItem(TypedDict):
     checklistItem: str
@@ -40,11 +45,13 @@ class PerformanceChecklistItem(TypedDict):
     evaluationLogic: str
     score: int
 
+
 class CriteriaEvaluation(TypedDict):
     criterionKey: str
     importantMetrics: Optional[ImportantMetrics]
     reports: Optional[List[Report]]
     performanceChecklist: Optional[List[PerformanceChecklistItem]]
+
 
 class SecFilingAttachment(TypedDict):
     attachmentSequenceNumber: str
@@ -53,15 +60,18 @@ class SecFilingAttachment(TypedDict):
     attachmentUrl: str
     matchedPercentage: float
 
+
 class CriterionMatch(TypedDict):
     criterionKey: str
     matchedAttachments: List[SecFilingAttachment]
     matchedContent: str
 
+
 class CriterionMatchesOfLatest10Q(TypedDict):
     criterionMatches: List[CriterionMatch]
     status: ProcessingStatus
     failureReason: Optional[str]
+
 
 class PubicEquityReport(TypedDict):
     ticker: str
@@ -77,11 +87,15 @@ class CriterionImportantMetricItem(TypedDict):
     description: str  # Detailed explanation of what the metric measures.
     formula: str  # Mathematical formula used to calculate the metric (e.g., 'occupied_units / total_units').
 
+
 class CriterionReportItem(TypedDict):
     key: str  # Unique identifier for the report associated with the criteria.
     name: str  # Name of the report.
     description: str  # Comprehensive description outlining the content and purpose of the report.
-    outputType: Literal["Text", "BarGraph", "PieChart"]  # Specifies the type of output: Text, BarGraph or PieChart.
+    outputType: Literal[
+        "Text", "BarGraph", "PieChart"
+    ]  # Specifies the type of output: Text, BarGraph or PieChart.
+
 
 class IndustryGroupCriterion(TypedDict):
     key: str
@@ -90,11 +104,13 @@ class IndustryGroupCriterion(TypedDict):
     importantMetrics: List[CriterionImportantMetricItem]
     reports: List[CriterionReportItem]
 
+
 class IndustryGroupCriteria(TypedDict):
     tickers: List[str]
     selectedSector: Sector
     selectedIndustryGroup: IndustryGroup
     criteria: List[IndustryGroupCriterion]
+
 
 class CriteriaLookupItem(TypedDict):
     sectorId: int
@@ -103,6 +119,7 @@ class CriteriaLookupItem(TypedDict):
     industryGroupName: str
     aiCriteriaFileUrl: Optional[str]
     customCriteriaFileUrl: Optional[str]
+
 
 class CriteriaLookupList(TypedDict):
     criteria: List[CriteriaLookupItem]
@@ -113,12 +130,12 @@ class CreateAllReportsRequest(TypedDict):
     selectedIndustryGroup: IndustryGroup
     selectedSector: Sector
 
+
 class CreateSingleReportsRequest(TypedDict):
     ticker: str
     criterionKey: str
     selectedIndustryGroup: IndustryGroup
     selectedSector: Sector
-
 
 
 # Exactly same as the typescript implementation we have here
@@ -137,9 +154,11 @@ def get_criteria_file_url(sector_name: str, industry_group_name: str):
     full_url = f"https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/{full_key}"
     return full_url
 
+
 def get_criteria_file_key(sector_name: str, industry_group_name: str):
     full_key = f"public-equities/US/gcis/{slugify(sector_name)}/{slugify(industry_group_name)}/custom-criteria.json"
     return full_key
+
 
 def get_ticker_file_key(ticker: str):
     full_key = f"public-equities/US/gcis/{ticker}/latest-10q-report.json"

@@ -3,8 +3,11 @@ from typing import TypedDict
 from flask import Blueprint, request, jsonify
 
 from koala_gains.api.api_helper import handle_exception
-from koala_gains.structures.criteria_structures import (
-    IndustryGroupCriteria,
+from koala_gains.structures.criteria_structures import IndustryGroupCriteriaStructure
+
+from koala_gains.structures.public_equity_structures import (
+    IndustryGroup,
+    Sector,
     CriteriaLookupList,
 )
 from koala_gains.utils.criteria_utils import (
@@ -19,6 +22,12 @@ from koala_gains.utils.criteria_utils import (
 class CreateCriteriaRequest(TypedDict):
     sectorId: int
     industryGroupId: int
+
+
+class CreateAllReportsRequest(TypedDict):
+    ticker: str
+    selectedIndustryGroup: IndustryGroup
+    selectedSector: Sector
 
 
 public_equity_api = Blueprint("public_equity_api", __name__)
@@ -37,7 +46,9 @@ def create_ai_criteria():
             criteria_request.get("industryGroupId"),
         )
 
-        final_data: IndustryGroupCriteria = generate_ai_criteria(mathing_criteria)
+        final_data: IndustryGroupCriteriaStructure = generate_ai_criteria(
+            mathing_criteria
+        )
         ai_criteria_url: str = upload_ai_criteria_to_s3(mathing_criteria, final_data)
         update_criteria_lookup_list(mathing_criteria, ai_criteria_url)
 
@@ -55,10 +66,12 @@ def create_ai_criteria():
     except Exception as e:
         return handle_exception(e)
 
+
 @public_equity_api.route("/create-all-reports", methods=["GET"])
 def process_ticker():
 
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
+
 
 @public_equity_api.route("/create-single-reports", methods=["GET"])
 def process_ticker():
