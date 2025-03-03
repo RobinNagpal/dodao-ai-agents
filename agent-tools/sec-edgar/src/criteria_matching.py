@@ -527,7 +527,7 @@ def get_criterion_attachments_content(
       - If data is missing, runs the full process and then returns results.
     """
     public_equity_report: PubicEquityReport = get_ticker_report(ticker)
-    criteria_matches: CriterionMatchesOfLatest10Q = public_equity_report.get("criteriaMatchesOfLatest10Q", None)
+    criteria_matches: Optional[CriterionMatchesOfLatest10Q] = public_equity_report.get("criteriaMatchesOfLatest10Q")
     if criteria_matches is None:
         raise Exception(f"Error: No criterion matches found for {ticker}.")
     if criteria_matches.get("status") != "Completed":
