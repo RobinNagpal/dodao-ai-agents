@@ -9,7 +9,7 @@ from koala_gains.structures.public_equity_structures import (
     IndustryGroup,
     IndustryGroupCriteria,
     Sector,
-    CriteriaLookupList,
+    CriteriaLookupList, IndustryGroupCriterion,
 )
 from koala_gains.utils.criteria_utils import (
     generate_ai_criteria,
@@ -27,11 +27,22 @@ class CreateCriteriaRequest(TypedDict):
     sectorId: int
     industryGroupId: int
 
+class UpsertCustomCriteriaRequest(TypedDict):
+    sectorId: int
+    industryGroupId: int
+    criteria: list[IndustryGroupCriterion]
+
 
 class CreateAllReportsRequest(TypedDict):
     ticker: str
-    selectedIndustryGroup: IndustryGroup
-    selectedSector: Sector
+    sectorId: Sector
+    industryGroupId: IndustryGroup
+
+class CreateSingleCriterionReportsRequest(TypedDict):
+    ticker: str
+    sectorId: int
+    industryGroupId: int
+    criterionKey: str
 
 
 public_equity_api = Blueprint("public_equity_api", __name__)
@@ -74,12 +85,12 @@ def create_ai_criteria():
 def create_custom_criteria():
     try:
         # Get request JSON
-        criteria_request: CreateCriteriaRequest = request.json
+        criteria_request: UpsertCustomCriteriaRequest = request.json
 
         # Validate required fields
         sector_id = criteria_request.get("sectorId")
         industry_group_id = criteria_request.get("industryGroupId")
-        criteria = criteria_request.get("criteria")  # Expecting a list of criteria
+        criteria: list[IndustryGroupCriterion] = criteria_request.get("criteria")  # Expecting a list of criteria
         print(f"Creating Custom criteria for Sector ID: {sector_id}, Industry Group ID: {industry_group_id}")
         if not sector_id or not industry_group_id or not criteria:
             return jsonify({"success": False, "message": "Missing required fields"}), 400
@@ -125,7 +136,7 @@ def process_ticker():
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
 
 @public_equity_api.route("/create-all-reports", methods=["POST"])
-def process_ticker():
+def create_all_reports():
     # Step 1 - Create a ticker report file if it does not exist
     # Step 2 - Populate matching criteria for the ticker if it does not exist
     # Step 3 - Generate report for the ticker using the criteria
@@ -143,7 +154,7 @@ def process_single_ticker():
 
 
 @public_equity_api.route("/save-criterion-report-and-trigger-next", methods=["POST"])
-def process_single_ticker():
+def save_and_trigger_next():
     # This will send ticker, criterionKey, and reportKey
     # Save the report in s3
     # Trigger the next criterion report if not last. Then pass shouldTriggerNext as True
