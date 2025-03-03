@@ -63,7 +63,7 @@ class CriterionMatchesOfLatest10Q(TypedDict):
     status: ProcessingStatus
     failureReason: Optional[str]
 
-class PubicEquityReport(TypedDict):
+class TickerReport(TypedDict):
     ticker: str
     selectedIndustryGroup: IndustryGroup
     selectedSector: Sector
