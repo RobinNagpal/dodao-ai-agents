@@ -31,7 +31,7 @@ def upload_to_s3_public_equities(content, s3_key: str, content_type="text/plain"
     """
     Uploads content to S3.
     """
-    full_key = f"public-equities/US/{s3_key}"
+    full_key = f"public-equities/US/gics/{s3_key}"
     print(
         f"Uploading to S3... at https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/{full_key} with content type {content_type}"
     )
