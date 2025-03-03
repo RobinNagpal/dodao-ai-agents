@@ -40,11 +40,14 @@ load_dotenv()
 s3_client = boto3.client("s3")
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
+
 class Criterion(BaseModel):
     """Criterion for which we need to extract data from SEC filings"""
+
     key: str = Field(description="The key for the criterion")
     name: str = Field(description="The name of the criterion")
     short_description: str = Field(description="A short description of the criterion")
+
 
 class Criteria(BaseModel):
     sector: str = Field(description="The sector of the company")
@@ -53,26 +56,45 @@ class Criteria(BaseModel):
     sub_industry: str = Field(description="The sub-industry of the company")
     criteria: list[Criterion] = Field(description="The list of criteria to be matched")
 
+
 class CriterionMatchItem(BaseModel):
     """Criterion match item"""
+
     criterion_key: str = Field(description="The key of the matched criterion")
     matched: bool = Field(description="Whether the criterion matched")
-    matched_amount: float = Field(description="The percentage of the content that matched the keyword")
+    matched_amount: float = Field(
+        description="The percentage of the content that matched the keyword"
+    )
+
 
 class CriterionMatchResponse(BaseModel):
     """Return LLM response in a structured format"""
-    criterion_matches: List[CriterionMatchItem] = Field(description="List of criterion matches")
-    status: Literal['success', 'failure'] = Field(description="If successful in processing the prompt and producing the output.")
-    failureReason: Optional[str] = Field(description="The reason for the failure if the status is failed.")
+
+    criterion_matches: List[CriterionMatchItem] = Field(
+        description="List of criterion matches"
+    )
+    status: Literal["success", "failure"] = Field(
+        description="If successful in processing the prompt and producing the output."
+    )
+    failureReason: Optional[str] = Field(
+        description="The reason for the failure if the status is failed."
+    )
+
 
 class MatchedAttachment(BaseModel):
     name: str = Field(description="The name of the attachment")
     content: str = Field(description="The content of the attachment")
-    matched_amount: float = Field(description="The percentage of the content that matched the criterion")
+    matched_amount: float = Field(
+        description="The percentage of the content that matched the criterion"
+    )
+
 
 class CriterionMatches(BaseModel):
     key: str = Field(description="The key of the criterion")
-    matched_attachments: List[MatchedAttachment] = Field(description="The list of attachments that matched the criterion")
+    matched_attachments: List[MatchedAttachment] = Field(
+        description="The list of attachments that matched the criterion"
+    )
+
 
 class CriterialInfoOutput(BaseModel):
     ticker: str = Field(description="")
@@ -80,25 +102,51 @@ class CriterialInfoOutput(BaseModel):
     industry_group: str = Field(description="The industry group of the company")
     industry: str = Field(description="The industry of the company")
     sub_industry: str = Field(description="The sub-industry of the company")
-    status: Literal['success', 'failure', 'processing'] = Field(description="If successful in processing the prompt and producing the output.")
-    failureReason: Optional[str] = Field(description="The reason for the failure if the status is failed.")
-    criterion_matches: List[CriterionMatches] = Field(description="The list of criteria that matched the criterion")
-    
+    status: Literal["success", "failure", "processing"] = Field(
+        description="If successful in processing the prompt and producing the output."
+    )
+    failureReason: Optional[str] = Field(
+        description="The reason for the failure if the status is failed."
+    )
+    criterion_matches: List[CriterionMatches] = Field(
+        description="The list of criteria that matched the criterion"
+    )
+
+
 reit_criteria: Criteria = Criteria(
     sector="Real Estate",
     industry_group="Equity Real Estate Investment Trusts (REITs)",
     industry="Residential REITs",
     sub_industry="Multi-Family Residential REITs",
     criteria=[
-        Criterion(key="rent", name="Rental Income of REIT", short_description="Rental Income of REIT, above and below market rents etc, and shares quantitative or qualitative data for it"),
-        Criterion(key="debt", name="Debt obligations", short_description="Debt obligations, Mortgage Loans Payable, Lines of Credit and Term Loan, Schedule of Debt"),
-        Criterion(key="cost_of_operations", name="Cost of Operations", short_description="Cost of Operations, Operating Expenses, Property Management Expenses, General and Administrative Expenses"),
-        Criterion(key="stock_types", name="Stock Types", short_description="Stock Distribution, Common State, Preferred Shares, Dividends, Dividend Payout")
-    ])
+        Criterion(
+            key="rent",
+            name="Rental Income of REIT",
+            short_description="Rental Income of REIT, above and below market rents etc, and shares quantitative or qualitative data for it",
+        ),
+        Criterion(
+            key="debt",
+            name="Debt obligations",
+            short_description="Debt obligations, Mortgage Loans Payable, Lines of Credit and Term Loan, Schedule of Debt",
+        ),
+        Criterion(
+            key="cost_of_operations",
+            name="Cost of Operations",
+            short_description="Cost of Operations, Operating Expenses, Property Management Expenses, General and Administrative Expenses",
+        ),
+        Criterion(
+            key="stock_types",
+            name="Stock Types",
+            short_description="Stock Distribution, Common State, Preferred Shares, Dividends, Dividend Payout",
+        ),
+    ],
+)
+
 
 def s3_key_for_criterial_info(ticker: str) -> str:
     """Construct the S3 key/path for the JSON file."""
     return f"public-equities/US/{ticker}/latest-10q-criterial-info.json"
+
 
 def get_criterial_info_from_s3(ticker: str) -> CriterialInfoOutput:
     """
@@ -108,7 +156,7 @@ def get_criterial_info_from_s3(ticker: str) -> CriterialInfoOutput:
     key = s3_key_for_criterial_info(ticker)
     try:
         obj = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key=key)
-        body = obj['Body'].read().decode("utf-8")
+        body = obj["Body"].read().decode("utf-8")
         data = json.loads(body)
         return CriterialInfoOutput(**data)
     except s3_client.exceptions.NoSuchKey:
@@ -121,9 +169,10 @@ def get_criterial_info_from_s3(ticker: str) -> CriterialInfoOutput:
             sub_industry=reit_criteria.sub_industry,
             status="processing",
             failureReason=None,
-            criterion_matches=[]
+            criterion_matches=[],
         )
         return info
+
 
 def put_criteria_info_to_s3(ticker: str, info: CriterialInfoOutput):
     """Writes the updated info JSON to S3."""
@@ -133,10 +182,13 @@ def put_criteria_info_to_s3(ticker: str, info: CriterialInfoOutput):
         Bucket=S3_BUCKET_NAME,
         Key=key,
         Body=data.encode("utf-8"),
-        ContentType="application/json"
+        ContentType="application/json",
     )
 
-def create_criteria_match_analysis(attachment_name: str, content: str, keywords: list[Criterion]) -> Union[CriterionMatchResponse, None]:
+
+def create_criteria_match_analysis(
+    attachment_name: str, content: str, keywords: list[Criterion]
+) -> Union[CriterionMatchResponse, None]:
     """
     Calls GPT-4o-mini to analyze if the content is relevant to provided topics.
     """
@@ -182,15 +234,20 @@ def create_criteria_match_analysis(attachment_name: str, content: str, keywords:
 
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
     structured_llm = model.with_structured_output(CriterionMatchResponse)
-    
+
     try:
-        response: CriterionMatchResponse = structured_llm.invoke([HumanMessage(content=prompt)])
+        response: CriterionMatchResponse = structured_llm.invoke(
+            [HumanMessage(content=prompt)]
+        )
         return response
     except Exception as e:
         print(f"Error analyzing content: {attachment_name} - {str(e)}")
         return None
 
-def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion]) -> list[CriterionMatches]:
+
+def get_criterion_matched_attachments_list(
+    ticker: str, keywords: list[Criterion]
+) -> list[CriterionMatches]:
     """
     Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
     """
@@ -199,7 +256,7 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
     set_identity("dodao@gmail.com")
     company = Company(ticker)
     filings = company.get_filings(form="10-Q")
-    
+
     if not filings:
         raise Exception(f"Error: No 10-Q filings found for {ticker}.")
 
@@ -207,12 +264,12 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
     cik = latest_10q.cik
     raw_acc_number = latest_10q.accession_number  # e.g. "0000950170-24-127114"
     acc_number_no_dashes = raw_acc_number.replace("-", "")
-    
+
     attachments = latest_10q.attachments
 
     if not keywords:
         raise Exception("Error: No keywords provided for analysis.")
-    
+
     excluded_purposes = [
         "cover",
         "balance sheet",
@@ -222,10 +279,11 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
         "statements of operations and comprehensive income",
         "statement of operations and comprehensive income",
         "statements of operations",
-        "statements of equity"
+        "statements of equity",
     ]
 
     from collections import defaultdict
+
     attachments_per_criterion = defaultdict(list)
 
     for attach in attachments:
@@ -251,11 +309,9 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
         if not content:
             print(f"Warning: Attachment {attach.purpose} has empty content; skipping.")
             continue
-        
+
         matched_result = create_criteria_match_analysis(
-            attachment_name=attach_purpose,
-            content=content,
-            keywords=keywords
+            attachment_name=attach_purpose, content=content, keywords=keywords
         )
         if matched_result and matched_result.status == "success":
             for item in matched_result.criterion_matches:
@@ -264,20 +320,18 @@ def get_criterion_matched_attachments_list(ticker: str, keywords: list[Criterion
                         MatchedAttachment(
                             name=attach_purpose,
                             content=content,
-                            matched_amount=item.matched_amount
+                            matched_amount=item.matched_amount,
                         )
                     )
 
     criterion_to_matched_attachments: List[CriterionMatches] = []
     for c_key, matched_list in attachments_per_criterion.items():
         criterion_to_matched_attachments.append(
-            CriterionMatches(
-                key=c_key,
-                matched_attachments=matched_list
-            )
+            CriterionMatches(key=c_key, matched_attachments=matched_list)
         )
 
     return criterion_to_matched_attachments
+
 
 def refine_financial_text(raw_text: str) -> str:
     """
@@ -312,12 +366,12 @@ def refine_financial_text(raw_text: str) -> str:
     {raw_text}
     """
 
-    response = llm.invoke([
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=user_prompt)
-    ])
+    response = llm.invoke(
+        [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
+    )
 
     return response.content
+
 
 def process_top_attachments(criterion_match) -> str:
     """
@@ -328,14 +382,22 @@ def process_top_attachments(criterion_match) -> str:
     """
     if not criterion_match or not criterion_match.matched_attachments:
         return None
-    
+
     # Sort and select the top 5 attachments
-    top_attachments = sorted(criterion_match.matched_attachments, key=lambda x: x.matched_amount, reverse=True)[:5]
-    refined_texts = [refine_financial_text(attachment.content) for attachment in top_attachments]
+    top_attachments = sorted(
+        criterion_match.matched_attachments,
+        key=lambda x: x.matched_amount,
+        reverse=True,
+    )[:5]
+    refined_texts = [
+        refine_financial_text(attachment.content) for attachment in top_attachments
+    ]
     return "\n\n".join(refined_texts)
 
 
-def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_from_input: Optional[List[dict]] = None) -> dict:
+def get_matching_criteria_attachments(
+    ticker: str, criterion_key: str, keywords_from_input: Optional[List[dict]] = None
+) -> dict:
     """
     This function:
       - Retrieves existing data from S3.
@@ -350,7 +412,9 @@ def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_
         # Check if file exists and contains matches
         if info.status == "success" and info.criterion_matches:
             # Find the criterion match for the given key
-            criterion_match = next((cm for cm in info.criterion_matches if cm.key == criterion_key), None)
+            criterion_match = next(
+                (cm for cm in info.criterion_matches if cm.key == criterion_key), None
+            )
 
             # Process and return the refined content if available
             final_text = process_top_attachments(criterion_match)
@@ -363,7 +427,11 @@ def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_
         put_criteria_info_to_s3(ticker, info)
 
         # Use keywords from input if provided, otherwise default to predefined criteria
-        keywords = [Criterion(**kw) for kw in keywords_from_input] if keywords_from_input else reit_criteria.criteria
+        keywords = (
+            [Criterion(**kw) for kw in keywords_from_input]
+            if keywords_from_input
+            else reit_criteria.criteria
+        )
 
         # Run the full analysis process
         results = get_criterion_matched_attachments_list(ticker, keywords)
@@ -378,7 +446,10 @@ def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_
         if final_text:
             return {"status": "success", "content": final_text}
 
-        return {"status": "failure", "message": "No matching attachments found after processing."}
+        return {
+            "status": "failure",
+            "message": "No matching attachments found after processing.",
+        }
 
     except Exception as e:
         error_msg = str(e)
@@ -393,7 +464,7 @@ def get_matching_criteria_attachments(ticker: str, criterion_key: str, keywords_
             sub_industry=reit_criteria.sub_industry,
             status="failure",
             failureReason=error_msg,
-            criterion_matches=[]
+            criterion_matches=[],
         )
         put_criteria_info_to_s3(ticker, info)
         return {"status": "failure", "message": error_msg}

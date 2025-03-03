@@ -10,6 +10,7 @@ load_dotenv()
 use_local_storage()
 set_identity("your_email@example.com")
 
+
 def refine_financial_text(raw_text: str) -> str:
     """
     Call an LLM (e.g., GPT-4) to filter out older periods and keep only
@@ -44,10 +45,9 @@ def refine_financial_text(raw_text: str) -> str:
     {raw_text}
     """
 
-    response = llm.invoke([
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=user_prompt)
-    ])
+    response = llm.invoke(
+        [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
+    )
 
     return response.content
 

@@ -1,8 +1,8 @@
 from typing import TypedDict
 
-import traceback
 from flask import Blueprint, request, jsonify
 
+from koala_gains.api.api_helper import handle_exception
 from koala_gains.structures.criteria_structures import (
     IndustryGroupCriteria,
     CriteriaLookupList,
@@ -53,6 +53,14 @@ def create_ai_criteria():
         )
 
     except Exception as e:
-        print(traceback.format_exc())
-        print("Error creating AI criteria:", str(e))
-        return jsonify({"success": False, "message": "Internal server error."}), 500
+        return handle_exception(e)
+
+@public_equity_api.route("/create-all-reports", methods=["GET"])
+def process_ticker():
+
+    return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
+
+@public_equity_api.route("/create-single-reports", methods=["GET"])
+def process_ticker():
+
+    return jsonify({"success": True, "message": "Ticker processed successfully."}), 200

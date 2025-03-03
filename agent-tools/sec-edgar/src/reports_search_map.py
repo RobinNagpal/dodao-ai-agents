@@ -12,6 +12,6 @@ search_map: Dict[str, list[str]] = {
     "operation_statement": [
         "statements of operations",
         "statements of operations and comprehensive income",
-        "statement of operations and comprehensive income"
-    ]
+        "statement of operations and comprehensive income",
+    ],
 }

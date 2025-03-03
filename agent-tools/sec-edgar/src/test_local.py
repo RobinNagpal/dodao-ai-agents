@@ -1,6 +1,7 @@
 import json
 from src.app import lambda_handler
 
+
 def local_invoke_search(ticker, report_type):
     """
     Simulate an HTTP POST to /search
@@ -10,16 +11,9 @@ def local_invoke_search(ticker, report_type):
         # For Lambda Function URLs or HTTP API, "rawPath" is used.
         # If you were simulating API Gateway REST, you'd do "path": "/search" instead.
         "rawPath": "/search",
-        "requestContext": {
-            "http": {
-                "method": "POST"
-            }
-        },
+        "requestContext": {"http": {"method": "POST"}},
         # The event body must be a string (JSON-encoded).
-        "body": json.dumps({
-            "ticker": ticker,
-            "report_type": report_type
-        })
+        "body": json.dumps({"ticker": ticker, "report_type": report_type}),
     }
     context = {}  # Unused in this example
     response = lambda_handler(event, context)
@@ -37,14 +31,8 @@ def local_invoke_financials(ticker):
     """
     event = {
         "rawPath": "/financials",
-        "requestContext": {
-            "http": {
-                "method": "POST"
-            }
-        },
-        "body": json.dumps({
-            "ticker": ticker
-        })
+        "requestContext": {"http": {"method": "POST"}},
+        "body": json.dumps({"ticker": ticker}),
     }
     context = {}
     response = lambda_handler(event, context)

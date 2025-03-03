@@ -53,3 +53,9 @@ venv-uv:
 	fi
 	@echo "Creating $(tool) virtual environment using uv with Python 3.10..."
 	cd $(tool) && uv venv --python=python3.11 .venv && uv pip install -r requirements.txt
+
+
+fmt:
+	black sec-edgar/src
+	black s3-uploader/src
+	black scrapingant/src

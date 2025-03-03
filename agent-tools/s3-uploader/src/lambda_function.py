@@ -4,7 +4,8 @@ import re
 import boto3
 import mimetypes
 
-s3 = boto3.client('s3')
+s3 = boto3.client("s3")
+
 
 def lambda_handler(event, context):
     """
@@ -30,7 +31,7 @@ def lambda_handler(event, context):
         if not s3_path or not file_content:
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Missing 'path' or 'content' parameter"})
+                "body": json.dumps({"error": "Missing 'path' or 'content' parameter"}),
             }
 
         # Extract bucket name and object key from s3_path
@@ -38,7 +39,7 @@ def lambda_handler(event, context):
         if not match:
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Invalid S3 path format"})
+                "body": json.dumps({"error": "Invalid S3 path format"}),
             }
 
         bucket_name, s3_key = match.groups()
@@ -64,15 +65,14 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({
-                "message": f"File uploaded successfully",
-                "public_url": public_url,
-                "content_type": content_type
-            })
+            "body": json.dumps(
+                {
+                    "message": f"File uploaded successfully",
+                    "public_url": public_url,
+                    "content_type": content_type,
+                }
+            ),
         }
 
     except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": str(e)})
-        }
+        return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
