@@ -12,3 +12,6 @@ run-single-test:
 
 run-test-windows: 
 	source .venv/Scripts/activate && pytest -v ./test
+
+run-test-local:
+	python -m src.test_local
