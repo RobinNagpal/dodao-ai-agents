@@ -66,7 +66,7 @@ def get_criteria_lookup_list() -> CriteriaLookupList:
     return CriteriaLookupList(**json_response)
 
 
-def get_matching_criteria(
+def get_matching_criteria_lookup_item(
         custom_criteria_list: CriteriaLookupList,
         sector_id: int,
         industry_group_id: int
@@ -90,7 +90,8 @@ def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCr
 
 
 def upload_ai_criteria_to_s3(
-        criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteriaStructure
+        criteria_lookup: CriteriaLookupItem,
+        final_data: IndustryGroupCriteria
 ) -> str:
     """
     Upload AI criteria data to S3 and return the S3 URL.
@@ -105,7 +106,8 @@ def upload_ai_criteria_to_s3(
 
 
 def upload_custom_criteria_to_s3(
-        criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteria
+        criteria_lookup: CriteriaLookupItem,
+        final_data: IndustryGroupCriteria
 ) -> str:
     """
     Upload custom criteria data to S3 and return the S3 URL.
@@ -128,7 +130,7 @@ def update_criteria_lookup_list(
     custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
 
     # Find criteria for the given sector and industry group in the list
-    matching_criteria = get_matching_criteria(
+    matching_criteria = get_matching_criteria_lookup_item(
         custom_criteria_list,
         criteria_lookup_item.sectorId,
         criteria_lookup_item.industryGroupId,
@@ -151,7 +153,7 @@ def update_criteria_lookup_list_for_custom_criteria(
     custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
 
     # Find criteria for the given sector and industry group in the list
-    matching_criteria = get_matching_criteria(
+    matching_criteria = get_matching_criteria_lookup_item(
         custom_criteria_list,
         criteria_lookup_item.sectorId,
         criteria_lookup_item.industryGroupId,

@@ -14,7 +14,7 @@ from koala_gains.utils.criteria_utils import (
     update_criteria_lookup_list_for_custom_criteria,
     upload_ai_criteria_to_s3,
     update_criteria_lookup_list,
-    get_matching_criteria,
+    get_matching_criteria_lookup_item,
     get_criteria_lookup_list,
     upload_custom_criteria_to_s3,
 )
@@ -51,17 +51,28 @@ def create_ai_criteria(body: CreateCriteriaRequest):
         print(f"Creating AI criteria for: sectorId: {body.sectorId}, industryGroupId: {body.industryGroupId}")
         custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
 
-        mathing_criteria = get_matching_criteria(
+        criteria_lookup_item = get_matching_criteria_lookup_item(
             custom_criteria_list,
             body.sectorId,
             body.industryGroupId,
         )
 
-        final_data: IndustryGroupCriteriaStructure = generate_ai_criteria(
-            mathing_criteria
+        ai_criteria_reponse: IndustryGroupCriteriaStructure = generate_ai_criteria(
+            criteria_lookup_item
         )
-        ai_criteria_url: str = upload_ai_criteria_to_s3(mathing_criteria, final_data)
-        update_criteria_lookup_list(mathing_criteria, ai_criteria_url)
+        ai_criteria_url: str = upload_ai_criteria_to_s3(criteria_lookup_item, IndustryGroupCriteria(
+            tickers=ai_criteria_reponse.tickers,
+            criteria=ai_criteria_reponse.criteria,
+            selectedSector=Sector(
+                id=criteria_lookup_item.sectorId,
+                name=criteria_lookup_item.sectorName
+            ),
+            selectedIndustryGroup=IndustryGroup(
+                id=criteria_lookup_item.industryGroupId,
+                name=criteria_lookup_item.industryGroupName
+            )
+        ))
+        update_criteria_lookup_list(criteria_lookup_item, ai_criteria_url)
 
         return (
             jsonify(
@@ -94,7 +105,7 @@ def create_custom_criteria(body: UpsertCustomCriteriaRequest):
         # Get the existing criteria lookup list
         custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
         # Find matching criteria
-        matching_criteria = get_matching_criteria(custom_criteria_list, sector_id, industry_group_id)
+        matching_criteria = get_matching_criteria_lookup_item(custom_criteria_list, sector_id, industry_group_id)
 
         # Generate final criteria data using provided criteria
         final_data = IndustryGroupCriteria(

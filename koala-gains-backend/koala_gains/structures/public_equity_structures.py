@@ -1,7 +1,7 @@
 import re
 from typing import TypedDict, List, Optional, Literal
 import os
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 ProcessingStatus = Literal["Completed", "Failed", "InProgress"]
 
@@ -83,27 +83,45 @@ class TickerReport(BaseModel):
 
 
 class CriterionImportantMetricItem(BaseModel):
-    key: str  # Unique identifier for the metric, formatted in lower case with underscores.
-    name: str  # Descriptive name of the metric.
-    description: str  # Detailed explanation of what the metric measures.
-    formula: str  # Mathematical formula used to calculate the metric (e.g., 'occupied_units / total_units').
+    key: str = Field(
+        description="Unique identifier for the metric, formatted in lower case with underscores."
+    )
+    name: str = Field(description="Descriptive name of the metric.")
+    description: str = Field(
+        description="Detailed explanation of what the metric measures."
+    )
+    formula: str = Field(
+        description="Mathematical formula used to calculate the metric (e.g., 'occupied_units / total_units')."
+    )
 
 
 class CriterionReportItem(BaseModel):
-    key: str  # Unique identifier for the report associated with the criteria.
-    name: str  # Name of the report.
-    description: str  # Comprehensive description outlining the content and purpose of the report.
-    outputType: Literal[
-        "Text", "BarGraph", "PieChart"
-    ]  # Specifies the type of output: Text, BarGraph or PieChart.
+    key: str = Field(
+        description="Unique identifier for the report associated with the criteria."
+    )
+    name: str = Field(description="Name of the report.")
+    description: str = Field(
+        description="Comprehensive description outlining the content and purpose of the report."
+    )
+    outputType: Literal["Text", "BarGraph", "PieChart"] = Field(
+        description="Specifies the type of output to produced Text, BarGraph or PieChart."
+    )
 
 
 class IndustryGroupCriterion(BaseModel):
-    key: str
-    name: str
-    shortDescription: str
-    importantMetrics: List[CriterionImportantMetricItem]
-    reports: List[CriterionReportItem]
+    key: str = Field(
+        description="Unique identifier for the criteria, formatted in lower case with underscores."
+    )
+    name: str = Field(description="Descriptive name of the criteria.")
+    shortDescription: str = Field(
+        description="Brief overview of the criteria and its intended evaluation purpose."
+    )
+    importantMetrics: List[CriterionImportantMetricItem] = Field(
+        description="List of key metrics that are used to evaluate this criteria."
+    )
+    reports: List[CriterionReportItem] = Field(
+        description="List of reports generated based on the criteria's evaluation."
+    )
 
 
 class IndustryGroupCriteria(BaseModel):
