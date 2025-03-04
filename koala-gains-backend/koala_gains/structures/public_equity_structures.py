@@ -1,34 +1,35 @@
 import re
 from typing import TypedDict, List, Optional, Literal
 import os
+from pydantic import BaseModel
 
 ProcessingStatus = Literal["Completed", "Failed", "InProgress"]
 
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 
-class IndustryGroup(TypedDict):
+class IndustryGroup(BaseModel):
     id: int
     name: str
 
 
-class Sector(TypedDict):
+class Sector(BaseModel):
     id: int  # ID of the sector.
     name: str  # Name of the sector.
 
 
-class Metric(TypedDict):
+class Metric(BaseModel):
     metric: str
     value: float  # Use float; adjust if integers are expected sometimes.
     calculationExplanation: str
 
 
-class ImportantMetrics(TypedDict):
+class ImportantMetrics(BaseModel):
     status: str
     metrics: List[List[Metric]]  # Nested list structure as provided.
 
 
-class Report(TypedDict, total=False):
+class Report(BaseModel):
     key: str
     name: str
     outputType: str
@@ -37,7 +38,7 @@ class Report(TypedDict, total=False):
     outputFileUrl: Optional[str]  # Optional field.
 
 
-class PerformanceChecklistItem(TypedDict):
+class PerformanceChecklistItem(BaseModel):
     checklistItem: str
     oneLinerExplanation: str
     informationUsed: str
@@ -46,14 +47,14 @@ class PerformanceChecklistItem(TypedDict):
     score: int
 
 
-class CriteriaEvaluation(TypedDict):
+class CriteriaEvaluation(BaseModel):
     criterionKey: str
     importantMetrics: Optional[ImportantMetrics]
     reports: Optional[List[Report]]
     performanceChecklist: Optional[List[PerformanceChecklistItem]]
 
 
-class SecFilingAttachment(TypedDict):
+class SecFilingAttachment(BaseModel):
     attachmentSequenceNumber: str
     attachmentDocumentName: str
     attachmentPurpose: Optional[str]
@@ -61,19 +62,19 @@ class SecFilingAttachment(TypedDict):
     matchedPercentage: float
 
 
-class CriterionMatch(TypedDict):
+class CriterionMatch(BaseModel):
     criterionKey: str
     matchedAttachments: List[SecFilingAttachment]
     matchedContent: str
 
 
-class CriterionMatchesOfLatest10Q(TypedDict):
+class CriterionMatchesOfLatest10Q(BaseModel):
     criterionMatches: List[CriterionMatch]
     status: ProcessingStatus
     failureReason: Optional[str]
 
 
-class TickerReport(TypedDict):
+class TickerReport(BaseModel):
     ticker: str
     selectedIndustryGroup: IndustryGroup
     selectedSector: Sector
@@ -81,14 +82,14 @@ class TickerReport(TypedDict):
     criteriaMatchesOfLatest10Q: Optional[CriterionMatchesOfLatest10Q]
 
 
-class CriterionImportantMetricItem(TypedDict):
+class CriterionImportantMetricItem(BaseModel):
     key: str  # Unique identifier for the metric, formatted in lower case with underscores.
     name: str  # Descriptive name of the metric.
     description: str  # Detailed explanation of what the metric measures.
     formula: str  # Mathematical formula used to calculate the metric (e.g., 'occupied_units / total_units').
 
 
-class CriterionReportItem(TypedDict):
+class CriterionReportItem(BaseModel):
     key: str  # Unique identifier for the report associated with the criteria.
     name: str  # Name of the report.
     description: str  # Comprehensive description outlining the content and purpose of the report.
@@ -97,7 +98,7 @@ class CriterionReportItem(TypedDict):
     ]  # Specifies the type of output: Text, BarGraph or PieChart.
 
 
-class IndustryGroupCriterion(TypedDict):
+class IndustryGroupCriterion(BaseModel):
     key: str
     name: str
     shortDescription: str
@@ -105,33 +106,33 @@ class IndustryGroupCriterion(TypedDict):
     reports: List[CriterionReportItem]
 
 
-class IndustryGroupCriteria(TypedDict):
+class IndustryGroupCriteria(BaseModel):
     tickers: List[str]
     selectedSector: Sector
     selectedIndustryGroup: IndustryGroup
     criteria: List[IndustryGroupCriterion]
 
 
-class CriteriaLookupItem(TypedDict):
+class CriteriaLookupItem(BaseModel):
     sectorId: int
     sectorName: str
     industryGroupId: int
     industryGroupName: str
-    aiCriteriaFileUrl: Optional[str]
-    customCriteriaFileUrl: Optional[str]
+    aiCriteriaFileUrl: Optional[str] = None
+    customCriteriaFileUrl: Optional[str] = None
 
 
-class CriteriaLookupList(TypedDict):
-    criteria: List[CriteriaLookupItem]
+class CriteriaLookupList(BaseModel):
+    criteria: list[CriteriaLookupItem]
 
 
-class CreateAllReportsRequest(TypedDict):
+class CreateAllReportsRequest(BaseModel):
     ticker: str
     selectedIndustryGroup: IndustryGroup
     selectedSector: Sector
 
 
-class CreateSingleReportsRequest(TypedDict):
+class CreateSingleReportsRequest(BaseModel):
     ticker: str
     criterionKey: str
     selectedIndustryGroup: IndustryGroup

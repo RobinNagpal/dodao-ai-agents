@@ -91,6 +91,10 @@ Note - We can treat null as not started status for reports
 {
     "ticker": "AMT",
     "selectedIndustryGroup": {
+       "id": 60101,
+       "name": "Equity REITs"
+    },
+   "selectedSector": {
        "id": 60,
        "name": "Equity REITs"
     },
@@ -153,7 +157,7 @@ This information can be saved in the same ticker file.
             "status": "Completed",
             "metrics": [[
                {
-                  "metric": "rental_rates",
+                  "metricKey": "rental_rates",
                   "value": 1000,
                   "calculationExplanation": "Explains which values were used to calculate the metric."
                },
@@ -162,7 +166,8 @@ This information can be saved in the same ticker file.
                   "value": 0.1,
                   "calculationExplanation": "Explains which values were used to calculate the metric."
                }
-            ]]            },
+            ]]
+         },
          "reports": [
             {
                "key": "rental_health_summary",

@@ -1,19 +1,16 @@
-from typing import TypedDict
+from flask import Blueprint, jsonify
 
-from flask import Blueprint, request, jsonify
+from flask_pydantic import validate
+from pydantic import BaseModel
 
 from koala_gains.api.api_helper import handle_exception
 from koala_gains.structures.criteria_structures import IndustryGroupCriteriaStructure
-
 from koala_gains.structures.public_equity_structures import (
-    IndustryGroup,
     IndustryGroupCriteria,
-    Sector,
-    CriteriaLookupList, IndustryGroupCriterion,
+    CriteriaLookupList, IndustryGroupCriterion, Sector, IndustryGroup,
 )
 from koala_gains.utils.criteria_utils import (
     generate_ai_criteria,
-    get_matching_criteria_using_slugs,
     update_criteria_lookup_list_for_custom_criteria,
     upload_ai_criteria_to_s3,
     update_criteria_lookup_list,
@@ -23,22 +20,21 @@ from koala_gains.utils.criteria_utils import (
 )
 
 
-class CreateCriteriaRequest(TypedDict):
+class CreateCriteriaRequest(BaseModel):
     sectorId: int
     industryGroupId: int
 
-class UpsertCustomCriteriaRequest(TypedDict):
+class UpsertCustomCriteriaRequest(BaseModel):
     sectorId: int
     industryGroupId: int
     criteria: list[IndustryGroupCriterion]
 
-
-class CreateAllReportsRequest(TypedDict):
+class CreateAllReportsRequest(BaseModel):
     ticker: str
     sectorId: Sector
     industryGroupId: IndustryGroup
 
-class CreateSingleCriterionReportsRequest(TypedDict):
+class CreateSingleCriterionReportsRequest(BaseModel):
     ticker: str
     sectorId: int
     industryGroupId: int
@@ -49,16 +45,16 @@ public_equity_api = Blueprint("public_equity_api", __name__)
 
 
 @public_equity_api.route("/upsert-ai-criteria", methods=["POST"])
-def create_ai_criteria():
+@validate(body=CreateCriteriaRequest)
+def create_ai_criteria(body: CreateCriteriaRequest):
     try:
-        # It is assumed that request.json matches the EquityDetailsDict type.
-        criteria_request: CreateCriteriaRequest = request.json
-        print(f"Creating AI criteria for: {criteria_request}")
+        print(f"Creating AI criteria for: sectorId: {body.sectorId}, industryGroupId: {body.industryGroupId}")
         custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
+
         mathing_criteria = get_matching_criteria(
             custom_criteria_list,
-            criteria_request.get("sectorId"),
-            criteria_request.get("industryGroupId"),
+            body.sectorId,
+            body.industryGroupId,
         )
 
         final_data: IndustryGroupCriteriaStructure = generate_ai_criteria(
@@ -82,15 +78,13 @@ def create_ai_criteria():
         return handle_exception(e)
 
 @public_equity_api.route("/upsert-custom-criteria", methods=["POST"])
-def create_custom_criteria():
+@validate(body=UpsertCustomCriteriaRequest)
+def create_custom_criteria(body: UpsertCustomCriteriaRequest):
     try:
-        # Get request JSON
-        criteria_request: UpsertCustomCriteriaRequest = request.json
-
         # Validate required fields
-        sector_id = criteria_request.get("sectorId")
-        industry_group_id = criteria_request.get("industryGroupId")
-        criteria: list[IndustryGroupCriterion] = criteria_request.get("criteria")  # Expecting a list of criteria
+        sector_id = body.sectorId
+        industry_group_id = body.industryGroupId
+        criteria: list[IndustryGroupCriterion] = body.criteria
         print(f"Creating Custom criteria for Sector ID: {sector_id}, Industry Group ID: {industry_group_id}")
         if not sector_id or not industry_group_id or not criteria:
             return jsonify({"success": False, "message": "Missing required fields"}), 400
@@ -100,18 +94,19 @@ def create_custom_criteria():
         # Get the existing criteria lookup list
         custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
         # Find matching criteria
-        matching_criteria = get_matching_criteria_using_slugs(custom_criteria_list, sector_id, industry_group_id)
+        matching_criteria = get_matching_criteria(custom_criteria_list, sector_id, industry_group_id)
 
         # Generate final criteria data using provided criteria
         final_data = IndustryGroupCriteria(
             tickers=["AMT"],  # Hardcoded for now
-            selectedSector={
-                "id": matching_criteria.get("sectorId"),
-                "name": matching_criteria.get("sectorName")},
-            selectedIndustryGroup={
-                "id": matching_criteria.get("industryGroupId"),
-                "name": matching_criteria.get("industryGroupName")
-            },
+            selectedSector= Sector(
+                id=matching_criteria.sectorId,
+                name=matching_criteria.sectorName
+            ),
+            selectedIndustryGroup= IndustryGroup(
+                id=matching_criteria.industryGroupId,
+                name=matching_criteria.industryGroupName
+            ),
             criteria=criteria  # Use the provided criteria
         )
         # Upload criteria to S3
@@ -137,6 +132,7 @@ def process_ticker():
 
 @public_equity_api.route("/create-all-reports", methods=["POST"])
 def create_all_reports():
+
     # Step 1 - Create a ticker report file if it does not exist
     # Step 2 - Populate matching criteria for the ticker if it does not exist
     # Step 3 - Generate report for the ticker using the criteria
