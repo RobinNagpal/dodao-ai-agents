@@ -11,6 +11,7 @@ from koala_gains.structures.public_equity_structures import (
 )
 from koala_gains.utils.criteria_utils import (
     generate_ai_criteria,
+    get_ai_criteria,
     update_criteria_lookup_list_for_custom_criteria,
     upload_ai_criteria_to_s3,
     update_criteria_lookup_list,
@@ -100,8 +101,6 @@ def create_custom_criteria(body: UpsertCustomCriteriaRequest):
         if not sector_id or not industry_group_id or not criteria:
             return jsonify({"success": False, "message": "Missing required fields"}), 400
 
-        print(f"Creating Custom criteria for Sector ID: {sector_id}, Industry Group ID: {industry_group_id}")
-
         # Get the existing criteria lookup list
         custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
         # Find matching criteria
@@ -109,7 +108,7 @@ def create_custom_criteria(body: UpsertCustomCriteriaRequest):
 
         # Generate final criteria data using provided criteria
         final_data = IndustryGroupCriteria(
-            tickers=["AMT"],  # Hardcoded for now
+            tickers=[],
             selectedSector= Sector(
                 id=matching_criteria.sectorId,
                 name=matching_criteria.sectorName
@@ -167,3 +166,37 @@ def save_and_trigger_next():
     # Trigger the next criterion report if not last. Then pass shouldTriggerNext as True
     # IF last in the list - Then pass shouldTriggerNext as False
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
+
+
+@public_equity_api.route("/copy-ai-criteria", methods=["POST"])
+@validate(body=CreateCriteriaRequest)
+def copy_ai_criteria_to_custom(body: CreateCriteriaRequest):
+    try:
+        print(f"Copy AI criteria for: sectorId: {body.sectorId}, industryGroupId: {body.industryGroupId}")
+        custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
+
+        criteria_lookup_item = get_matching_criteria_lookup_item(
+            custom_criteria_list, 
+            body.sectorId, 
+            body.industryGroupId
+        )
+        
+        ai_criteria_data = get_ai_criteria(criteria_lookup_item)
+
+        custom_criteria_url = upload_custom_criteria_to_s3(criteria_lookup_item, ai_criteria_data)
+
+        update_criteria_lookup_list_for_custom_criteria(criteria_lookup_item, custom_criteria_url)
+
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "AI criteria file copied successfully.",
+                    "filePath": custom_criteria_url,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        return handle_exception(e)
