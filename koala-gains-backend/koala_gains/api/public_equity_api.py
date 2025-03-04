@@ -101,8 +101,6 @@ def create_custom_criteria(body: UpsertCustomCriteriaRequest):
         if not sector_id or not industry_group_id or not criteria:
             return jsonify({"success": False, "message": "Missing required fields"}), 400
 
-        print(f"Creating Custom criteria for Sector ID: {sector_id}, Industry Group ID: {industry_group_id}")
-
         # Get the existing criteria lookup list
         custom_criteria_list: CriteriaLookupList = get_criteria_lookup_list()
         # Find matching criteria
@@ -110,7 +108,7 @@ def create_custom_criteria(body: UpsertCustomCriteriaRequest):
 
         # Generate final criteria data using provided criteria
         final_data = IndustryGroupCriteria(
-            tickers=["AMT"],  # Hardcoded for now
+            tickers=[],
             selectedSector= Sector(
                 id=matching_criteria.sectorId,
                 name=matching_criteria.sectorName
