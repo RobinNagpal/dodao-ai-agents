@@ -181,8 +181,18 @@ def get_ticker_file_key(ticker: str):
     full_key = f"public-equities/US/tickers/{ticker}/latest-10q-report.json"
     return full_key
 
-def get_criterion_report_key(ticker: str, criterion_key: str, report_key: str, report_type: Literal["Text", "PieChart", "BarGraph"]):
+
+def get_criterion_report_key(
+    ticker: str,
+    criterion_key: str,
+    report_key: str,
+    report_type: Literal["Text", "PieChart", "BarGraph"],
+):
     if report_type == "Text":
         return f"public-equities/US/tickers/{ticker}/criterion-reports/{criterion_key}/{report_key}.md"
     else:
         return f"public-equities/US/tickers/{ticker}/criterion-reports/{criterion_key}/{report_key}.json"
+
+
+def get_criterion_performance_checklist_key(ticker: str, criterion_key: str):
+    return f"public-equities/US/tickers/{ticker}/criterion-reports/{criterion_key}/performance_checklist.json"

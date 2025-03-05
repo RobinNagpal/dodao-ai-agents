@@ -14,7 +14,7 @@ from koala_gains.utils.s3_utils import s3_client, upload_to_s3_public_equities
 
 
 def get_industry_group_criteria(
-        criteria_lookup: CriteriaLookupItem,
+    criteria_lookup: CriteriaLookupItem,
 ) -> IndustryGroupCriteriaStructure:
     """
     Generates a structured report with 6-8 evaluation criteria for a company operating in a specific sector and industry group.
@@ -65,6 +65,7 @@ def get_criteria_lookup_list() -> CriteriaLookupList:
     json_response = json.loads(response["Body"].read().decode("utf-8"))
     return CriteriaLookupList(**json_response)
 
+
 def get_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCriteria:
     s3_key: str = (
         f"gics/{get_s3_base_path_for_criteria_lookup(criteria_lookup)}/ai-criteria.json"
@@ -76,10 +77,9 @@ def get_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCriteri
     json_response = json.loads(response["Body"].read().decode("utf-8"))
     return IndustryGroupCriteria(**json_response)
 
+
 def get_matching_criteria_lookup_item(
-        custom_criteria_list: CriteriaLookupList,
-        sector_id: int,
-        industry_group_id: int
+    custom_criteria_list: CriteriaLookupList, sector_id: int, industry_group_id: int
 ) -> CriteriaLookupItem:
     """
     Fetches the matching criteria for the given sector and industry group.
@@ -92,7 +92,9 @@ def get_matching_criteria_lookup_item(
     return matching_criteria
 
 
-def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCriteriaStructure:
+def generate_ai_criteria(
+    criteria_lookup: CriteriaLookupItem,
+) -> IndustryGroupCriteriaStructure:
     """
     Generate AI criteria data using industry group information.
     """
@@ -100,8 +102,7 @@ def generate_ai_criteria(criteria_lookup: CriteriaLookupItem) -> IndustryGroupCr
 
 
 def upload_ai_criteria_to_s3(
-        criteria_lookup: CriteriaLookupItem,
-        final_data: IndustryGroupCriteria
+    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteria
 ) -> str:
     """
     Upload AI criteria data to S3 and return the S3 URL.
@@ -112,12 +113,13 @@ def upload_ai_criteria_to_s3(
     upload_to_s3_public_equities(
         final_data.model_dump_json(indent=2), s3_key, content_type="application/json"
     )
-    return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/{s3_key}"
+    return (
+        f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/{s3_key}"
+    )
 
 
 def upload_custom_criteria_to_s3(
-        criteria_lookup: CriteriaLookupItem,
-        final_data: IndustryGroupCriteria
+    criteria_lookup: CriteriaLookupItem, final_data: IndustryGroupCriteria
 ) -> str:
     """
     Upload custom criteria data to S3 and return the S3 URL.
@@ -128,11 +130,13 @@ def upload_custom_criteria_to_s3(
     upload_to_s3_public_equities(
         final_data.model_dump_json(indent=2), s3_key, content_type="application/json"
     )
-    return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/{s3_key}"
+    return (
+        f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/public-equities/US/{s3_key}"
+    )
 
 
 def update_criteria_lookup_list(
-        criteria_lookup_item: CriteriaLookupItem, ai_criteria_url: str
+    criteria_lookup_item: CriteriaLookupItem, ai_criteria_url: str
 ) -> None:
     """
     Update the custom criteria file with AI criteria information.
@@ -155,7 +159,7 @@ def update_criteria_lookup_list(
 
 
 def update_criteria_lookup_list_for_custom_criteria(
-        criteria_lookup_item: CriteriaLookupItem, ai_criteria_url: str
+    criteria_lookup_item: CriteriaLookupItem, ai_criteria_url: str
 ) -> None:
     """
     Update the custom criteria file with AI criteria information.

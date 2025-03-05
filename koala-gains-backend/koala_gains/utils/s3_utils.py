@@ -44,6 +44,7 @@ def upload_to_s3_public_equities(content, s3_key: str, content_type="text/plain"
     )
     print(f"Uploaded to https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/{full_key}")
 
+
 def upload_to_s3(content, full_key: str, content_type="text/plain"):
     """
     Uploads content to S3.
@@ -77,7 +78,6 @@ def get_object_from_s3(s3_key: str):
     """
     response = s3_client.get_object(Bucket=BUCKET_NAME, Key=s3_key)
     return response["Body"].read().decode("utf-8")
-
 
 
 def get_object_from_s3_optional(s3_key: str):
