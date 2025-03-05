@@ -59,3 +59,33 @@ def upload_to_s3(content, full_key: str, content_type="text/plain"):
         ACL="public-read",
     )
     print(f"Uploaded to https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/{full_key}")
+
+    return f"https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/{full_key}"
+
+
+def get_object_from_s3(s3_key: str):
+    """
+    Fetches and returns the object from S3.
+    """
+    response = s3_client.get_object(Bucket=BUCKET_NAME, Key=s3_key)
+    return response["Body"].read().decode("utf-8")
+
+
+def get_object_from_s3(s3_key: str):
+    """
+    Fetches and returns the object from S3.
+    """
+    response = s3_client.get_object(Bucket=BUCKET_NAME, Key=s3_key)
+    return response["Body"].read().decode("utf-8")
+
+
+
+def get_object_from_s3_optional(s3_key: str):
+    """
+    Fetches and returns the object from S3.
+    """
+    try:
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=s3_key)
+        return response["Body"].read().decode("utf-8")
+    except s3_client.exceptions.NoSuchKey:
+        return None

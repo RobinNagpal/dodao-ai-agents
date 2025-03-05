@@ -14,28 +14,25 @@ class IndustryGroup(BaseModel):
 
 
 class Sector(BaseModel):
-    id: int  # ID of the sector.
-    name: str  # Name of the sector.
+    id: int
+    name: str
 
 
-class Metric(BaseModel):
+class MetricValueItem(BaseModel):
     metric: str
-    value: float  # Use float; adjust if integers are expected sometimes.
+    value: float
     calculationExplanation: str
 
 
 class ImportantMetrics(BaseModel):
-    status: str
-    metrics: List[List[Metric]]  # Nested list structure as provided.
+    status: ProcessingStatus
+    metrics: List[MetricValueItem]
 
 
-class Report(BaseModel):
-    key: str
-    name: str
-    outputType: str
-    status: str
-    outputFile: Optional[str]  # Optional since some reports use "outputFileUrl"
-    outputFileUrl: Optional[str]  # Optional field.
+class ReportValueItem(BaseModel):
+    reportKey: str
+    status: ProcessingStatus
+    outputFileUrl: Optional[str]
 
 
 class PerformanceChecklistItem(BaseModel):
@@ -50,7 +47,7 @@ class PerformanceChecklistItem(BaseModel):
 class CriteriaEvaluation(BaseModel):
     criterionKey: str
     importantMetrics: Optional[ImportantMetrics]
-    reports: Optional[List[Report]]
+    reports: Optional[List[ReportValueItem]]
     performanceChecklist: Optional[List[PerformanceChecklistItem]]
 
 
@@ -60,6 +57,7 @@ class SecFilingAttachment(BaseModel):
     attachmentPurpose: Optional[str]
     attachmentUrl: str
     matchedPercentage: float
+    latest10QContent: str
 
 
 class CriterionMatch(BaseModel):
@@ -82,7 +80,7 @@ class TickerReport(BaseModel):
     criteriaMatchesOfLatest10Q: Optional[CriterionMatchesOfLatest10Q]
 
 
-class CriterionImportantMetricItem(BaseModel):
+class MetricDefinitionItem(BaseModel):
     key: str = Field(
         description="Unique identifier for the metric, formatted in lower case with underscores."
     )
@@ -95,7 +93,7 @@ class CriterionImportantMetricItem(BaseModel):
     )
 
 
-class CriterionReportItem(BaseModel):
+class CriterionReportDefinitionItem(BaseModel):
     key: str = Field(
         description="Unique identifier for the report associated with the criteria."
     )
@@ -116,10 +114,10 @@ class IndustryGroupCriterion(BaseModel):
     shortDescription: str = Field(
         description="Brief overview of the criteria and its intended evaluation purpose."
     )
-    importantMetrics: List[CriterionImportantMetricItem] = Field(
+    importantMetrics: List[MetricDefinitionItem] = Field(
         description="List of key metrics that are used to evaluate this criteria."
     )
-    reports: List[CriterionReportItem] = Field(
+    reports: List[CriterionReportDefinitionItem] = Field(
         description="List of reports generated based on the criteria's evaluation."
     )
 
@@ -182,3 +180,9 @@ def get_criteria_file_key(sector_name: str, industry_group_name: str):
 def get_ticker_file_key(ticker: str):
     full_key = f"public-equities/US/tickers/{ticker}/latest-10q-report.json"
     return full_key
+
+def get_criterion_report_key(ticker: str, criterion_key: str, report_key: str, report_type: Literal["Text", "PieChart", "BarGraph"]):
+    if report_type == "Text":
+        return f"public-equities/US/tickers/{ticker}/criterion-reports/{criterion_key}/{report_key}.md"
+    else:
+        return f"public-equities/US/tickers/{ticker}/criterion-reports/{criterion_key}/{report_key}.json"

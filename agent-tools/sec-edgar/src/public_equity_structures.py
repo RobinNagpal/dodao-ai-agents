@@ -14,26 +14,26 @@ class IndustryGroup(BaseModel):
 
 
 class Sector(BaseModel):
-    id: int  # ID of the sector.
-    name: str  # Name of the sector.
+    id: int
+    name: str
 
 
-class Metric(BaseModel):
+class MetricValueItem(BaseModel):
     metric: str
-    value: float  # Use float; adjust if integers are expected sometimes.
+    value: float
     calculationExplanation: str
 
 
 class ImportantMetrics(BaseModel):
-    status: str
-    metrics: List[List[Metric]]  # Nested list structure as provided.
+    status: ProcessingStatus
+    metrics: List[MetricValueItem]
 
 
 class Report(BaseModel):
     key: str
     name: str
     outputType: str
-    status: str
+    status: ProcessingStatus
     outputFile: Optional[str]  # Optional since some reports use "outputFileUrl"
     outputFileUrl: Optional[str]  # Optional field.
 
@@ -83,7 +83,7 @@ class TickerReport(BaseModel):
     criteriaMatchesOfLatest10Q: Optional[CriterionMatchesOfLatest10Q]
 
 
-class CriterionImportantMetricItem(BaseModel):
+class MetricDefinitionItem(BaseModel):
     key: str = Field(
         description="Unique identifier for the metric, formatted in lower case with underscores."
     )
@@ -117,7 +117,7 @@ class IndustryGroupCriterion(BaseModel):
     shortDescription: str = Field(
         description="Brief overview of the criteria and its intended evaluation purpose."
     )
-    importantMetrics: List[CriterionImportantMetricItem] = Field(
+    importantMetrics: List[MetricDefinitionItem] = Field(
         description="List of key metrics that are used to evaluate this criteria."
     )
     reports: List[CriterionReportItem] = Field(
