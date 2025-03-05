@@ -153,6 +153,7 @@ def create_criteria_match_analysis(
     response: CriterionMatchResponse = structured_llm.invoke(
         [HumanMessage(content=prompt)]
     )
+    # print(f"LLM analysis response: \n\n{response.model_dump_json(indent=2)}")
     return response
 
 
@@ -213,9 +214,6 @@ def get_matched_attachments(
 
         attachment_start_index += 1
 
-        if attachment_start_index > 20:
-            continue
-
         if attach.document_type != "HTML":
             continue
 
@@ -250,33 +248,39 @@ def get_matched_attachments(
             print(f"Error: LLM analysis failed for attachment {attachment_document_name}.")
             continue
 
-        for item in match_analysis.criterion_matches:
-            if item.matched:
-                attachments_by_criterion_map[item.criterion_key].append(
+        for criterion_match_result in match_analysis.criterion_matches:
+            if criterion_match_result.matched:
+                print(f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.matched_amount}")
+                attachments_by_criterion_map[criterion_match_result.criterion_key].append(
                     AttachmentWithContent(
                         attachmentSequenceNumber=attachment_sequence_number,
                         attachmentDocumentName=attachment_document_name,
                         attachmentPurpose=attachment_purpose,
                         attachmentUrl=attachment_url,
                         attachmentContent=attachment_content,
-                        matchedPercentage=item.matched_amount,
+                        matchedPercentage=criterion_match_result.matched_amount,
                     )
                 )
+                print(f"Number of matched attachments for {criterion_match_result.criterion_key} - {len(attachments_by_criterion_map[criterion_match_result.criterion_key])}")
 
     criterion_to_matched_attachments: List[CriterionMatch] = []
 
 
     for c_key, matched_list in attachments_by_criterion_map.items():
+        print(f"Criterion: {c_key} - Number of matched attachments: {len(matched_list)}")
         top_attachments = sorted(
             matched_list,
             key=lambda x: x.matchedPercentage,
             reverse=True,
         )[:5]
 
+
         refined_texts: list[str] = list()
         matched_attachments: list[SecFilingAttachment] = list()
         for attachment in top_attachments:
+            print(f"Top attachment: {attachment.attachmentDocumentName} - {attachment.matchedPercentage}")
             matched_attachment_content = filter_text_to_latest_quarter(attachment.attachmentContent)
+            print(f"Done with filtering latest 10q content for : {attachment.attachmentDocumentName}")
             sec_attachment = SecFilingAttachment(
                 attachmentSequenceNumber=attachment.attachmentSequenceNumber,
                 attachmentDocumentName=attachment.attachmentDocumentName,
@@ -291,6 +295,7 @@ def get_matched_attachments(
         criterion_to_matched_attachments.append(
             CriterionMatch(criterionKey=c_key, matchedAttachments=matched_attachments, matchedContent="\n\n".join(refined_texts))
         )
+        print(f"Done with adding matched attachmets latest 10q content for criterion: {c_key}")
 
     return CriterionMatchesOfLatest10Q(criterionMatches=criterion_to_matched_attachments, status="Completed", failureReason=None)
 

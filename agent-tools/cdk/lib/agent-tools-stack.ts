@@ -104,7 +104,7 @@ export class AgentToolsStack extends cdk.Stack {
       }));
       
       lambdaFunction.addToRolePolicy(new iam.PolicyStatement({
-        actions: ["s3:GetObject", "s3:PutObject"],
+        actions: ["s3:GetObject", "s3:PutObject", "s3:PutObjectAcl"],
         resources: [`arn:aws:s3:::${process.env.S3_BUCKET_NAME}/*`],
       }));
 
