@@ -5,6 +5,7 @@ from edgar import use_local_storage, set_identity
 from src.all_financial_reports import get_xbrl_financials
 from src.criteria_matching import get_criterion_attachments_content, populate_criteria_matches
 from src.specific_10Q_report import specific_report_text
+import traceback
 
 load_dotenv()
 
@@ -53,6 +54,7 @@ def lambda_handler(event, context):
 
     except Exception as e:
         # If something goes really wrong, return 500
+        print(traceback.format_exc())
         return json_response(
             500, {"status": 500, "message": f"Internal server error: {str(e)}"}
         )

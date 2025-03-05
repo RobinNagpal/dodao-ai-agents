@@ -175,10 +175,10 @@ def get_criteria_file_url(sector_name: str, industry_group_name: str):
 
 
 def get_criteria_file_key(sector_name: str, industry_group_name: str):
-    full_key = f"public-equities/US/gcis/{slugify(sector_name)}/{slugify(industry_group_name)}/custom-criteria.json"
+    full_key = f"public-equities/US/gics/{slugify(sector_name)}/{slugify(industry_group_name)}/custom-criteria.json"
     return full_key
 
 
 def get_ticker_file_key(ticker: str):
-    full_key = f"public-equities/US/gcis/{ticker}/latest-10q-report.json"
+    full_key = f"public-equities/US/tickers/{ticker}/latest-10q-report.json"
     return full_key

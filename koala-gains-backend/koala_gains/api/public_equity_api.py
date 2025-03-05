@@ -19,6 +19,7 @@ from koala_gains.utils.criteria_utils import (
     get_criteria_lookup_list,
     upload_custom_criteria_to_s3,
 )
+from koala_gains.utils.ticker_utils import initialize_new_ticker_report
 
 
 class CreateCriteriaRequest(BaseModel):
@@ -150,9 +151,11 @@ def create_all_reports():
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
 
 
-@public_equity_api.route("/create-single-reports", methods=["GET"])
-def process_single_ticker():
-    # Step 1 - Create a ticker report file if it does not exist
+@public_equity_api.route("/create-single-report", methods=["POST"])
+@validate(body=CreateSingleCriterionReportsRequest)
+def process_single_ticker(body: CreateSingleCriterionReportsRequest):
+    initialize_new_ticker_report(body.ticker, body.sectorId, body.industryGroupId)
+
     # Step 2 - Populate matching criteria for the ticker if it does not exist
     # Step 3 - Generate report for the ticker using the criteria
     # Trigger the next criterion report. and pass shouldTriggerNext as False

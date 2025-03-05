@@ -38,7 +38,7 @@ from koala_gains.utils.report_utils import (
     ProcessedSecInfoSchema,
     ProcessedIndustryAndForecastsSchema,
 )
-from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
+from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_cf_file_to_s3
 
 
 def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:
@@ -477,7 +477,7 @@ def repopulate_project_field(project_id: str, field: RepopulatableFields):
 
     # Save back to S3
     project_file_contents["processedProjectInfo"] = project_info_in_s3
-    upload_to_s3(
+    upload_cf_file_to_s3(
         json.dumps(project_file_contents, indent=4),
         f"{project_id}/agent-status.json",
         "application/json",
@@ -761,7 +761,7 @@ def ensure_processed_project_info(
         )
 
     project_file_contents["processedProjectInfo"] = project_info_in_s3
-    upload_to_s3(
+    upload_cf_file_to_s3(
         content=json.dumps(project_file_contents, indent=4),
         s3_key=f"{project_id}/agent-status.json",
         content_type="application/json",

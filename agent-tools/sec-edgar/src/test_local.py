@@ -84,5 +84,5 @@ if __name__ == "__main__":
     # print()
 
     # 2) Financials route for ticker=AMT
-    # local_invoke_populate_criteria("FVR")
-    local_invoke_get_criteria("FVR", "financial_performance")
+    local_invoke_populate_criteria("FVR")
+    # local_invoke_get_criteria("FVR", "financial_performance")

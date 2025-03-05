@@ -9,7 +9,7 @@ from enum import Enum
 from koala_gains.agent_state import ProjectInfo, ProcessingStatus, ReportType
 from koala_gains.structures.report_structures import StructuredReportResponse
 from koala_gains.utils.env_variables import REGION
-from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_to_s3
+from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_cf_file_to_s3
 
 load_dotenv()
 
@@ -264,7 +264,7 @@ def initialize_project_in_s3(
     }
 
     # Upload the file to S3
-    upload_to_s3(
+    upload_cf_file_to_s3(
         json.dumps(project_file_contents, indent=4),
         agent_status_file_path,
         content_type="application/json",
@@ -392,7 +392,7 @@ def update_project_file(
     }
 
     agent_status_file_path = get_project_status_file_path(project_id)
-    upload_to_s3(
+    upload_cf_file_to_s3(
         json.dumps(new_project_file_contents, indent=4),
         agent_status_file_path,
         content_type="application/json",
@@ -439,7 +439,7 @@ def update_report_with_structured_output(
 
     output_string = generate_markdown_report(structured_output)
 
-    upload_to_s3(f"{addition_data}\n\n{output_string}", report_file_path)
+    upload_cf_file_to_s3(f"{addition_data}\n\n{output_string}", report_file_path)
     # Update status file to "completed"
     markdown_link = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/crowd-fund-analysis/{report_file_path}"
     project_file_contents = get_project_file(project_id)
@@ -552,7 +552,7 @@ def update_status_to_not_started_for_all_reports(project_id, triggered_by):
         f"Set status of report 'finalReport' to 'not_started'. Initialized startTime and estimatedTimeInSec."
     )
 
-    upload_to_s3(
+    upload_cf_file_to_s3(
         json.dumps(project_file_contents, indent=4),
         agent_status_file_path,
         content_type="application/json",
@@ -566,7 +566,7 @@ def create_report_file_and_upload_to_s3(
     project_id: str, report_type: ReportType, report_content: str
 ):
     report_file_path = f"{project_id}/{report_type}.md"
-    upload_to_s3(report_content, report_file_path)
+    upload_cf_file_to_s3(report_content, report_file_path)
     # Update status file to "completed"
     markdown_link = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/crowd-fund-analysis/{report_file_path}"
     update_report_status_completed(project_id, report_type, markdown_link=markdown_link)

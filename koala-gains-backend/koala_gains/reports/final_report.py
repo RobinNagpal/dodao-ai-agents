@@ -1,7 +1,7 @@
 import traceback
 from langchain_core.messages import HumanMessage
 import json
-from koala_gains.utils.s3_utils import upload_to_s3
+from koala_gains.utils.s3_utils import upload_cf_file_to_s3
 from koala_gains.agent_state import AgentState
 from koala_gains.utils.llm_utils import get_llm
 from koala_gains.utils.report_utils import (
@@ -183,7 +183,7 @@ def create_final_report_test(state: AgentState) -> None:
         update_report_status_in_progress(project_id, REPORT_NAME)
         combined_reports = get_combined_reports_from_s3(project_id)
         report_content = generate_project_info_report(state, combined_reports)
-        upload_to_s3(
+        upload_cf_file_to_s3(
             content=json.dumps(report_content, indent=4),
             s3_key=f"{project_id}/spider-graph.json",
             content_type="application/json",
