@@ -47,14 +47,11 @@ def initialize_new_ticker_report(
 
     ticker_file_key = get_ticker_file_key(ticker)
 
-    upload_to_s3(
+    return upload_to_s3(
         report.model_dump_json(indent=2),
         ticker_file_key,
         content_type="application/json",
     )
-
-    return f"https://{BUCKET_NAME}.s3.us-east-1.amazonaws.com/{ticker_file_key}"
-
 
 def get_ticker_report(ticker: str) -> TickerReport:
     ticker_file_key = get_ticker_file_key(ticker)
@@ -126,3 +123,27 @@ def save_performance_checklist(
     checklist_json = json.dumps([item.dict() for item in checklist], indent=2)
 
     return upload_to_s3(checklist_json, file_key, content_type="application/json")
+
+
+def trigger_criteria_matching(ticker: str, force: bool) -> str:
+    report = get_ticker_report(ticker)
+
+    if not force and report.criteriaMatchesOfLatest10Q is not None and report.criteriaMatchesOfLatest10Q.status == "Completed":
+        return f"Criteria matching already done for {ticker}"
+
+    report.criteriaMatchesOfLatest10Q = None
+
+    ticker_file_key = get_ticker_file_key(ticker)
+
+    upload_to_s3(
+        report.model_dump_json(indent=2),
+        ticker_file_key,
+        content_type="application/json",
+    )
+    url = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/populate-criteria-matches"
+    payload = {"ticker": "FVR"}
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    return response.text

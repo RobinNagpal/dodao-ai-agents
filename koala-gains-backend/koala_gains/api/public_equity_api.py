@@ -35,7 +35,7 @@ from koala_gains.utils.ticker_utils import (
     initialize_new_ticker_report,
     get_ticker_report,
     save_criteria_evaluation,
-    save_performance_checklist,
+    save_performance_checklist, trigger_criteria_matching,
 )
 
 
@@ -68,7 +68,7 @@ class SaveCriterionReportRequest(BaseModel):
     criterionKey: str
     reportKey: str
     shouldTriggerNext: bool
-    data: dict[str, str]
+    data: str
 
 
 class SavePerformanceChecklistRequest(BaseModel):
@@ -82,6 +82,9 @@ class SaveCriterionMetricsRequest(BaseModel):
     criterionKey: str
     metrics: List[MetricValueItem]
 
+
+class RepopulateCriteriaMatchingRequest(BaseModel):
+    ticker: str
 
 public_equity_api = Blueprint("public_equity_api", __name__)
 
@@ -198,7 +201,13 @@ def create_custom_criteria(body: UpsertCustomCriteriaRequest):
 
 
 @public_equity_api.route("/re-populate-matching-attachments", methods=["POST"])
-def process_ticker():
+@validate(body=RepopulateCriteriaMatchingRequest)
+def repopulate_criteria_matching(body: RepopulateCriteriaMatchingRequest):
+    trigger_criteria_matching(
+        ticker=body.ticker,
+        force=True
+    )
+
     try:
         return (
             jsonify({"success": True, "message": "Ticker processed successfully."}),
@@ -222,9 +231,11 @@ def create_all_reports():
 def process_single_ticker(body: CreateSingleCriterionReportsRequest):
     initialize_new_ticker_report(body.ticker, body.sectorId, body.industryGroupId)
 
-    # Step 2 - Populate matching criteria for the ticker if it does not exist
-    # Step 3 - Generate report for the ticker using the criteria
-    # Trigger the next criterion report. and pass shouldTriggerNext as False
+    trigger_criteria_matching(
+        ticker=body.ticker,
+        force=False
+    )
+
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
 
 

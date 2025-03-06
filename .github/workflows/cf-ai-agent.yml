@@ -78,6 +78,7 @@ jobs:
                   "GOOGLE_API_KEY": "${{ secrets.GOOGLE_API_KEY }}",
                   "AWS_ACCESS_KEY_ID": "${{ secrets.AI_AGENT_AWS_ACCESS_KEY_ID }}",
                   "AWS_SECRET_ACCESS_KEY": "${{ secrets.AI_AGENT_AWS_SECRET_ACCESS_KEY }}",
+                  "ADMIN_CODES": "${{ secrets.ADMIN_CODES }}",
                   "S3_BUCKET_NAME": "dodao-ai-insights-agent",
                   "AWS_DEFAULT_REGION": "us-east-1"
                 }
