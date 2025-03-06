@@ -101,8 +101,8 @@ class CriterionReportDefinitionItem(BaseModel):
     description: str = Field(
         description="Comprehensive description outlining the content and purpose of the report."
     )
-    outputType: Literal["Text", "BarGraph", "PieChart"] = Field(
-        description="Specifies the type of output to produced Text, BarGraph or PieChart."
+    outputType: Literal["Text", "BarGraph", "PieChart", "WaterfallChart"] = Field(
+        description="Specifies the type of output to produced Text, BarGraph, WaterfallChart or PieChart."
     )
 
 
@@ -186,7 +186,7 @@ def get_criterion_report_key(
     ticker: str,
     criterion_key: str,
     report_key: str,
-    report_type: Literal["Text", "PieChart", "BarGraph"],
+    report_type: Literal["Text", "PieChart", "BarGraph", "WaterfallChart"],
 ):
     if report_type == "Text":
         return f"public-equities/US/tickers/{ticker}/criterion-reports/{criterion_key}/{report_key}.md"
