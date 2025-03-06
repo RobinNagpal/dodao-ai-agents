@@ -1,7 +1,8 @@
 from langflow.custom import Component
-from langflow.inputs import StrInput, DropdownInput
+from langflow.inputs import DropdownInput
 from langflow.template import Output
 from langflow.schema.message import Message
+from langflow.io import MessageTextInput, Output
 
 import requests
 import json
@@ -63,7 +64,7 @@ class SecEdgarMergedComponent(Component):
     CRITERIA_ENDPOINT = "https://4mbhgkl77s4gubn7i2rdcllbru0wzyxl.lambda-url.us-east-1.on.aws/get-matching-criteria-attachments"
     
     inputs = [
-        StrInput(
+        MessageTextInput(
             name="ticker",
             display_name="Ticker",
             value="AAPL",
@@ -81,14 +82,14 @@ class SecEdgarMergedComponent(Component):
             ),
             tool_mode=True,
         ),
-        StrInput(
+        MessageTextInput(
             name="report_type",
             display_name="Report Type (Used if mode='specific_report')",
             value="",
             info="E.g.: 'balance_sheet', 'income_statement', 'operation_statement', or 'cash_flow'.",
             tool_mode=True,
         ),
-        StrInput(
+        MessageTextInput(
             name="criterion_key",
             display_name="Criterion Key (Used if mode='criteria_related_info')",
             value="",
