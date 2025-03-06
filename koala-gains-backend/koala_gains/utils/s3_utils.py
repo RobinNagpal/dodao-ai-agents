@@ -72,14 +72,6 @@ def get_object_from_s3(s3_key: str):
     return response["Body"].read().decode("utf-8")
 
 
-def get_object_from_s3(s3_key: str):
-    """
-    Fetches and returns the object from S3.
-    """
-    response = s3_client.get_object(Bucket=BUCKET_NAME, Key=s3_key)
-    return response["Body"].read().decode("utf-8")
-
-
 def get_object_from_s3_optional(s3_key: str):
     """
     Fetches and returns the object from S3.

@@ -19,8 +19,8 @@ class Sector(BaseModel):
 
 
 class MetricValueItem(BaseModel):
-    metric: str
-    value: float
+    metricKey: str
+    value: str
     calculationExplanation: str
 
 
