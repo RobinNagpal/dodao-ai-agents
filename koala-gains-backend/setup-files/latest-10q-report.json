@@ -1,0 +1,11 @@
+{
+  "ticker": "FVR",
+  "selectedSector": {
+    "id": 60,
+    "name": "Real Estate"
+  },
+  "selectedIndustryGroup": {
+    "id": 6010,
+    "name": "Equity Real Estate Investment Trusts (REITs)"
+  }
+}

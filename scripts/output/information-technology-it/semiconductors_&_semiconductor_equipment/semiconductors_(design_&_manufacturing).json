@@ -1,0 +1,476 @@
+{
+    "subsubsector": "Semiconductors (Design & Manufacturing)",
+    "subsector": "Semiconductors & Semiconductor Equipment",
+    "id": "information-technology-it-semiconductors-semiconductor-equipment-semiconductors-design-manufacturing",
+    "criteria": [
+        {
+            "name": "R&D Spending",
+            "description": "The amount of financial resources allocated to research and development activities to innovate and enhance semiconductor designs.",
+            "importance_rank": "Critical",
+            "reason": "R&D spending is crucial for staying competitive in the rapidly evolving semiconductor industry.",
+            "examples": [
+                "Advanced microprocessors",
+                "Innovative foundry processes"
+            ],
+            "data_points": [
+                {
+                    "name": "Annual R&D Expenses",
+                    "description": "Total expenses on research and development each year",
+                    "source": "Company Financial Reports"
+                },
+                {
+                    "name": "R&D Intensity",
+                    "description": "Percentage of revenue spent on R&D",
+                    "source": "Industry Analysis Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "R&D Intensity Ratio",
+                    "formula": "(R&D Spending / Revenue) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "R&D to Revenue Ratio",
+                    "ideal_value": "15%",
+                    "range": "10%-20%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "NVIDIA Corporation",
+                    "ticker": "NVDA",
+                    "market_cap": "$945B",
+                    "revenue": "$26.91B"
+                },
+                {
+                    "name": "Intel Corporation",
+                    "ticker": "INTC",
+                    "market_cap": "$200B",
+                    "revenue": "$79B"
+                }
+            ],
+            "key_points": [
+                "Prioritization of innovation in design",
+                "Impact of tech advancements on production",
+                "Trends in semiconductor research areas",
+                "Competitors' R&D strategies",
+                "Investment return from R&D"
+            ],
+            "charts": [
+                {
+                    "type": "Bar Chart",
+                    "usage": "A bar chart is useful to compare R&D spending across different companies or over time."
+                },
+                {
+                    "type": "Line Chart",
+                    "usage": "A line chart helps in visualizing R&D spending trends over several years."
+                }
+            ]
+        },
+        {
+            "name": "Process Technology Advancement",
+            "description": "Evaluation of the technology processes used for semiconductor manufacturing, indicating efficiency and capability to shrink nodes.",
+            "importance_rank": "Critical",
+            "reason": "Success in process technologies directly affects yield, performance, and production costs.",
+            "examples": [
+                "7nm and 5nm process technologies",
+                "Extreme Ultraviolet Lithography"
+            ],
+            "data_points": [
+                {
+                    "name": "Process Node Size",
+                    "description": "Minimum manufacturing node achieved (in nm)",
+                    "source": "Industry Reports"
+                },
+                {
+                    "name": "Yield Rates",
+                    "description": "Percentage of product that meets quality standards in production",
+                    "source": "Quality Control Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Effective Node",
+                    "formula": "Node Size / Average Industry Node Size",
+                    "unit": "Scale"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Minimum Technology Node",
+                    "ideal_value": "3nm",
+                    "range": "3nm - 5nm"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Taiwan Semiconductor Manufacturing Company",
+                    "ticker": "TSM",
+                    "market_cap": "$545B",
+                    "revenue": "$60.03B"
+                },
+                {
+                    "name": "Samsung Electronics",
+                    "ticker": "005930.KS",
+                    "market_cap": "$430B",
+                    "revenue": "$200B"
+                }
+            ],
+            "key_points": [
+                "Technology nodes significantly impact performance",
+                "Cost implications of new process technologies",
+                "Competitive landscape of manufacturers",
+                "New technology adoption rates",
+                "Impact on end-product reliability"
+            ],
+            "charts": [
+                {
+                    "type": "Scatter Plot",
+                    "usage": "This chart type is useful to illustrate the relationship between process node size and yield rates."
+                },
+                {
+                    "type": "Radar Chart",
+                    "usage": "A radar chart can show the strengths and weaknesses of different companies in process technology capabilities."
+                }
+            ]
+        },
+        {
+            "name": "Market Share Analysis",
+            "description": "Understanding the distribution of market share among key competitors in the semiconductor design and manufacturing space.",
+            "importance_rank": "High",
+            "reason": "Market share insights help assess the competitive position and trends within the industry.",
+            "examples": [
+                "Total semiconductor sales comparisons",
+                "Shifts in market shares over time"
+            ],
+            "data_points": [
+                {
+                    "name": "Market Share Percentage",
+                    "description": "Percentage of total market controlled by a company",
+                    "source": "Market Research Reports"
+                },
+                {
+                    "name": "Sales Growth Rate",
+                    "description": "Year-over-year growth in sales",
+                    "source": "Company Earnings Releases"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Relative Market Share",
+                    "formula": "(Company Market Share / Total Market Share) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Top 3 Market Share",
+                    "ideal_value": "50%",
+                    "range": "40%-60%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Qualcomm Incorporated",
+                    "ticker": "QCOM",
+                    "market_cap": "$160B",
+                    "revenue": "$44.2B"
+                },
+                {
+                    "name": "Micron Technology",
+                    "ticker": "MU",
+                    "market_cap": "$100B",
+                    "revenue": "$27.7B"
+                }
+            ],
+            "key_points": [
+                "Trends in market consolidation",
+                "Competitive positioning analysis",
+                "Innovation impact on market dynamics",
+                "Geographical market distribution",
+                "Customer segment analysis"
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "A pie chart can represent the market share of each key player easily."
+                },
+                {
+                    "type": "Stacked Bar Chart",
+                    "usage": "This chart can show market share trends over the years for different companies."
+                }
+            ]
+        },
+        {
+            "name": "Supply Chain Inefficiencies",
+            "description": "Identification of bottlenecks or inefficiencies in the supply chain that impact semiconductor manufacturing processes.",
+            "importance_rank": "High",
+            "reason": "Supply chain issues can lead to significant delays in production and increased costs.",
+            "examples": [
+                "Material shortages",
+                "Logistical delays"
+            ],
+            "data_points": [
+                {
+                    "name": "Lead Time Average",
+                    "description": "Average time taken from order to delivery of materials",
+                    "source": "Supply Chain Reports"
+                },
+                {
+                    "name": "Defect Rate",
+                    "description": "Percentage of defective components received from suppliers",
+                    "source": "Quality Control Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Supply Chain Efficiency Ratio",
+                    "formula": "(100 - Defect Rate) / Lead Time",
+                    "unit": "Scale"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Supply Chain Efficiency Ratio",
+                    "ideal_value": "85%",
+                    "range": "75%-90%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Texas Instruments",
+                    "ticker": "TXN",
+                    "market_cap": "$144B",
+                    "revenue": "$18.34B"
+                },
+                {
+                    "name": "Broadcom Inc.",
+                    "ticker": "AVGO",
+                    "market_cap": "$212B",
+                    "revenue": "$27.45B"
+                }
+            ],
+            "key_points": [
+                "Impact of global logistics on efficiency",
+                "Supplier reliability and quality analysis",
+                "Technology's role in supply chain management",
+                "Response to supply disruptions",
+                "Cost implications of supply chain inefficiencies"
+            ],
+            "charts": [
+                {
+                    "type": "Histogram",
+                    "usage": "A histogram can show the distribution of lead times across various suppliers."
+                },
+                {
+                    "type": "Heatmap",
+                    "usage": "This can visualize inefficiencies in supply chain processes across different segments."
+                }
+            ]
+        },
+        {
+            "name": "Customer Demand Forecasting",
+            "description": "Techniques used to forecast demand for semiconductor products in different markets.",
+            "importance_rank": "High",
+            "reason": "Accurate demand forecasting helps companies optimize production and inventory levels.",
+            "examples": [
+                "Trends in consumer electronics",
+                "Forecasting for automotive semiconductors"
+            ],
+            "data_points": [
+                {
+                    "name": "Demand Variability",
+                    "description": "Standard deviation of sales volumes over periods",
+                    "source": "Market Research Reports"
+                },
+                {
+                    "name": "Market Growth Rate",
+                    "description": "Expected growth rate of semiconductor demand",
+                    "source": "Industry Analyst Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Demand Prediction Accuracy",
+                    "formula": "(1 - |Forecasted Demand - Actual Demand| / Actual Demand) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Forecast Accuracy",
+                    "ideal_value": "90%",
+                    "range": "80%-95%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Analog Devices",
+                    "ticker": "ADI",
+                    "market_cap": "$55B",
+                    "revenue": "$12.55B"
+                },
+                {
+                    "name": "ON Semiconductor",
+                    "ticker": "ON",
+                    "market_cap": "$38B",
+                    "revenue": "$7.75B"
+                }
+            ],
+            "key_points": [
+                "Role of AI in demand forecasting",
+                "Trends in end-user markets",
+                "Economic conditions affecting demand",
+                "Impact of supply disruptions on demand",
+                "Time frames for accurate forecasts"
+            ],
+            "charts": [
+                {
+                    "type": "Column Chart",
+                    "usage": "A column chart can easily show forecasted versus actual demand over time."
+                },
+                {
+                    "type": "Area Chart",
+                    "usage": "An area chart helps in visualizing the growth rate over multiple periods."
+                }
+            ]
+        },
+        {
+            "name": "Innovation Frequency",
+            "description": "The rate at which companies introduce new products or technologies in the semiconductor sector.",
+            "importance_rank": "Medium",
+            "reason": "Higher innovation frequency can reflect a company's competitiveness and adaptability to market changes.",
+            "examples": [
+                "Launch of next-gen chips",
+                "Incorporation of new materials"
+            ],
+            "data_points": [
+                {
+                    "name": "New Product Launches",
+                    "description": "Number of new products introduced annually",
+                    "source": "Press Releases and Company Announcements"
+                },
+                {
+                    "name": "Patents Filed",
+                    "description": "Number of patents filed as a measure of innovation",
+                    "source": "Patent Office Databases"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Innovation Rate",
+                    "formula": "New Products / Total Products",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "New Product Introduction Rate",
+                    "ideal_value": "20%",
+                    "range": "15%-25%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Microchip Technology",
+                    "ticker": "MCHP",
+                    "market_cap": "$35B",
+                    "revenue": "$5.24B"
+                },
+                {
+                    "name": "Xilinx",
+                    "ticker": "XLNX",
+                    "market_cap": "$28B",
+                    "revenue": "$3.14B"
+                }
+            ],
+            "key_points": [
+                "Trends in relevant technologies",
+                "Impact of innovation on market share",
+                "Comparison of innovation rates among competitors",
+                "Research and development synergies",
+                "Detection of disruptions caused by innovations"
+            ],
+            "charts": [
+                {
+                    "type": "Bubble Chart",
+                    "usage": "A bubble chart can visualize the correlation between innovation frequency and market growth."
+                },
+                {
+                    "type": "Time Series Chart",
+                    "usage": "A time series chart can show the yearly advancements in innovation and their outcomes."
+                }
+            ]
+        },
+        {
+            "name": "Sustainability Efforts",
+            "description": "Assessment of environmentally sustainable practices in semiconductor manufacturing processes.",
+            "importance_rank": "Medium",
+            "reason": "Increased regulatory and consumer focus on sustainability impacts corporate strategy and reputation.",
+            "examples": [
+                "Reduction of hazardous materials",
+                "Energy-efficient processes"
+            ],
+            "data_points": [
+                {
+                    "name": "Carbon Footprint",
+                    "description": "Total greenhouse gas emissions from operations",
+                    "source": "Sustainability Reports"
+                },
+                {
+                    "name": "Waste Reduction Percentage",
+                    "description": "Percentage reduction in waste production",
+                    "source": "Company Environmental Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Sustainability Score",
+                    "formula": "(Waste Reduction + Energy Efficiency) / 2",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Carbon Neutrality Target Year",
+                    "ideal_value": "2030",
+                    "range": "2025-2035"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Intel Corporation",
+                    "ticker": "INTC",
+                    "market_cap": "$200B",
+                    "revenue": "$79B"
+                },
+                {
+                    "name": "NVIDIA Corporation",
+                    "ticker": "NVDA",
+                    "market_cap": "$945B",
+                    "revenue": "$26.91B"
+                }
+            ],
+            "key_points": [
+                "Importance of compliance with Sustainability Regulations",
+                "Impact on operational costs",
+                "Market expectations on sustainability",
+                "Sustainability as a brand differentiator",
+                "Future trends in sustainability practices"
+            ],
+            "charts": [
+                {
+                    "type": "Doughnut Chart",
+                    "usage": "A doughnut chart can represent the proportion of initiatives taken towards sustainability."
+                },
+                {
+                    "type": "Line Graph",
+                    "usage": "A line graph can illustrate progress towards sustainability goals over time."
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,79 @@
+{
+    "subsubsector": "Pharmaceuticals",
+    "subsector": "Pharmaceuticals, Biotechnology & Life Sciences",
+    "id": "health-care-pharmaceuticals-biotechnology-life-sciences-pharmaceuticals",
+    "criteria": [
+        {
+            "name": "R&D Investment",
+            "description": "The amount invested in research and development to discover new drugs and therapies.",
+            "importance_rank": "High",
+            "reason": "Research and development are crucial for innovation and staying competitive in the pharmaceutical industry.",
+            "examples": [
+                "Investment in developing new diabetes medications",
+                "Funding for cancer research trials"
+            ],
+            "data_points": [
+                {
+                    "name": "Annual R&D Expenditure",
+                    "description": "Total investment in R&D activities per year",
+                    "source": "Company financial reports"
+                },
+                {
+                    "name": "Number of Clinical Trials",
+                    "description": "The count of clinical trials initiated in a given year",
+                    "source": "ClinicalTrials.gov"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "R&D Spend per Revenue",
+                    "formula": "Total R&D Spend / Total Revenue",
+                    "unit": "Percentage"
+                },
+                {
+                    "name": "R&D Cycle Time",
+                    "formula": "Average Time to Bring Drug to Market (Years)",
+                    "unit": "Years"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "R&D to Revenue Ratio",
+                    "ideal_value": "15% or higher",
+                    "range": "10% - 20%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Pfizer Inc.",
+                    "ticker": "PFE",
+                    "market_cap": "$220B",
+                    "revenue": "$57B"
+                },
+                {
+                    "name": "Johnson & Johnson",
+                    "ticker": "JNJ",
+                    "market_cap": "$450B",
+                    "revenue": "$93B"
+                }
+            ],
+            "key_points": [
+                "Focus on long-term potential returns.",
+                "Consider regulatory hurdles in R&D investment.",
+                "Evaluate partnerships with research institutions.",
+                "Assess the ratio of successful trials to investments.",
+                "Review historical R&D trends for financial forecasting."
+            ],
+            "charts": [
+                {
+                    "type": "Bar Chart",
+                    "usage": "Comparing R&D expenses over different periods or across companies for investment decisions."
+                },
+                {
+                    "type": "Pie Chart",
+                    "usage": "Visualizing R&D expenditure as a percentage of total revenue."
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,446 @@
+{
+    "subsubsector": "Biotechnology",
+    "subsector": "Pharmaceuticals, Biotechnology & Life Sciences",
+    "id": "health-care-pharmaceuticals-biotechnology-life-sciences-biotechnology",
+    "criteria": [
+        {
+            "name": "Research & Development Investment",
+            "description": "Amount of capital invested in R&D to drive innovation and product development.",
+            "importance_rank": "Critical",
+            "reason": "High R&D investment often correlates with a robust pipeline of new therapies and innovations.",
+            "examples": [
+                "Genomics research",
+                "Therapeutic development"
+            ],
+            "data_points": [
+                {
+                    "name": "Annual R&D Expenditure",
+                    "description": "Total spending on research activities annually.",
+                    "source": "Company annual reports"
+                },
+                {
+                    "name": "Percentage of Revenue Spent on R&D",
+                    "description": "The ratio of R&D spending to total revenue.",
+                    "source": "Financial statements"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "R&D Intensity",
+                    "formula": "Annual R&D Expenditure / Total Revenue",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "R&D to Revenue Ratio",
+                    "ideal_value": "20%",
+                    "range": "15% - 25%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Amgen Inc.",
+                    "ticker": "AMGN",
+                    "market_cap": "134B",
+                    "revenue": "25B"
+                },
+                {
+                    "name": "Biogen Inc.",
+                    "ticker": "BIIB",
+                    "market_cap": "42B",
+                    "revenue": "10B"
+                }
+            ],
+            "key_points": [
+                "Higher R&D can lead to more innovative products.",
+                "R&D costs often fluctuate based on clinical trials.",
+                "Successful R&D reduces long-term costs.",
+                "Collaboration can impact R&D investment.",
+                "Market trends can drive R&D focus areas."
+            ],
+            "charts": [
+                {
+                    "type": "Bar Chart",
+                    "usage": "Visualizes the comparison of R&D investments across companies."
+                }
+            ]
+        },
+        {
+            "name": "Regulatory Approval Rates",
+            "description": "Percentage of therapies that receive regulatory approval after clinical trials.",
+            "importance_rank": "High",
+            "reason": "Higher approval rates indicate better pipeline robustness and strategic execution.",
+            "examples": [
+                "FDA approvals",
+                "EMA approvals"
+            ],
+            "data_points": [
+                {
+                    "name": "New Drug Application (NDA) Approval Rate",
+                    "description": "Percentage of submitted NDAs that get approved.",
+                    "source": "FDA database"
+                },
+                {
+                    "name": "Clinical Trial Success Rate",
+                    "description": "Percentage of clinical trials that progress to the next phase.",
+                    "source": "Clinical Trial registries"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Approval Ratio",
+                    "formula": "Number of Approvals / Total Applications",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Approval Rate",
+                    "ideal_value": "70%",
+                    "range": "60% - 80%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Gilead Sciences Inc.",
+                    "ticker": "GILD",
+                    "market_cap": "98B",
+                    "revenue": "23B"
+                },
+                {
+                    "name": "Regeneron Pharmaceuticals",
+                    "ticker": "REGN",
+                    "market_cap": "60B",
+                    "revenue": "11B"
+                }
+            ],
+            "key_points": [
+                "Regulatory challenges can delay product launches.",
+                "Competitive analysis impacts approval strategies.",
+                "Investments in regulatory consultancy enhance success.",
+                "Understanding regional dynamics is crucial.",
+                "Post-approval performance matters as well."
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "Displays the proportion of approved versus rejected applications."
+                }
+            ]
+        },
+        {
+            "name": "Market Penetration Rate",
+            "description": "The extent to which a biotechnology product captures the total market potential.",
+            "importance_rank": "High",
+            "reason": "Indicates the competitive edge and product acceptance in the market.",
+            "examples": [
+                "Genetic therapy market penetration",
+                "Biologics market share"
+            ],
+            "data_points": [
+                {
+                    "name": "Market Share of Innovation",
+                    "description": "Percentage of the market held by a specific product.",
+                    "source": "Market research firms"
+                },
+                {
+                    "name": "Growth Rate in Relevant Market",
+                    "description": "Year-over-year growth of the biotechnology market.",
+                    "source": "Industry reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Market Penetration Percentage",
+                    "formula": "Total Sales of Product / Total Market Size",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Market Penetration",
+                    "ideal_value": "30%",
+                    "range": "20% - 40%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Vertex Pharmaceuticals Inc.",
+                    "ticker": "VRTX",
+                    "market_cap": "64B",
+                    "revenue": "4B"
+                },
+                {
+                    "name": "Illumina Inc.",
+                    "ticker": "ILMN",
+                    "market_cap": "38B",
+                    "revenue": "4B"
+                }
+            ],
+            "key_points": [
+                "Understanding customer needs enhances penetration.",
+                "Effective marketing strategies drive acceptance.",
+                "Competitor actions can rapidly shift market dynamics.",
+                "Regulatory changes can open or close markets.",
+                "Revenue growth provides insights into penetration effectiveness."
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "Illustrates the trend of market share over time."
+                }
+            ]
+        },
+        {
+            "name": "Partnership and Collaboration Networks",
+            "description": "The extent and effectiveness of partnerships between biotech and other sectors such as pharma, academic institutions, and CROs.",
+            "importance_rank": "Medium",
+            "reason": "Collaborations can enhance innovation and reduce costs through shared resources.",
+            "examples": [
+                "Partnerships for clinical trials",
+                "Co-development agreements"
+            ],
+            "data_points": [
+                {
+                    "name": "Number of Strategic Partnerships",
+                    "description": "Total collaborations established within a timeframe.",
+                    "source": "Company press releases"
+                },
+                {
+                    "name": "Success Rate of Collaborations",
+                    "description": "Percentage of collaborations leading to successful product development.",
+                    "source": "Company reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Collab Success Ratio",
+                    "formula": "Successful Collaborations / Total Collaborations",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Collaboration Success Rate",
+                    "ideal_value": "75%",
+                    "range": "60% - 90%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Novavax Inc.",
+                    "ticker": "NVAX",
+                    "market_cap": "5B",
+                    "revenue": "1B"
+                },
+                {
+                    "name": "Sarepta Therapeutics",
+                    "ticker": "SRPT",
+                    "market_cap": "6B",
+                    "revenue": "800M"
+                }
+            ],
+            "key_points": [
+                "Strong partnerships amplify resource sharing.",
+                "Geopolitical factors can influence collaborative efforts.",
+                "Intellectual property management is crucial.",
+                "Regulatory hurdles need collective addressing.",
+                "Diverse partnerships can yield innovative outcomes."
+            ],
+            "charts": [
+                {
+                    "type": "Stacked Bar Chart",
+                    "usage": "Shows the distribution of successful versus unsuccessful collaborations."
+                }
+            ]
+        },
+        {
+            "name": "Product Pipeline Diversity",
+            "description": "Measure of variety within the product development pipeline, covering different therapeutic areas.",
+            "importance_rank": "High",
+            "reason": "A diversified pipeline mitigates risks associated with reliance on limited products.",
+            "examples": [
+                "Therapeutics across oncology, immunology, etc."
+            ],
+            "data_points": [
+                {
+                    "name": "Number of Products in Pipeline",
+                    "description": "Total count of products under development.",
+                    "source": "Clinical trial databases"
+                },
+                {
+                    "name": "Therapeutic Areas Represented",
+                    "description": "Diversity of therapeutic categories within the pipeline.",
+                    "source": "Company pipeline reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Pipeline Diversity Index",
+                    "formula": "Number of Unique Therapeutic Areas / Total Products",
+                    "unit": "Ratio"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Product Variety in Pipeline",
+                    "ideal_value": "10+ areas",
+                    "range": "5 - 15 areas"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Crispr Therapeutics AG",
+                    "ticker": "CRSP",
+                    "market_cap": "8B",
+                    "revenue": "Null"
+                },
+                {
+                    "name": "Sangamo Therapeutics",
+                    "ticker": "SGMO",
+                    "market_cap": "700M",
+                    "revenue": "200M"
+                }
+            ],
+            "key_points": [
+                "Diversity shields against market volatility.",
+                "Focus areas should align with unmet medical needs.",
+                "Investment trends can guide pipeline focus.",
+                "Rapid advancements must be monitored.",
+                "Strong intellectual property is essential."
+            ],
+            "charts": [
+                {
+                    "type": "Bubble Chart",
+                    "usage": "Represents the number of products against therapeutic diversity levels."
+                }
+            ]
+        },
+        {
+            "name": "Intellectual Property Strength",
+            "description": "The robustness of patents related to products in development, influencing competitive advantage.",
+            "importance_rank": "Critical",
+            "reason": "Strong IP can provide market exclusivity and protect against competition.",
+            "examples": [
+                "Patents filed for gene-editing technologies"
+            ],
+            "data_points": [
+                {
+                    "name": "Number of Patents Granted",
+                    "description": "Total patents awarded in the last five years.",
+                    "source": "USPTO database"
+                },
+                {
+                    "name": "Patent Longevity",
+                    "description": "Average remaining lifespan of existing patents.",
+                    "source": "Patent analysis reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "IP Strength Score",
+                    "formula": "Number of Active Patents / Average Patent Lifespan",
+                    "unit": "Score"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Strong IP Foundation",
+                    "ideal_value": "20+ patents",
+                    "range": "10 - 30 patents"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Moderna Inc.",
+                    "ticker": "MRNA",
+                    "market_cap": "68B",
+                    "revenue": "18B"
+                },
+                {
+                    "name": "Novartis AG",
+                    "ticker": "NVS",
+                    "market_cap": "202B",
+                    "revenue": "48B"
+                }
+            ],
+            "key_points": [
+                "Strong IP protects against generic competition.",
+                "Effective patent strategies impact funding.",
+                "Monitoring competitor patents is crucial.",
+                "Litigation risks associated with IP should be assessed.",
+                "International IP laws can influence strategy."
+            ],
+            "charts": [
+                {
+                    "type": "Radar Chart",
+                    "usage": "Compares the strength of IP across various areas/technologies."
+                }
+            ]
+        },
+        {
+            "name": "Financial Sustainability",
+            "description": "Ability of the company to maintain operations and growth without jeopardizing its financial health.",
+            "importance_rank": "High",
+            "reason": "Sustainable financial health indicates long-term viability and operational effectiveness.",
+            "examples": [
+                "Cash reserves",
+                "Debt levels"
+            ],
+            "data_points": [
+                {
+                    "name": "Cash on Hand",
+                    "description": "Total liquid assets available for operational expenses.",
+                    "source": "Company financial statements"
+                },
+                {
+                    "name": "Debt-to-Equity Ratio",
+                    "description": "The proportion of company financing from debt versus equity.",
+                    "source": "Balance sheets"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Liquidity Ratio",
+                    "formula": "Current Assets / Current Liabilities",
+                    "unit": "Ratio"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Healthy Debt-to-Equity",
+                    "ideal_value": "1.0",
+                    "range": "0.5 - 1.5"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Pfizer Inc.",
+                    "ticker": "PFE",
+                    "market_cap": "208B",
+                    "revenue": "90B"
+                },
+                {
+                    "name": "Eli Lilly and Company",
+                    "ticker": "LLY",
+                    "market_cap": "228B",
+                    "revenue": "40B"
+                }
+            ],
+            "key_points": [
+                "Adequate cash reserves can attract investors.",
+                "High debt can impede flexibility.",
+                "Cash burn rates need monitoring.",
+                "Revenue diversification enhances sustainability.",
+                "Cost control measures are essential."
+            ],
+            "charts": [
+                {
+                    "type": "Area Chart",
+                    "usage": "Displays trends in cash reserves over time."
+                }
+            ]
+        }
+    ]
+}

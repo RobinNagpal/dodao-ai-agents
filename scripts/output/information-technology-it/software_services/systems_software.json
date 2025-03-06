@@ -1,0 +1,535 @@
+{
+    "subsubsector": "Systems Software",
+    "subsector": "Software & Services",
+    "id": "information-technology-it-software-services-systems-software",
+    "criteria": [
+        {
+            "name": "Market Share",
+            "description": "Proportion of sales in a marketplace that is claimed by a specific company or product.",
+            "importance_rank": "High",
+            "reason": "Understanding market share helps identify leading players within the systems software sector.",
+            "examples": [
+                "Operating Systems, Database Management Systems"
+            ],
+            "data_points": [
+                {
+                    "name": "Total Revenue",
+                    "description": "Total sales generated from systems software products.",
+                    "source": "Company Financial Reports"
+                },
+                {
+                    "name": "Unit Sales",
+                    "description": "Total number of software units sold.",
+                    "source": "Industry Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Market Share Percentage",
+                    "formula": "(Company Sales / Total Market Sales) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Market Share",
+                    "ideal_value": "30%",
+                    "range": "15% - 50%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Microsoft Corporation",
+                    "ticker": "MSFT",
+                    "market_cap": "$2.5 Trillion",
+                    "revenue": "$168 Billion"
+                },
+                {
+                    "name": "Oracle Corporation",
+                    "ticker": "ORCL",
+                    "market_cap": "$200 Billion",
+                    "revenue": "$40 Billion"
+                }
+            ],
+            "key_points": [
+                "Assess growth trends in market share over time.",
+                "Identify main competitors and their market positions.",
+                "Evaluate the impact of emerging technologies on market share.",
+                "Analyze regional differences in market share.",
+                "Consider potential mergers and acquisitions affecting market dynamics."
+            ],
+            "charts": [
+                {
+                    "type": "Pie Chart",
+                    "usage": "Visualize the market share distribution among top companies."
+                },
+                {
+                    "type": "Bar Chart",
+                    "usage": "Compare market shares of different competitors over multiple quarters."
+                }
+            ]
+        },
+        {
+            "name": "Product Innovation",
+            "description": "Rate at which new features and technologies are implemented into product lines.",
+            "importance_rank": "Critical",
+            "reason": "Innovation drives competitiveness and relevance in the fast-evolving systems software landscape.",
+            "examples": [
+                "Cloud integration, AI functionalities"
+            ],
+            "data_points": [
+                {
+                    "name": "R&D Expenditure",
+                    "description": "Total spending on research and development activities.",
+                    "source": "Annual Reports"
+                },
+                {
+                    "name": "Patents Filed",
+                    "description": "Number of patents filed in a given year.",
+                    "source": "Patent Offices"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Innovation Index",
+                    "formula": "(R&D Expenditure / Revenue) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "R&D Investment",
+                    "ideal_value": "15%",
+                    "range": "5% - 25%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "IBM Corporation",
+                    "ticker": "IBM",
+                    "market_cap": "$120 Billion",
+                    "revenue": "$77 Billion"
+                },
+                {
+                    "name": "Red Hat, Inc.",
+                    "ticker": "RHT",
+                    "market_cap": "$34 Billion",
+                    "revenue": "$3 Billion"
+                }
+            ],
+            "key_points": [
+                "Monitor the pace of new product releases.",
+                "Evaluate customer feedback on recent innovations.",
+                "Investigate partnerships enhancing innovation.",
+                "Review industry awards for innovative products.",
+                "Consider the lifecycle stage of existing products."
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "Show trends in R&D spending compared to revenue over time."
+                },
+                {
+                    "type": "Bar Chart",
+                    "usage": "Highlight number of patents filed by competitors."
+                }
+            ]
+        },
+        {
+            "name": "Customer Satisfaction",
+            "description": "Level of satisfaction among users with the products and services offered.",
+            "importance_rank": "High",
+            "reason": "High customer satisfaction leads to better retention, referrals, and overall performance.",
+            "examples": [
+                "Net Promoter Score (NPS), Customer Satisfaction Score (CSAT)"
+            ],
+            "data_points": [
+                {
+                    "name": "Survey Scores",
+                    "description": "Scores collected from customer surveys.",
+                    "source": "Customer Feedback Platforms"
+                },
+                {
+                    "name": "Churn Rates",
+                    "description": "Percentage of customers that stop using the software in a given time period.",
+                    "source": "Customer Analytics Tools"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Satisfaction Index",
+                    "formula": "Average Survey Score * (1 - Churn Rate)",
+                    "unit": "Index"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Customer Satisfaction Score",
+                    "ideal_value": "80%",
+                    "range": "70% - 90%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "SAP SE",
+                    "ticker": "SAP",
+                    "market_cap": "$150 Billion",
+                    "revenue": "$32 Billion"
+                },
+                {
+                    "name": "ServiceNow, Inc.",
+                    "ticker": "NOW",
+                    "market_cap": "$64 Billion",
+                    "revenue": "$6 Billion"
+                }
+            ],
+            "key_points": [
+                "Gather and analyze customer feedback regularly.",
+                "Identify common pain points across users.",
+                "Track changes in satisfaction over new product updates.",
+                "Benchmark against industry standards.",
+                "Engage with customers proactively to understand their needs."
+            ],
+            "charts": [
+                {
+                    "type": "Scatter Plot",
+                    "usage": "Visualize correlation between survey scores and churn rates."
+                },
+                {
+                    "type": "Radar Chart",
+                    "usage": "Feature comparisons based on multiple satisfaction metrics."
+                }
+            ]
+        },
+        {
+            "name": "Infrastructure Scalability",
+            "description": "Ability of systems software to grow and manage increased loads efficiently.",
+            "importance_rank": "Medium",
+            "reason": "Scalable systems software is essential for supporting growth in user base and data.",
+            "examples": [
+                "Cloud-based scaling, Load balancing"
+            ],
+            "data_points": [
+                {
+                    "name": "Load Capacity",
+                    "description": "Maximum load the software can handle effectively.",
+                    "source": "System Performance Tests"
+                },
+                {
+                    "name": "User Growth Rate",
+                    "description": "Percentage increase in user base within a defined period.",
+                    "source": "User Analytics"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Scalability Ratio",
+                    "formula": "(Load Capacity / Current Load)",
+                    "unit": "Ratio"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Load Handling Efficiency",
+                    "ideal_value": "95%",
+                    "range": "80% - 100%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "VMware, Inc.",
+                    "ticker": "VMW",
+                    "market_cap": "$48 Billion",
+                    "revenue": "$12 Billion"
+                },
+                {
+                    "name": "Citrix Systems, Inc.",
+                    "ticker": "CTSH",
+                    "market_cap": "$14 Billion",
+                    "revenue": "$3 Billion"
+                }
+            ],
+            "key_points": [
+                "Assess current and projected loads against capacity.",
+                "Evaluate elasticity of resources in cloud environments.",
+                "Review case studies of scaling successes and failures.",
+                "Analyze performance under peak load conditions.",
+                "Plan for future scalability needs in product development."
+            ],
+            "charts": [
+                {
+                    "type": "Area Chart",
+                    "usage": "Display historical load capacity against user growth."
+                },
+                {
+                    "type": "Stacked Bar Chart",
+                    "usage": "Represent different load scenarios and their handling efficiency."
+                }
+            ]
+        },
+        {
+            "name": "Security Compliance",
+            "description": "Adherence to laws, regulations, and standards regarding data security and privacy.",
+            "importance_rank": "Critical",
+            "reason": "Maintaining compliance mitigates risks associated with data breaches and legal issues.",
+            "examples": [
+                "GDPR, ISO Certifications"
+            ],
+            "data_points": [
+                {
+                    "name": "Audit Results",
+                    "description": "Findings from security compliance audits.",
+                    "source": "Third-party Auditors"
+                },
+                {
+                    "name": "Incident Reports",
+                    "description": "Records of security incidents and breaches.",
+                    "source": "Internal Security Teams"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Compliance Score",
+                    "formula": "(Compliant Measures / Total Measures) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Compliance Rate",
+                    "ideal_value": "100%",
+                    "range": "90% - 100%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Palo Alto Networks, Inc.",
+                    "ticker": "PANW",
+                    "market_cap": "$54 Billion",
+                    "revenue": "$5 Billion"
+                },
+                {
+                    "name": "Fortinet, Inc.",
+                    "ticker": "FTNT",
+                    "market_cap": "$30 Billion",
+                    "revenue": "$4 Billion"
+                }
+            ],
+            "key_points": [
+                "Regularly review and update compliance policies.",
+                "Conduct frequent audits to uncover gaps.",
+                "Implement training programs for employees.",
+                "Monitor industry changes in regulations.",
+                "Assess impact of compliance on customer trust."
+            ],
+            "charts": [
+                {
+                    "type": "Heat Map",
+                    "usage": "Visualize compliance status across different departments or measures."
+                },
+                {
+                    "type": "Bar Graph",
+                    "usage": "Compare incident reports before and after compliance measures."
+                }
+            ]
+        },
+        {
+            "name": "Cost Efficiency",
+            "description": "Evaluation of the cost relative to the benefits received from the systems software.",
+            "importance_rank": "Medium",
+            "reason": "Higher cost efficiency leads to better profit margins and competitive pricing.",
+            "examples": [
+                "Cost per user, Total cost of ownership (TCO)"
+            ],
+            "data_points": [
+                {
+                    "name": "Operational Costs",
+                    "description": "Monthly and yearly expenses associated with the software.",
+                    "source": "Financial Statements"
+                },
+                {
+                    "name": "Return on Investment (ROI)",
+                    "description": "Financial benefits derived from using the software.",
+                    "source": "Investment Analysis Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Cost-to-Benefit Ratio",
+                    "formula": "(Operational Costs / ROI)",
+                    "unit": "Ratio"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Cost Efficiency Ratio",
+                    "ideal_value": "1:3",
+                    "range": "1:1 - 1:4"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Atlassian Corporation Plc",
+                    "ticker": "TEAM",
+                    "market_cap": "$27 Billion",
+                    "revenue": "$3 Billion"
+                },
+                {
+                    "name": "Splunk Inc.",
+                    "ticker": "SPLK",
+                    "market_cap": "$22 Billion",
+                    "revenue": "$3 Billion"
+                }
+            ],
+            "key_points": [
+                "Analyze fixed vs variable costs in operations.",
+                "Evaluate pricing models against competitors.",
+                "Identify cost-saving opportunities without sacrificing quality.",
+                "Regularly track ROI on extensive software investments.",
+                "Adjust strategy based on cost-benefit analysis results."
+            ],
+            "charts": [
+                {
+                    "type": "Column Chart",
+                    "usage": "Visualize operational costs in comparison to revenue generated."
+                },
+                {
+                    "type": "Waterfall Chart",
+                    "usage": "Display changes in cost efficiency over time."
+                }
+            ]
+        },
+        {
+            "name": "Technical Support and Services",
+            "description": "Quality and availability of support and professional services provided to customers.",
+            "importance_rank": "Medium",
+            "reason": "Strong support services enhance customer retention and satisfaction.",
+            "examples": [
+                "Helpdesk response time, Availability of training programs"
+            ],
+            "data_points": [
+                {
+                    "name": "Response Time",
+                    "description": "Average time taken to resolve customer issues.",
+                    "source": "Customer Support Analytics"
+                },
+                {
+                    "name": "Customer Training Engagement",
+                    "description": "Participation rates in training programs offered.",
+                    "source": "Training Session Records"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Support Efficiency Score",
+                    "formula": "(Resolved Tickets / Total Tickets) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Customer Support Satisfaction",
+                    "ideal_value": "85%",
+                    "range": "70% - 90%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Zendesk, Inc.",
+                    "ticker": "ZEN",
+                    "market_cap": "$10 Billion",
+                    "revenue": "$1 Billion"
+                },
+                {
+                    "name": "Freshworks Inc.",
+                    "ticker": "FRSH",
+                    "market_cap": "$1 Billion",
+                    "revenue": "$500 Million"
+                }
+            ],
+            "key_points": [
+                "Regularly survey customers on support satisfaction.",
+                "Track tickets resolution times for continuous improvement.",
+                "Benchmark support services against industry standards.",
+                "Analyze engagement metrics of training programs.",
+                "Implement feedback loops for support improvements."
+            ],
+            "charts": [
+                {
+                    "type": "Line Chart",
+                    "usage": "Track changes in response times over a period."
+                },
+                {
+                    "type": "Stacked Area Chart",
+                    "usage": "Show distribution of support types and their resolution success."
+                }
+            ]
+        },
+        {
+            "name": "Integration Capability",
+            "description": "Ability of systems software to integrate with other software and platforms.",
+            "importance_rank": "High",
+            "reason": "Good integration capabilities add value by enhancing functionality and usability.",
+            "examples": [
+                "API availability, Compatibility with other software"
+            ],
+            "data_points": [
+                {
+                    "name": "Number of Supported Integrations",
+                    "description": "Total number of third-party software integrations.",
+                    "source": "Internal Software Overview"
+                },
+                {
+                    "name": "Integration Success Rate",
+                    "description": "Percentage of successful integrations performed.",
+                    "source": "User Reports"
+                }
+            ],
+            "normalized_data_points": [
+                {
+                    "name": "Integration Index",
+                    "formula": "(Successful Integrations / Total Attempts) * 100",
+                    "unit": "Percentage"
+                }
+            ],
+            "benchmarks": [
+                {
+                    "metric": "Integration Rate",
+                    "ideal_value": "90%",
+                    "range": "80% - 95%"
+                }
+            ],
+            "companies": [
+                {
+                    "name": "Salesforce.com, Inc.",
+                    "ticker": "CRM",
+                    "market_cap": "$220 Billion",
+                    "revenue": "$20 Billion"
+                },
+                {
+                    "name": "ServiceNow, Inc.",
+                    "ticker": "NOW",
+                    "market_cap": "$64 Billion",
+                    "revenue": "$6 Billion"
+                }
+            ],
+            "key_points": [
+                "Map out essential software ecosystems requiring integration.",
+                "Evaluate customer needs for integrations.",
+                "Monitor performance and issues with existing integrations.",
+                "Investigate new technologies facilitating better integrations.",
+                "Review case studies of successful integrations."
+            ],
+            "charts": [
+                {
+                    "type": "Bubble Chart",
+                    "usage": "Visualize the relationship between number of integrations and success rate."
+                },
+                {
+                    "type": "Donut Chart",
+                    "usage": "Highlight the distribution of integration types."
+                }
+            ]
+        }
+    ]
+}
