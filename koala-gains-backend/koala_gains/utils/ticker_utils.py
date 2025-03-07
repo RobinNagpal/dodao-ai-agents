@@ -110,8 +110,15 @@ def save_criteria_evaluation(
         ticker, criterion_key, report_key, report_definition.outputType
     )
 
+    # If the report output type is not Text and data is not already a string,
+    # convert it to a JSON string.
+    if report_definition.outputType != "Text" and not isinstance(data, str):
+        data_to_upload = json.dumps(data)
+    else:
+        data_to_upload = data
+
     return upload_to_s3(
-        data,
+        data_to_upload,
         criterion_report_key,
         content_type=(
             "text/plain"
