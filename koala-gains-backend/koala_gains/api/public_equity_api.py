@@ -263,22 +263,22 @@ def create_custom_criteria(body: UpsertCustomCriteriaRequest):
         return handle_exception(e)
 
 
-@public_equity_api.route("/re-populate-matching-attachments", methods=["POST"])
-@validate(body=RepopulateCriteriaMatchingRequest)
-def repopulate_criteria_matching(body: RepopulateCriteriaMatchingRequest):
-    trigger_criteria_matching(
-        ticker=body.ticker,
-        force=True
-    )
-
-    try:
-        return (
-            jsonify({"success": True, "message": "Ticker processed successfully."}),
-            200,
-        )
-    except Exception as e:
-        return handle_exception(e)
-
+# @public_equity_api.route("/re-populate-matching-attachments", methods=["POST"])
+# @validate(body=RepopulateCriteriaMatchingRequest)
+# def repopulate_criteria_matching(body: RepopulateCriteriaMatchingRequest):
+#     trigger_criteria_matching(
+#         ticker=body.ticker,
+#         force=True
+#     )
+#
+#     try:
+#         return (
+#             jsonify({"success": True, "message": "Ticker processed successfully."}),
+#             200,
+#         )
+#     except Exception as e:
+#         return handle_exception(e)
+#
 
 @public_equity_api.route("/single-criterion-report", methods=["POST"])
 @validate(body=SingleCriterionReportRequest)
