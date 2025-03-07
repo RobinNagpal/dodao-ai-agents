@@ -1,9 +1,12 @@
-from typing import List, Optional
+import ast
+import json
+from typing import Dict, List, Optional, Union, Any
 
 from flask import Blueprint, jsonify
+import requests
 
 from flask_pydantic import validate
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from koala_gains.api.api_helper import handle_exception
 from koala_gains.structures.criteria_structures import IndustryGroupCriteriaStructure
@@ -32,11 +35,13 @@ from koala_gains.utils.criteria_utils import (
 )
 from koala_gains.utils.s3_utils import upload_to_s3
 from koala_gains.utils.ticker_utils import (
+    get_criteria,
     initialize_new_ticker_report,
     get_ticker_report,
     save_criteria_evaluation,
     save_performance_checklist, trigger_criteria_matching,
 )
+from koala_gains.utils.env_variables import PE_US_REITS_WEBHOOK_URL
 
 
 class CreateCriteriaRequest(BaseModel):
@@ -63,28 +68,86 @@ class CreateSingleCriterionReportsRequest(BaseModel):
     criterionKey: str
 
 
+class SingleCriterionReportRequest(BaseModel):
+    ticker: str
+    criterionKey: str
+
+class NextCriterionReportRequest(BaseModel):
+    ticker: str
+    shouldTriggerNext: bool
+    criterionKey: str
+    overflow: Optional[str] # just ignore this field
+    
+    @field_validator("shouldTriggerNext", mode="before")
+    def parse_should_trigger_next(cls, value):
+        # If value is already a boolean, return it.
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            lower_value = value.lower()
+            if lower_value == "true":
+                return True
+            elif lower_value == "false":
+                return False
+            
+class AllCriterionReportRequest(BaseModel):
+    ticker: str
+        
 class SaveCriterionReportRequest(BaseModel):
     ticker: str
     criterionKey: str
     reportKey: str
-    shouldTriggerNext: bool
-    data: str
+    data: Union[str, Dict[str, str], List[Any]]  # Supports plain string, dict, or list
+
+    @field_validator("data", mode="before")
+    def parse_data(cls, v):
+        if isinstance(v, (dict, list)):
+            return v
+        if isinstance(v, str):
+            # First try to use ast.literal_eval to handle python literals (e.g., single quotes)
+            try:
+                parsed = ast.literal_eval(v)
+                if isinstance(parsed, (dict, list)):
+                    return parsed
+            except Exception:
+                pass
+            # Fallback: try using json.loads for valid JSON strings
+            try:
+                parsed = json.loads(v)
+                if isinstance(parsed, (dict, list)):
+                    return parsed
+            except Exception:
+                pass
+        return v
 
 
 class SavePerformanceChecklistRequest(BaseModel):
     ticker: str
     criterionKey: str
-    performanceChecklist: List[PerformanceChecklistItem]
+    performanceChecklist: Union[List[PerformanceChecklistItem], str]
+    
+    @field_validator("performanceChecklist", mode="before")
+    def parse_performance_checklist(cls, v):
+        if isinstance(v, str):
+            if not v.strip():
+                return []
+            parsed_list = ast.literal_eval(v)
+            return [PerformanceChecklistItem(**item) for item in parsed_list]
 
 
 class SaveCriterionMetricsRequest(BaseModel):
     ticker: str
     criterionKey: str
-    metrics: List[MetricValueItem]
+    metrics: Union[List[MetricValueItem], str]
+    
+    @field_validator("metrics", mode="before")
+    def parse_performance_checklist(cls, v):
+        if isinstance(v, str):
+            if not v.strip():
+                return []
+            parsed_list = ast.literal_eval(v)
+            return [MetricValueItem(**item) for item in parsed_list]
 
-
-class RepopulateCriteriaMatchingRequest(BaseModel):
-    ticker: str
 
 public_equity_api = Blueprint("public_equity_api", __name__)
 
@@ -217,6 +280,134 @@ def repopulate_criteria_matching(body: RepopulateCriteriaMatchingRequest):
         return handle_exception(e)
 
 
+@public_equity_api.route("/single-criterion-report", methods=["POST"])
+@validate(body=SingleCriterionReportRequest)
+def single_criterion_report(body:SingleCriterionReportRequest):
+    try:
+        criterion_key = body.criterionKey
+        ticker_report = get_ticker_report(body.ticker)
+        industry_group_criteria = get_criteria(
+            ticker_report.selectedSector.name,
+            ticker_report.selectedIndustryGroup.name,
+        )
+        
+        # Find the criterion object that matches the provided key.
+        matching_criterion = next(
+            (criterion for criterion in industry_group_criteria.criteria if criterion.key == criterion_key),
+            None
+        )
+        
+        if matching_criterion is None:
+            raise ValueError(f"Criterion with key '{criterion_key}' not found.")
+        
+        # Build the payload. We convert the matching criterion to a dict.
+        payload = {
+            "ticker": body.ticker,
+            "shouldTriggerNext": False,
+            "criterion": matching_criterion.model_dump_json(),
+        }
+
+        headers = {"Content-Type": "application/json"}
+
+        response = requests.post(PE_US_REITS_WEBHOOK_URL, json=payload, headers=headers)
+        print(response.json())
+        return jsonify({"success": True, "message": f"{criterion_key} criterion report generation started successfully."}), 200
+    except Exception as e:
+        return handle_exception(e)
+
+@public_equity_api.route("/next-criterion-report", methods=["POST"])
+@validate(body=NextCriterionReportRequest)
+def next_criterion_report(body: NextCriterionReportRequest):
+    if not body.shouldTriggerNext:
+        return jsonify({
+            "success": True,
+            "message": "shouldTriggerNext flag is false. Not triggering next criterion report."
+        }), 200
+    try:
+        # Step 1: Get the ticker report and corresponding industry group criteria.
+        ticker_report = get_ticker_report(body.ticker)
+        industry_group_criteria = get_criteria(
+            ticker_report.selectedSector.name,
+            ticker_report.selectedIndustryGroup.name,
+        )
+
+        # Step 2: Find the index of the criterion matching the provided key.
+        criteria_list = industry_group_criteria.criteria
+        current_index = None
+        for idx, crit in enumerate(criteria_list):
+            if crit.key == body.criterionKey:
+                current_index = idx
+                break
+
+        if current_index is None:
+            raise ValueError(f"Criterion with key '{body.criterionKey}' not found.")
+
+        # Step 3: Check if this is the last criterion.
+        if current_index + 1 >= len(criteria_list):
+            return jsonify({
+                "success": True,
+                "message": "This was the last criterion. No next criterion to process."
+            }), 200
+
+        # Get the next criterion.
+        next_criterion = criteria_list[current_index + 1]
+        
+        # Determine the shouldTriggerNext flag for the payload.
+        # If the next criterion is the last in the list, then set the flag to False.
+        if current_index + 1 == len(criteria_list) - 1:
+            payload_should_trigger_next = False
+        else:
+            payload_should_trigger_next = True
+
+
+        # Step 4: Build the payload and call the webhook.
+        payload = {
+            "ticker": body.ticker,
+            "shouldTriggerNext": payload_should_trigger_next,
+            "criterion": next_criterion.model_dump_json(),
+        }
+
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(PE_US_REITS_WEBHOOK_URL, json=payload, headers=headers)
+        print(response.json())
+
+        return jsonify({
+            "success": True,
+            "message": f"Next criterion '{next_criterion.key}' report generation started successfully."
+        }), 200
+    except Exception as e:
+        return handle_exception(e)
+
+
+@public_equity_api.route("/all-criterion-report", methods=["POST"])
+@validate(body=AllCriterionReportRequest)
+def all_criterion_report(body:AllCriterionReportRequest):
+    try:
+        ticker_report = get_ticker_report(body.ticker)
+        industry_group_criteria = get_criteria(
+            ticker_report.selectedSector.name,
+            ticker_report.selectedIndustryGroup.name,
+        )
+        
+        first_criterion = industry_group_criteria.criteria[0]
+
+        if first_criterion is None:
+            raise ValueError(f"Criteria list is empty.")
+        
+        payload = {
+            "ticker": body.ticker,
+            "shouldTriggerNext": True,
+            "criterion": first_criterion.model_dump_json(),
+        }
+
+        headers = {"Content-Type": "application/json"}
+
+        response = requests.post(PE_US_REITS_WEBHOOK_URL, json=payload, headers=headers)
+        print(response.json())
+        return jsonify({"success": True, "message": "All criterion report generation started successfully."}), 200
+    except Exception as e:
+        return handle_exception(e)
+
 @public_equity_api.route("/create-all-reports", methods=["POST"])
 def create_all_reports():
     # Step 1 - Create a ticker report file if it does not exist
@@ -239,9 +430,9 @@ def process_single_ticker(body: CreateSingleCriterionReportsRequest):
     return jsonify({"success": True, "message": "Ticker processed successfully."}), 200
 
 
-@public_equity_api.route("/criterion-report", methods=["PUT"])
+@public_equity_api.route("/criterion-report", methods=["POST"])
 @validate(body=SaveCriterionReportRequest)
-def save_and_trigger_next(body: SaveCriterionReportRequest):
+def save_criterion_report(body: SaveCriterionReportRequest):
     try:
         ticker_report = get_ticker_report(body.ticker)
         # Ensure evaluations list is always a list, even if it was originally None.
@@ -283,10 +474,8 @@ def save_and_trigger_next(body: SaveCriterionReportRequest):
                 report_item.outputFileUrl = report_url
                 report_item.status = "Completed"
             else:
-                # Otherwise, add the new report and update shouldTriggerNext if available.
+                # Otherwise, add the new report
                 evaluation.reports.append(new_report)
-                if hasattr(evaluation, "shouldTriggerNext"):
-                    evaluation.shouldTriggerNext = body.shouldTriggerNext
 
         # Update the ticker report evaluations and upload the new state.
         ticker_report.evaluationsOfLatest10Q = evaluations
@@ -383,13 +572,6 @@ def save_criterion_performance_checklist(body: SavePerformanceChecklistRequest):
         else:
             # Update the existing evaluation's performance checklist
             evaluation.performanceChecklist = body.performanceChecklist
-
-        # Determine if this evaluation is not the last one in the evaluations list.
-        # If not last, trigger the next criterion report by setting shouldTriggerNext = True.
-        index = evaluations.index(evaluation)
-        should_trigger_next = index < (len(evaluations) - 1)
-        if hasattr(evaluation, "shouldTriggerNext"):
-            evaluation.shouldTriggerNext = should_trigger_next
 
         # Save updated evaluations back into the ticker report and upload to S3
         ticker_report.evaluationsOfLatest10Q = evaluations

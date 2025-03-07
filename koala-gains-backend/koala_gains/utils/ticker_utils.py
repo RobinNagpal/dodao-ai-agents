@@ -7,6 +7,7 @@ from koala_gains.structures.public_equity_structures import (
     TickerReport,
     Sector,
     IndustryGroup,
+    get_criteria_file_key,
     get_ticker_file_key,
     CriterionReportDefinitionItem,
     IndustryGroupCriteria,
@@ -56,7 +57,7 @@ def initialize_new_ticker_report(
 def get_ticker_report(ticker: str) -> TickerReport:
     ticker_file_key = get_ticker_file_key(ticker)
     ticker_json = get_object_from_s3(ticker_file_key)
-    report = TickerReport.model_load_json(ticker_json)
+    report = TickerReport.model_validate_json(ticker_json)
     return report
 
 
@@ -76,15 +77,20 @@ def get_criteria_report_definition(
 
     response = requests.get(matching_criteria.customCriteriaFileUrl)
     json_response = json.loads(response.text)
-    industry_group_criteria = IndustryGroupCriteria.model_load_json(json_response)
+    industry_group_criteria = IndustryGroupCriteria.model_validate(json_response)
     criterion = next(
         criterion
         for criterion in industry_group_criteria.criteria
         if criterion.key == criteria_key
     )
     report_definition = next(
-        report for report in criterion.reports if report.key == report_key
+        (report for report in criterion.reports if report.key == report_key), None
     )
+
+    if report_definition is None:
+        raise Exception(
+            f"Report with key {report_key} not found for criteria {criteria_key}"
+        )
 
     return report_definition
 
@@ -104,8 +110,15 @@ def save_criteria_evaluation(
         ticker, criterion_key, report_key, report_definition.outputType
     )
 
+    # If the report output type is not Text and data is not already a string,
+    # convert it to a JSON string.
+    if report_definition.outputType != "Text" and not isinstance(data, str):
+        data_to_upload = json.dumps(data)
+    else:
+        data_to_upload = data
+
     return upload_to_s3(
-        data,
+        data_to_upload,
         criterion_report_key,
         content_type=(
             "text/plain"
@@ -123,6 +136,12 @@ def save_performance_checklist(
     checklist_json = json.dumps([item.dict() for item in checklist], indent=2)
 
     return upload_to_s3(checklist_json, file_key, content_type="application/json")
+
+def get_criteria(sector_name: str, industry_group_name: str) -> IndustryGroupCriteria:
+    key = get_criteria_file_key(sector_name, industry_group_name)
+    data_str = get_object_from_s3(key)  # This returns a JSON string
+    data = json.loads(data_str)         # Convert the JSON string to a dict
+    return IndustryGroupCriteria(**data)
 
 
 def trigger_criteria_matching(ticker: str, force: bool) -> str:
