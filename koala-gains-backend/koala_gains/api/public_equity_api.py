@@ -1,6 +1,6 @@
 import ast
 import json
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 
 from flask import Blueprint, jsonify
 import requests
@@ -97,19 +97,26 @@ class SaveCriterionReportRequest(BaseModel):
     ticker: str
     criterionKey: str
     reportKey: str
-    data: Union[str, Dict[str, str]]
+    data: Union[str, Dict[str, str], List[Any]]  # Supports plain string, dict, or list
 
     @field_validator("data", mode="before")
     def parse_data(cls, v):
-        if isinstance(v, dict):
+        if isinstance(v, (dict, list)):
             return v
         if isinstance(v, str):
+            # First try to use ast.literal_eval to handle python literals (e.g., single quotes)
+            try:
+                parsed = ast.literal_eval(v)
+                if isinstance(parsed, (dict, list)):
+                    return parsed
+            except Exception:
+                pass
+            # Fallback: try using json.loads for valid JSON strings
             try:
                 parsed = json.loads(v)
-                if isinstance(parsed, dict):
+                if isinstance(parsed, (dict, list)):
                     return parsed
-            except json.JSONDecodeError:
-                # If it isn't valid JSON, then assume it's a simple string.
+            except Exception:
                 pass
         return v
 
