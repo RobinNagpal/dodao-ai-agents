@@ -54,6 +54,7 @@ def initialize_new_ticker_report(
         content_type="application/json",
     )
 
+
 def get_ticker_report(ticker: str) -> TickerReport:
     ticker_file_key = get_ticker_file_key(ticker)
     ticker_json = get_object_from_s3(ticker_file_key)
@@ -137,17 +138,22 @@ def save_performance_checklist(
 
     return upload_to_s3(checklist_json, file_key, content_type="application/json")
 
+
 def get_criteria(sector_name: str, industry_group_name: str) -> IndustryGroupCriteria:
     key = get_criteria_file_key(sector_name, industry_group_name)
     data_str = get_object_from_s3(key)  # This returns a JSON string
-    data = json.loads(data_str)         # Convert the JSON string to a dict
+    data = json.loads(data_str)  # Convert the JSON string to a dict
     return IndustryGroupCriteria(**data)
 
 
 def trigger_criteria_matching(ticker: str, force: bool) -> str:
     report = get_ticker_report(ticker)
 
-    if not force and report.criteriaMatchesOfLatest10Q is not None and report.criteriaMatchesOfLatest10Q.status == "Completed":
+    if (
+        not force
+        and report.criteriaMatchesOfLatest10Q is not None
+        and report.criteriaMatchesOfLatest10Q.status == "Completed"
+    ):
         return f"Criteria matching already done for {ticker}"
 
     report.criteriaMatchesOfLatest10Q = None
