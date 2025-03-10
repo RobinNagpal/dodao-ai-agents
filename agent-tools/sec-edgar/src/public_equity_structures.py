@@ -29,13 +29,10 @@ class ImportantMetrics(BaseModel):
     metrics: List[MetricValueItem]
 
 
-class Report(BaseModel):
-    key: str
-    name: str
-    outputType: str
+class ReportValueItem(BaseModel):
+    reportKey: str
     status: ProcessingStatus
-    outputFile: Optional[str]  # Optional since some reports use "outputFileUrl"
-    outputFileUrl: Optional[str]  # Optional field.
+    outputFileUrl: Optional[str]
 
 
 class PerformanceChecklistItem(BaseModel):
@@ -50,7 +47,7 @@ class PerformanceChecklistItem(BaseModel):
 class CriteriaEvaluation(BaseModel):
     criterionKey: str
     importantMetrics: Optional[ImportantMetrics]
-    reports: Optional[List[Report]]
+    reports: Optional[List[ReportValueItem]]
     performanceChecklist: Optional[List[PerformanceChecklistItem]]
 
 
@@ -96,7 +93,7 @@ class MetricDefinitionItem(BaseModel):
     )
 
 
-class CriterionReportItem(BaseModel):
+class CriterionReportDefinitionItem(BaseModel):
     key: str = Field(
         description="Unique identifier for the report associated with the criteria."
     )
@@ -104,8 +101,8 @@ class CriterionReportItem(BaseModel):
     description: str = Field(
         description="Comprehensive description outlining the content and purpose of the report."
     )
-    outputType: Literal["Text", "BarGraph", "PieChart"] = Field(
-        description="Specifies the type of output to produced Text, BarGraph or PieChart."
+    outputType: Literal["Text", "BarGraph", "PieChart", "WaterfallChart"] = Field(
+        description="Specifies the type of output to produced Text, BarGraph, WaterfallChart or PieChart."
     )
 
 
@@ -120,7 +117,7 @@ class IndustryGroupCriterion(BaseModel):
     importantMetrics: List[MetricDefinitionItem] = Field(
         description="List of key metrics that are used to evaluate this criteria."
     )
-    reports: List[CriterionReportItem] = Field(
+    reports: List[CriterionReportDefinitionItem] = Field(
         description="List of reports generated based on the criteria's evaluation."
     )
 
