@@ -7,8 +7,8 @@ from langchain_openai import ChatOpenAI
 from typing import Optional, Literal, List, TypedDict
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-from src.public_equity_structures import IndustryGroupCriteria, CriterionMatchesOfLatest10Q, get_criteria_file_key, \
-    TickerReport, CriterionMatch, get_ticker_file_key, Sector, IndustryGroup, IndustryGroupCriterion, \
+from src.public_equity_structures import IndustryGroupCriteriaDefinition, CriterionMatchesOfLatest10Q, get_criteria_file_key, \
+    TickerReport, CriterionMatch, get_ticker_file_key, Sector, IndustryGroup, CriterionDefinition, \
     SecFilingAttachment
 from collections import defaultdict
 import traceback
@@ -73,10 +73,10 @@ def get_object_from_s3(key: str) -> dict:
         raise Exception(f"Error: {str(e)}")
 
 
-def get_criteria(sector_name: str, industry_group_name: str) -> IndustryGroupCriteria:
+def get_criteria(sector_name: str, industry_group_name: str) -> IndustryGroupCriteriaDefinition:
     key = get_criteria_file_key(sector_name, industry_group_name)
     data = get_object_from_s3(key)
-    return IndustryGroupCriteria(**data)
+    return IndustryGroupCriteriaDefinition(**data)
 
 
 def get_ticker_report(ticker: str) -> TickerReport:
@@ -101,7 +101,7 @@ def put_ticker_report_to_s3(ticker: str, report: TickerReport):
 def create_criteria_match_analysis(
         attachment_name: str,
         attachment_content: str,
-        criteria: List[IndustryGroupCriterion]
+        criteria: List[CriterionDefinition]
 ) -> CriterionMatchResponse:
     """
     Calls GPT-4o-mini to analyze if the content is relevant to provided topics.
@@ -181,7 +181,7 @@ def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
 
 def get_matched_attachments(
         ticker: str,
-        criteria: List[IndustryGroupCriterion]
+        criteria: List[CriterionDefinition]
 ) -> CriterionMatchesOfLatest10Q:
     """
     Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
@@ -295,7 +295,7 @@ def get_matched_attachments(
         criterion_to_matched_attachments.append(
             CriterionMatch(criterionKey=c_key, matchedAttachments=matched_attachments, matchedContent="\n\n".join(refined_texts))
         )
-        print(f"Done with adding matched attachmets latest 10q content for criterion: {c_key}")
+        print(f"Done with adding matched attachments latest 10q content for criterion: {c_key}")
 
     return CriterionMatchesOfLatest10Q(criterionMatches=criterion_to_matched_attachments, status="Completed", failureReason=None)
 
@@ -346,7 +346,7 @@ def populate_criteria_matches(ticker: str):
         sector: Sector = report.selectedSector
         industry_group: IndustryGroup = report.selectedIndustryGroup
         industry_group_criteria = get_criteria(sector.name, industry_group.name)
-        criteria: List[IndustryGroupCriterion] = industry_group_criteria.criteria
+        criteria: List[CriterionDefinition] = industry_group_criteria.criteria
         criteria_matches = get_matched_attachments(ticker, criteria)
         report.criteriaMatchesOfLatest10Q = criteria_matches
         put_ticker_report_to_s3(ticker, report)
