@@ -24,9 +24,7 @@ s3_client = boto3.client("s3")
 
 
 # --- Existing function to get filings ---
-def get_all_filings_for_ticker(
-    ticker: str, page: int = 0, limit: int = 50
-) -> List[SecFiling]:
+def get_all_filings_for_ticker(ticker: str, page: int, limit: int) -> List[SecFiling]:
     """
     Retrieve filings for a given ticker with pagination.
 
@@ -50,7 +48,7 @@ def get_all_filings_for_ticker(
         paged_table, cik=filings_obj.cik, company_name=filings_obj.company_name
     )
 
-    sec_filings = []
+    sec_filings: list[SecFiling] = list()
     for i in range(paged_filings.data.num_rows):
         # Get the filing at the current index
         f = paged_filings.get_filing_at(i)
@@ -190,21 +188,23 @@ def recreate_forms_info_in_s3():
     print("SEC forms info in S3 has been recreated successfully.")
 
 
-def get_all_filings_and_update_forms_info_in_s3(ticker: str) -> dict:
+def get_all_filings_and_update_forms_info_in_s3(
+    ticker: str, page: int = 0, limit: int = 50
+) -> dict:
     """
     Retrieve all filings for a given ticker, and update the forms info in S3.
     """
-    sec_filings = get_all_filings_for_ticker(ticker)
+    sec_filings = get_all_filings_for_ticker(ticker, page, limit)
     unique_forms = {filing.form for filing in sec_filings}
     update_forms_info_in_s3(unique_forms)
-    return {"secFilings": sec_filings}
+    return {"secFilings": [filing.model_dump() for filing in sec_filings]}
 
 
 # --- Main Function ---
 def main():
     ticker = "FVR"  # or any other ticker
 
-    sec_filings = get_all_filings_for_ticker(ticker)
+    sec_filings = get_all_filings_for_ticker(ticker, page=0, limit=50)
     print("=== SEC Filings ===")
     print(json.dumps([f.model_dump() for f in sec_filings], indent=2))
     print("\n\n=== Forms Info ===")

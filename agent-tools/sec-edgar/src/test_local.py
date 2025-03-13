@@ -1,6 +1,7 @@
 import json
 from src.app import lambda_handler
 
+
 def _invoke_endpoint(raw_path, body_data):
     """
     Helper function to simulate an HTTP POST to the specified endpoint.
@@ -17,20 +18,31 @@ def _invoke_endpoint(raw_path, body_data):
     response_body = json.loads(response["body"])
     print("body:", json.dumps(response_body, indent=2))
 
+
 def local_invoke_search(ticker, report_type):
     _invoke_endpoint("/search", {"ticker": ticker, "report_type": report_type})
+
 
 def local_invoke_financials(ticker):
     _invoke_endpoint("/financials", {"ticker": ticker})
 
+
 def local_invoke_populate_criteria(ticker):
     _invoke_endpoint("/populate-criteria-matches", {"ticker": ticker})
 
+
 def local_get_all_filings(ticker):
-    _invoke_endpoint("/all-filings-for-ticker", {"ticker": ticker})
+    _invoke_endpoint(
+        "/all-filings-for-ticker", {"ticker": ticker, "page": 0, "limit": 2}
+    )
+
 
 def local_invoke_get_criteria(ticker, criterion_key):
-    _invoke_endpoint("/get-matching-criteria-attachments", {"ticker": ticker, "criterion_key": criterion_key})
+    _invoke_endpoint(
+        "/get-matching-criteria-attachments",
+        {"ticker": ticker, "criterion_key": criterion_key},
+    )
+
 
 if __name__ == "__main__":
     # EXAMPLES OF LOCAL CALLS:
@@ -39,5 +51,5 @@ if __name__ == "__main__":
     # print()
 
     # 2) Financials route for ticker=AMT
-    local_invoke_populate_criteria("FVR")
+    local_get_all_filings("FVR")
     # local_invoke_get_criteria("FVR", "financial_performance")

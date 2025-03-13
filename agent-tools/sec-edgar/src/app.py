@@ -50,7 +50,10 @@ def lambda_handler(event, context):
             return json_response(200, {"status": 200, "data": data})
 
         elif path == "/all-filings-for-ticker":  # route 4
-            data = get_all_filings_and_update_forms_info_in_s3(ticker)
+            page = body.get("page", 0)
+            limit = body.get("limit", 50)
+            data = get_all_filings_and_update_forms_info_in_s3(ticker, page, limit)
+
             return json_response(200, data)
 
         else:
