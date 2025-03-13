@@ -15,3 +15,6 @@ run-test-windows:
 
 run-test-local:
 	source .venv/bin/activate && python -m src.test_local
+
+run-get-filings:
+	source .venv/bin/activate && python -m src.all_filings

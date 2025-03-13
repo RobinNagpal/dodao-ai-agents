@@ -2,6 +2,7 @@ import json
 from dotenv import load_dotenv
 from edgar import use_local_storage, set_identity
 
+from src.all_filings import get_all_filings_and_update_forms_info_in_s3
 from src.all_financial_reports import get_xbrl_financials
 from src.criteria_matching import get_criterion_attachments_content, populate_criteria_matches
 from src.specific_10Q_report import specific_report_text
@@ -44,6 +45,10 @@ def lambda_handler(event, context):
 
         elif path == "/populate-criteria-matches":  # route 4
             data = populate_criteria_matches(ticker)
+            return json_response(200, {"status": 200, "data": data})
+
+        elif path == "/all-filings-for-ticker":  # route 4
+            data = get_all_filings_and_update_forms_info_in_s3(ticker)
             return json_response(200, {"status": 200, "data": data})
 
         else:
