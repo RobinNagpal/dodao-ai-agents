@@ -10,9 +10,7 @@ use_local_storage()
 set_identity("your_email@example.com")
 
 
-def specific_report_text(
-    ticker: str, report_type: str
-) -> str:
+def specific_report_text(ticker: str, report_type: str) -> str:
     """
     Retrieve raw text from the latest 10-Q filing attachments based on report type.
     """
@@ -46,5 +44,7 @@ def specific_report_text(
                 break
 
     if not matched_texts:
-        raise ValueError( f"No matching attachments found for ticker: {ticker} and report type '{report_type}'." )
+        raise ValueError(
+            f"No matching attachments found for ticker: {ticker} and report type '{report_type}'."
+        )
     return "\n\n".join(matched_texts)

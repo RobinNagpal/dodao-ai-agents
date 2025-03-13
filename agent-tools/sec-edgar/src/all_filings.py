@@ -6,7 +6,12 @@ from dotenv import load_dotenv
 from edgar import Company, use_local_storage, set_identity, CompanyFilings
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
-from src.sec_filing_structures import SecFiling, SecFilingAttachment, SecForm, SecFormsInfo
+from src.sec_filing_structures import (
+    SecFiling,
+    SecFilingAttachment,
+    SecForm,
+    SecFormsInfo,
+)
 
 # Load environment variables and initialize EDGAR settings
 load_dotenv()
@@ -17,8 +22,11 @@ bucket = os.getenv("S3_BUCKET_NAME")
 sec_forms_key = "sec-timeline/sec-forms/sec-forms-info.json"
 s3_client = boto3.client("s3")
 
+
 # --- Existing function to get filings ---
-def get_all_filings_for_ticker(ticker: str, page: int = 0, limit: int = 50) -> List[SecFiling]:
+def get_all_filings_for_ticker(
+    ticker: str, page: int = 0, limit: int = 50
+) -> List[SecFiling]:
     """
     Retrieve filings for a given ticker with pagination.
 
@@ -38,7 +46,9 @@ def get_all_filings_for_ticker(ticker: str, page: int = 0, limit: int = 50) -> L
     # Slice the underlying PyArrow table
     paged_table = filings_obj.data.slice(start, slice_length)
     # Create a new CompanyFilings object from the sliced table
-    paged_filings = CompanyFilings(paged_table, cik=filings_obj.cik, company_name=filings_obj.company_name)
+    paged_filings = CompanyFilings(
+        paged_table, cik=filings_obj.cik, company_name=filings_obj.company_name
+    )
 
     sec_filings = []
     for i in range(paged_filings.data.num_rows):
@@ -48,13 +58,15 @@ def get_all_filings_for_ticker(ticker: str, page: int = 0, limit: int = 50) -> L
         for a in f.attachments:
             if a.extension in [".html", ".htm", ".xml"]:
                 # Compute base URL for attachment replacement
-                f_url_base = f.filing_url.rsplit('/', 1)[0]
+                f_url_base = f.filing_url.rsplit("/", 1)[0]
                 sec_attachment = SecFilingAttachment(
                     sequenceNumber=a.sequence_number,
                     description=a.description,
                     purpose=a.purpose,
-                    url=str(a.url).replace("https://www.sec.gov/<SGML FILE>", f_url_base),
-                    documentType=a.document_type
+                    url=str(a.url).replace(
+                        "https://www.sec.gov/<SGML FILE>", f_url_base
+                    ),
+                    documentType=a.document_type,
                 )
                 sec_attachments.append(sec_attachment)
 
@@ -64,13 +76,14 @@ def get_all_filings_for_ticker(ticker: str, page: int = 0, limit: int = 50) -> L
             filingUrl=f.filing_url,
             accessionNumber=f.accession_number,
             periodOfReport=str(f.period_of_report),
-            attachments=sec_attachments
+            attachments=sec_attachments,
         )
         print(sec_filing.model_dump_json(indent=2))
         sec_filings.append(sec_filing)
 
     print(f"Found {len(sec_filings)} filings for {ticker} on page {page}")
     return sec_filings
+
 
 # --- New LLM function for multiple forms ---
 def get_forms_info(forms: Set[str]) -> Dict[str, dict]:
@@ -112,6 +125,7 @@ def get_forms_info(forms: Set[str]) -> Dict[str, dict]:
         forms_dict[form.formName] = form.model_dump()
     return forms_dict
 
+
 # --- S3 Utility Functions ---
 def get_forms_info_from_s3() -> Dict[str, dict]:
     """
@@ -125,6 +139,7 @@ def get_forms_info_from_s3() -> Dict[str, dict]:
     except Exception as e:
         print(f"S3 object not found or error reading {sec_forms_key}: {e}")
         return {}
+
 
 def update_forms_info_in_s3(forms: Set[str]):
     """
@@ -151,6 +166,7 @@ def update_forms_info_in_s3(forms: Set[str]):
     else:
         print("No new forms to update.")
 
+
 def recreate_forms_info_in_s3():
     """
     Re-create the SEC forms info in S3 by fetching the latest details for all given form names via a single LLM call.
@@ -160,7 +176,6 @@ def recreate_forms_info_in_s3():
     existing_forms_info = get_forms_info_from_s3()
     if not isinstance(existing_forms_info, dict):
         existing_forms_info = {}
-
 
     print(f"Recreating info for all forms: {set(existing_forms_info.keys())}")
     new_forms_info = get_forms_info(set(existing_forms_info.keys()))
@@ -174,21 +189,20 @@ def recreate_forms_info_in_s3():
     )
     print("SEC forms info in S3 has been recreated successfully.")
 
-def get_all_filings_and_update_forms_info_in_s3(ticker: str) -> str:
+
+def get_all_filings_and_update_forms_info_in_s3(ticker: str) -> dict:
     """
     Retrieve all filings for a given ticker, and update the forms info in S3.
     """
     sec_filings = get_all_filings_for_ticker(ticker)
     unique_forms = {filing.form for filing in sec_filings}
     update_forms_info_in_s3(unique_forms)
-    return json.dumps([f.model_dump() for f in sec_filings], indent=2)
+    return {"secFilings": sec_filings}
+
 
 # --- Main Function ---
 def main():
     ticker = "FVR"  # or any other ticker
-
-
-
 
     sec_filings = get_all_filings_for_ticker(ticker)
     print("=== SEC Filings ===")
@@ -200,6 +214,7 @@ def main():
 
     # To recreate (refresh) info for all forms, uncomment the following:
     # recreate_forms_info_in_s3()
+
 
 # if __name__ == "__main__":
 #     main()

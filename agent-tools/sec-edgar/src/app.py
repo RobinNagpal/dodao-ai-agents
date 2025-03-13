@@ -4,7 +4,10 @@ from edgar import use_local_storage, set_identity
 
 from src.all_filings import get_all_filings_and_update_forms_info_in_s3
 from src.all_financial_reports import get_xbrl_financials
-from src.criteria_matching import get_criterion_attachments_content, populate_criteria_matches
+from src.criteria_matching import (
+    get_criterion_attachments_content,
+    populate_criteria_matches,
+)
 from src.specific_10Q_report import specific_report_text
 import traceback
 
@@ -38,7 +41,6 @@ def lambda_handler(event, context):
             data = get_xbrl_financials(ticker)
             return json_response(200, {"status": 200, "data": data})
 
-
         elif path == "/get-matching-criteria-attachments":  # route 3
             data = get_criterion_attachments_content(ticker, criterion_key)
             return json_response(200, {"status": 200, "data": data})
@@ -49,7 +51,7 @@ def lambda_handler(event, context):
 
         elif path == "/all-filings-for-ticker":  # route 4
             data = get_all_filings_and_update_forms_info_in_s3(ticker)
-            return json_response(200, {"status": 200, "data": data})
+            return json_response(200, data)
 
         else:
             # If path not recognized, return 404
@@ -72,5 +74,5 @@ def json_response(http_status, payload):
     return {
         "statusCode": http_status,
         "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(payload),
+        "body": json.dumps(payload, indent=2),
     }

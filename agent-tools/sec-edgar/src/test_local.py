@@ -41,6 +41,7 @@ def local_invoke_financials(ticker):
     response_body = json.loads(response["body"])
     print("body:", json.dumps(response_body, indent=2))
 
+
 def local_invoke_populate_criteria(ticker):
     """
     Simulate an HTTP POST to /populate-criteria-matches
@@ -58,6 +59,24 @@ def local_invoke_populate_criteria(ticker):
     response_body = json.loads(response["body"])
     print("body:", json.dumps(response_body, indent=2))
 
+def local_get_all_filings(ticker):
+    """
+    Simulate an HTTP POST to /populate-criteria-matches
+    with a JSON body containing "ticker".
+    """
+    event = {
+        "rawPath": "/populate-criteria-matches",
+        "requestContext": {"http": {"method": "POST"}},
+        "body": json.dumps({"ticker": ticker}),
+    }
+    context = {}
+    response = lambda_handler(event, context)
+    print("=== /populate-criteria-matches response ===")
+    print("statusCode:", response["statusCode"])
+    response_body = json.loads(response["body"])
+    print("body:", json.dumps(response_body, indent=2))
+
+
 def local_invoke_get_criteria(ticker, criterion_key):
     """
     Simulate an HTTP POST to /get-matching-criteria-attachments
@@ -74,7 +93,6 @@ def local_invoke_get_criteria(ticker, criterion_key):
     print("statusCode:", response["statusCode"])
     response_body = json.loads(response["body"])
     print("body:", json.dumps(response_body, indent=2))
-
 
 
 if __name__ == "__main__":

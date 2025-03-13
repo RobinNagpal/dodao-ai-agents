@@ -7,9 +7,18 @@ from langchain_openai import ChatOpenAI
 from typing import Optional, Literal, List, TypedDict
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-from src.public_equity_structures import IndustryGroupCriteriaDefinition, CriterionMatchesOfLatest10Q, get_criteria_file_key, \
-    TickerReport, CriterionMatch, get_ticker_file_key, Sector, IndustryGroup, CriterionDefinition, \
-    SecFilingAttachment
+from src.public_equity_structures import (
+    IndustryGroupCriteriaDefinition,
+    CriterionMatchesOfLatest10Q,
+    get_criteria_file_key,
+    TickerReport,
+    CriterionMatch,
+    get_ticker_file_key,
+    Sector,
+    IndustryGroup,
+    CriterionDefinition,
+    SecFilingAttachment,
+)
 from collections import defaultdict
 import traceback
 
@@ -24,6 +33,7 @@ class TickersInfoAndAttachments(TypedDict):
     acc_number_no_dashes: str
     attachments: List[Attachment]
 
+
 class AttachmentWithContent(BaseModel):
     attachmentSequenceNumber: str
     attachmentDocumentName: str
@@ -31,6 +41,7 @@ class AttachmentWithContent(BaseModel):
     attachmentUrl: str
     matchedPercentage: float
     attachmentContent: str
+
 
 class AttachmentsByCriterion(BaseModel):
     criterion_key: str
@@ -73,7 +84,9 @@ def get_object_from_s3(key: str) -> dict:
         raise Exception(f"Error: {str(e)}")
 
 
-def get_criteria(sector_name: str, industry_group_name: str) -> IndustryGroupCriteriaDefinition:
+def get_criteria(
+    sector_name: str, industry_group_name: str
+) -> IndustryGroupCriteriaDefinition:
     key = get_criteria_file_key(sector_name, industry_group_name)
     data = get_object_from_s3(key)
     return IndustryGroupCriteriaDefinition(**data)
@@ -99,17 +112,19 @@ def put_ticker_report_to_s3(ticker: str, report: TickerReport):
 
 
 def create_criteria_match_analysis(
-        attachment_name: str,
-        attachment_content: str,
-        criteria: List[CriterionDefinition]
+    attachment_name: str, attachment_content: str, criteria: List[CriterionDefinition]
 ) -> CriterionMatchResponse:
     """
     Calls GPT-4o-mini to analyze if the content is relevant to provided topics.
     """
 
     criteria_json = json.dumps(
-        [{"key": kw.key, "name": kw.name, "shortDescription": kw.shortDescription
-          } for kw in criteria], indent=2)
+        [
+            {"key": kw.key, "name": kw.name, "shortDescription": kw.shortDescription}
+            for kw in criteria
+        ],
+        indent=2,
+    )
 
     prompt = f"""
     You are analyzing a section from an SEC 10-Q filing named '{attachment_name}'.
@@ -173,15 +188,12 @@ def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
     attachments = latest_10q.attachments
 
     return TickersInfoAndAttachments(
-        cik=cik,
-        acc_number_no_dashes=acc_number_no_dashes,
-        attachments=attachments
+        cik=cik, acc_number_no_dashes=acc_number_no_dashes, attachments=attachments
     )
 
 
 def get_matched_attachments(
-        ticker: str,
-        criteria: List[CriterionDefinition]
+    ticker: str, criteria: List[CriterionDefinition]
 ) -> CriterionMatchesOfLatest10Q:
     """
     Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
@@ -189,11 +201,10 @@ def get_matched_attachments(
 
     attachments_by_criterion_map = defaultdict(list[AttachmentWithContent])
 
-
     ticker_info = get_ticker_info_and_attachments(ticker)
-    cik = ticker_info.get('cik')
-    acc_number_no_dashes = ticker_info.get('acc_number_no_dashes')
-    attachments = ticker_info.get('attachments')
+    cik = ticker_info.get("cik")
+    acc_number_no_dashes = ticker_info.get("acc_number_no_dashes")
+    attachments = ticker_info.get("attachments")
 
     excluded_purposes = [
         "cover",
@@ -206,7 +217,6 @@ def get_matched_attachments(
         "statements of operations",
         "statements of equity",
     ]
-
 
     attachment_start_index = 0
 
@@ -223,7 +233,9 @@ def get_matched_attachments(
         attachment_content = str(attach.text() or "")
         attachment_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
 
-        print(f"Processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}")
+        print(
+            f"Processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}"
+        )
         # Skipping conditions
         if any(excluded in attachment_purpose for excluded in excluded_purposes):
             continue
@@ -241,17 +253,23 @@ def get_matched_attachments(
         match_analysis = create_criteria_match_analysis(
             attachment_name=attachment_purpose,
             attachment_content=attachment_content,
-            criteria=criteria
+            criteria=criteria,
         )
 
         if match_analysis and match_analysis.status == "failure":
-            print(f"Error: LLM analysis failed for attachment {attachment_document_name}.")
+            print(
+                f"Error: LLM analysis failed for attachment {attachment_document_name}."
+            )
             continue
 
         for criterion_match_result in match_analysis.criterion_matches:
             if criterion_match_result.matched:
-                print(f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.matched_amount}")
-                attachments_by_criterion_map[criterion_match_result.criterion_key].append(
+                print(
+                    f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.matched_amount}"
+                )
+                attachments_by_criterion_map[
+                    criterion_match_result.criterion_key
+                ].append(
                     AttachmentWithContent(
                         attachmentSequenceNumber=attachment_sequence_number,
                         attachmentDocumentName=attachment_document_name,
@@ -261,43 +279,63 @@ def get_matched_attachments(
                         matchedPercentage=criterion_match_result.matched_amount,
                     )
                 )
-                print(f"Number of matched attachments for {criterion_match_result.criterion_key} - {len(attachments_by_criterion_map[criterion_match_result.criterion_key])}")
+                print(
+                    f"Number of matched attachments for {criterion_match_result.criterion_key} - {len(attachments_by_criterion_map[criterion_match_result.criterion_key])}"
+                )
 
     criterion_to_matched_attachments: List[CriterionMatch] = []
 
-
     for c_key, matched_list in attachments_by_criterion_map.items():
-        print(f"Criterion: {c_key} - Number of matched attachments: {len(matched_list)}")
+        print(
+            f"Criterion: {c_key} - Number of matched attachments: {len(matched_list)}"
+        )
         top_attachments = sorted(
             matched_list,
             key=lambda x: x.matchedPercentage,
             reverse=True,
         )[:5]
 
-
         refined_texts: list[str] = list()
         matched_attachments: list[SecFilingAttachment] = list()
         for attachment in top_attachments:
-            print(f"Top attachment: {attachment.attachmentDocumentName} - {attachment.matchedPercentage}")
-            matched_attachment_content = filter_text_to_latest_quarter(attachment.attachmentContent)
-            print(f"Done with filtering latest 10q content for : {attachment.attachmentDocumentName}")
+            print(
+                f"Top attachment: {attachment.attachmentDocumentName} - {attachment.matchedPercentage}"
+            )
+            matched_attachment_content = filter_text_to_latest_quarter(
+                attachment.attachmentContent
+            )
+            print(
+                f"Done with filtering latest 10q content for : {attachment.attachmentDocumentName}"
+            )
             sec_attachment = SecFilingAttachment(
                 attachmentSequenceNumber=attachment.attachmentSequenceNumber,
                 attachmentDocumentName=attachment.attachmentDocumentName,
                 attachmentPurpose=attachment.attachmentPurpose,
                 attachmentUrl=attachment.attachmentUrl,
                 matchedPercentage=attachment.matchedPercentage,
-                latest10QContent=matched_attachment_content
+                latest10QContent=matched_attachment_content,
             )
             matched_attachments.append(sec_attachment)
-            refined_texts.append(filter_text_to_latest_quarter(attachment.attachmentContent))
+            refined_texts.append(
+                filter_text_to_latest_quarter(attachment.attachmentContent)
+            )
 
         criterion_to_matched_attachments.append(
-            CriterionMatch(criterionKey=c_key, matchedAttachments=matched_attachments, matchedContent="\n\n".join(refined_texts))
+            CriterionMatch(
+                criterionKey=c_key,
+                matchedAttachments=matched_attachments,
+                matchedContent="\n\n".join(refined_texts),
+            )
         )
-        print(f"Done with adding matched attachments latest 10q content for criterion: {c_key}")
+        print(
+            f"Done with adding matched attachments latest 10q content for criterion: {c_key}"
+        )
 
-    return CriterionMatchesOfLatest10Q(criterionMatches=criterion_to_matched_attachments, status="Completed", failureReason=None)
+    return CriterionMatchesOfLatest10Q(
+        criterionMatches=criterion_to_matched_attachments,
+        status="Completed",
+        failureReason=None,
+    )
 
 
 # TODO: This prompt should be generic. Right now its a bit specific like “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”
@@ -340,6 +378,7 @@ def filter_text_to_latest_quarter(raw_text: str) -> str:
 
     return response.content
 
+
 def populate_criteria_matches(ticker: str):
     report: TickerReport = get_ticker_report(ticker)
     try:
@@ -352,16 +391,15 @@ def populate_criteria_matches(ticker: str):
         put_ticker_report_to_s3(ticker, report)
     except Exception as e:
         print(f"Error: {str(e)}")
-        criteria_matches = CriterionMatchesOfLatest10Q(criterionMatches=[], status="Failed", failureReason=str(e))
+        criteria_matches = CriterionMatchesOfLatest10Q(
+            criterionMatches=[], status="Failed", failureReason=str(e)
+        )
         report.criteriaMatchesOfLatest10Q = criteria_matches
         put_ticker_report_to_s3(ticker, report)
         raise e
 
 
-def get_criterion_attachments_content(
-        ticker: str,
-        criterion_key: str
-) -> str:
+def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
     """
     This function:
       - Retrieves existing data from S3.
@@ -370,12 +408,13 @@ def get_criterion_attachments_content(
       - If data is missing, runs the full process and then returns results.
     """
     public_equity_report: TickerReport = get_ticker_report(ticker)
-    criteria_matches: Optional[CriterionMatchesOfLatest10Q] = public_equity_report.criteriaMatchesOfLatest10Q
+    criteria_matches: Optional[CriterionMatchesOfLatest10Q] = (
+        public_equity_report.criteriaMatchesOfLatest10Q
+    )
     if criteria_matches is None:
         raise Exception(f"Error: No criterion matches found for {ticker}.")
     if criteria_matches.status != "Completed":
         raise Exception(f"Error: Criterion match process failed for {ticker}.")
-
 
     matches: List[CriterionMatch] = criteria_matches.criterionMatches
     if not matches:
