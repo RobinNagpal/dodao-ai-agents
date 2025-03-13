@@ -86,6 +86,9 @@ class CriterionDefinition(BaseModel):
     shortDescription: str = Field(
         description="Brief overview of the criteria and its intended evaluation purpose."
     )
+    matchingInstruction: str = Field(
+        description="Instructions on how to match the criteria with the latest 10-Q report."
+    )
     importantMetrics: List[MetricItemDefinition] = Field(
         description="List of key metrics that are used to evaluate this criteria."
     )

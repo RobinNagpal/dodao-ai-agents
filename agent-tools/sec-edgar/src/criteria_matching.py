@@ -120,7 +120,7 @@ def create_criteria_match_analysis(
 
     criteria_json = json.dumps(
         [
-            {"key": kw.key, "name": kw.name, "shortDescription": kw.shortDescription}
+            {"key": kw.key, "name": kw.name, "shortDescription": kw.shortDescription, "matchingInstruction": kw.matchingInstruction}
             for kw in criteria
         ],
         indent=2,
@@ -137,8 +137,8 @@ def create_criteria_match_analysis(
 
     For each criterion, output:
     - 'matched': true or false
-    - 'matched_amount': a percentage (0-100) indicating how much of the section is directly relevant
-    (Only return true if more than 60% is genuinely relevant).
+    - 'matched_amount': a percentage (0-100) indicating how much of the section is directly relevant based on matchingInstruction
+    (Only return true if the given matchingInstruction is satisfied for the criterion).
     - You can match at most two criteria as 'true'.
 
     Return JSON that fits the EXACT structure of 'CriterionMatchResponse':
@@ -152,7 +152,6 @@ def create_criteria_match_analysis(
         ...
     ],
     "status": "success" or "failure",
-    "confidence": 1-10,
     "failureReason": "optional"
     }}
 
@@ -289,7 +288,11 @@ def get_matched_attachments(
         print(
             f"Criterion: {c_key} - Number of matched attachments: {len(matched_list)}"
         )
-        top_attachments = sorted(
+        for attachment in matched_list:
+            print(
+                f"Matched attachment: {attachment.attachmentDocumentName} - {attachment.matchedPercentage}- {attachment.attachmentUrl}"
+            )
+        top_attachments = sorted(   
             matched_list,
             key=lambda x: x.matchedPercentage,
             reverse=True,
