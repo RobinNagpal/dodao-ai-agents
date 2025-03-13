@@ -120,7 +120,7 @@ def create_criteria_match_analysis(
 
     criteria_json = json.dumps(
         [
-            {"key": kw.key, "name": kw.name, "shortDescription": kw.shortDescription, "matchingInstruction": kw.matchingInstruction}
+            {"key": kw.key, "name": kw.name, "matchingInstruction": kw.matchingInstruction}
             for kw in criteria
         ],
         indent=2,
