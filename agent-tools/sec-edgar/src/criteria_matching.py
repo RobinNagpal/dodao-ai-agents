@@ -52,9 +52,9 @@ class CriterionMatchItem(BaseModel):
     """Criterion match item"""
 
     criterion_key: str = Field(description="The key of the matched criterion")
-    matched: bool = Field(description="Whether the criterion matched")
-    matched_amount: float = Field(
-        description="The percentage of the content that matched the keyword"
+    relevant: bool = Field(description="Whether the criterion is relevant")
+    relevance_amount: float = Field(
+        description="The percentage of the content that was relevant to the instructions"
     )
 
 
@@ -136,9 +136,9 @@ def create_criteria_match_analysis(
         - A section **must be strongly and directly related** to the topic to be considered a match.
 
     For each criterion, output:
-    - 'matched': true or false
-    - 'matched_amount': a percentage (0-100) indicating how much of the section is directly relevant based on matchingInstruction
-    (Only return true if the given matchingInstruction is satisfied for the criterion).
+    - 'relevant': true or false
+    - 'relevance_amount': a percentage (0-100) indicating how much of the section is directly relevant based on matchingInstruction from the critera Json data given below
+    (Only return true if the matchingInstruction is satisfied for the criterion from the critera Json data given below by the attachmet given below).
     - You can match at most two criteria as 'true'.
 
     Return JSON that fits the EXACT structure of 'CriterionMatchResponse':
@@ -146,8 +146,8 @@ def create_criteria_match_analysis(
     "criterion_matches": [
         {{
         "criterion_key": "...",
-        "matched": true/false,
-        "matched_amount": 0-100
+        "relevant": true/false,
+        "relevance_amount": 0-100
         }},
         ...
     ],
@@ -262,9 +262,9 @@ def get_matched_attachments(
             continue
 
         for criterion_match_result in match_analysis.criterion_matches:
-            if criterion_match_result.matched:
+            if criterion_match_result.relevant:
                 print(
-                    f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.matched_amount}"
+                    f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.relevance_amount}"
                 )
                 attachments_by_criterion_map[
                     criterion_match_result.criterion_key
@@ -275,7 +275,7 @@ def get_matched_attachments(
                         attachmentPurpose=attachment_purpose,
                         attachmentUrl=attachment_url,
                         attachmentContent=attachment_content,
-                        matchedPercentage=criterion_match_result.matched_amount,
+                        matchedPercentage=criterion_match_result.relevance_amount,
                     )
                 )
                 print(
