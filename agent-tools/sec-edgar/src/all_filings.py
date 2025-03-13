@@ -24,7 +24,9 @@ s3_client = boto3.client("s3")
 
 
 # --- Existing function to get filings ---
-def get_all_filings_for_ticker(ticker: str, page: int, limit: int) -> List[SecFiling]:
+def get_all_filings_for_ticker(
+    ticker: str, page: int, page_size: int
+) -> List[SecFiling]:
     """
     Retrieve filings for a given ticker with pagination.
 
@@ -34,13 +36,13 @@ def get_all_filings_for_ticker(ticker: str, page: int, limit: int) -> List[SecFi
     filings_obj = company.get_filings()  # This is a CompanyFilings instance
     total_filings = filings_obj.data.num_rows  # Get total number of filings
 
-    start = page * limit
+    start = page * page_size
     if start >= total_filings:
         print(f"No filings found on page {page}. Total filings: {total_filings}")
         return []
 
     # Calculate how many records to take (in case fewer filings remain)
-    slice_length = min(limit, total_filings - start)
+    slice_length = min(page_size, total_filings - start)
     # Slice the underlying PyArrow table
     paged_table = filings_obj.data.slice(start, slice_length)
     # Create a new CompanyFilings object from the sliced table
@@ -189,12 +191,12 @@ def recreate_forms_info_in_s3():
 
 
 def get_all_filings_and_update_forms_info_in_s3(
-    ticker: str, page: int = 0, limit: int = 50
+    ticker: str, page: int = 0, page_size: int = 50
 ) -> dict:
     """
     Retrieve all filings for a given ticker, and update the forms info in S3.
     """
-    sec_filings = get_all_filings_for_ticker(ticker, page, limit)
+    sec_filings = get_all_filings_for_ticker(ticker, page, page_size)
     unique_forms = {filing.form for filing in sec_filings}
     update_forms_info_in_s3(unique_forms)
     return {"secFilings": [filing.model_dump() for filing in sec_filings]}
@@ -204,7 +206,7 @@ def get_all_filings_and_update_forms_info_in_s3(
 def main():
     ticker = "FVR"  # or any other ticker
 
-    sec_filings = get_all_filings_for_ticker(ticker, page=0, limit=50)
+    sec_filings = get_all_filings_for_ticker(ticker, page=0, page_size=50)
     print("=== SEC Filings ===")
     print(json.dumps([f.model_dump() for f in sec_filings], indent=2))
     print("\n\n=== Forms Info ===")

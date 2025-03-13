@@ -33,7 +33,7 @@ def local_invoke_populate_criteria(ticker):
 
 def local_get_all_filings(ticker):
     _invoke_endpoint(
-        "/all-filings-for-ticker", {"ticker": ticker, "page": 0, "limit": 2}
+        "/all-filings-for-ticker", {"ticker": ticker, "page": 0, "pageSize": 2}
     )
 
 

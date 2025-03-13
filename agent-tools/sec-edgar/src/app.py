@@ -51,8 +51,8 @@ def lambda_handler(event, context):
 
         elif path == "/all-filings-for-ticker":  # route 4
             page = body.get("page", 0)
-            limit = body.get("limit", 50)
-            data = get_all_filings_and_update_forms_info_in_s3(ticker, page, limit)
+            page_size = body.get("pageSize", 50)
+            data = get_all_filings_and_update_forms_info_in_s3(ticker, page, page_size)
 
             return json_response(200, data)
 
