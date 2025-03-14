@@ -120,7 +120,11 @@ def create_criteria_match_analysis(
 
     criteria_json = json.dumps(
         [
-            {"key": kw.key, "name": kw.name, "matchingInstruction": kw.matchingInstruction}
+            {
+                "key": kw.key,
+                "name": kw.name,
+                "matchingInstruction": kw.matchingInstruction,
+            }
             for kw in criteria
         ],
         indent=2,
@@ -288,7 +292,7 @@ def get_matched_attachments(
             print(
                 f"Matched attachment: {attachment.attachmentDocumentName} - {attachment.relevance}- {attachment.attachmentUrl}"
             )
-        top_attachments = sorted(   
+        top_attachments = sorted(
             matched_list,
             key=lambda x: x.relevance,
             reverse=True,
@@ -339,7 +343,9 @@ def get_matched_attachments(
 
 
 # TODO: This prompt should be generic. Right now its a bit specific like “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”
-def get_content_for_criterion_and_latest_quarter(raw_text: str, current_criterion: CriterionDefinition) -> str:
+def get_content_for_criterion_and_latest_quarter(
+    raw_text: str, current_criterion: CriterionDefinition
+) -> str:
     """
     Calls GPT-4o-mini to filter out older periods and keep only
     the latest quarter. Preserves original formatting.
