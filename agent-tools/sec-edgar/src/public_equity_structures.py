@@ -24,8 +24,8 @@ class SecFilingAttachment(BaseModel):
     attachmentDocumentName: str
     attachmentPurpose: Optional[str] = None
     attachmentUrl: str
-    matchedPercentage: float
-    latest10QContent: str
+    relevance: Optional[float] = None
+    attachmentContent: Optional[str] = None
 
 
 class CriterionMatch(BaseModel):
