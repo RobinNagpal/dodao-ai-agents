@@ -102,6 +102,7 @@ def put_ticker_report_to_s3(ticker: str, report: TickerReport):
     """Writes the updated info JSON to S3."""
     key = get_ticker_file_key(ticker)
     data = report.model_dump_json(indent=2)
+    print(f"Writing to S3: {key}")
     s3_client.put_object(
         Bucket=S3_BUCKET_NAME,
         Key=key,
@@ -109,6 +110,7 @@ def put_ticker_report_to_s3(ticker: str, report: TickerReport):
         ContentType="application/json",
         ACL="public-read",
     )
+    print(f"Updated {key} uploaded to S3.")
 
 
 def create_criteria_match_analysis(

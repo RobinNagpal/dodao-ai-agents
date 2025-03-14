@@ -1,15 +1,15 @@
-from typing import Set, Dict, List
-import json
 import boto3
+import json
 import os
 from dotenv import load_dotenv
 from edgar import Company, use_local_storage, set_identity, CompanyFilings
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
+from typing import Set, Dict
+
 from src.sec_filing_structures import (
     SecFiling,
     SecFilingAttachment,
-    SecForm,
     SecFormsInfo,
 )
 
@@ -24,13 +24,14 @@ s3_client = boto3.client("s3")
 
 
 # --- Existing function to get filings ---
-def get_all_filings_for_ticker(
-    ticker: str, page: int, page_size: int
-) -> List[SecFiling]:
+def get_all_filings_for_ticker(ticker: str, page: int, page_size: int) -> dict:
     """
     Retrieve filings for a given ticker with pagination.
-
     The 'page' parameter is zero-indexed.
+
+    Returns a dictionary with:
+      - "secFilings": List of SecFiling objects for the current page.
+      - "hasMore": A boolean indicating if there are more filings to fetch.
     """
     company = Company(ticker)
     filings_obj = company.get_filings()  # This is a CompanyFilings instance
@@ -39,7 +40,7 @@ def get_all_filings_for_ticker(
     start = page * page_size
     if start >= total_filings:
         print(f"No filings found on page {page}. Total filings: {total_filings}")
-        return []
+        return {"secFilings": [], "hasMore": False}
 
     # Calculate how many records to take (in case fewer filings remain)
     slice_length = min(page_size, total_filings - start)
@@ -81,8 +82,12 @@ def get_all_filings_for_ticker(
         print(sec_filing.model_dump_json(indent=2))
         sec_filings.append(sec_filing)
 
-    print(f"Found {len(sec_filings)} filings for {ticker} on page {page}")
-    return sec_filings
+    # Determine if more filings are available in subsequent pages
+    has_more = ((page + 1) * page_size) < total_filings
+    print(
+        f"Found {len(sec_filings)} filings for {ticker} on page {page}. Has more: {has_more}"
+    )
+    return {"secFilings": sec_filings, "hasMore": has_more}
 
 
 # --- New LLM function for multiple forms ---
@@ -194,12 +199,20 @@ def get_all_filings_and_update_forms_info_in_s3(
     ticker: str, page: int = 0, page_size: int = 50
 ) -> dict:
     """
-    Retrieve all filings for a given ticker, and update the forms info in S3.
+    Retrieve filings for a given ticker with pagination and update the forms info in S3.
+
+    Returns a dictionary with:
+      - "secFilings": List of filings in JSON format.
+      - "hasMore": A boolean indicating if there are more filings available.
     """
-    sec_filings = get_all_filings_for_ticker(ticker, page, page_size)
+    paginated_result = get_all_filings_for_ticker(ticker, page, page_size)
+    sec_filings = paginated_result["secFilings"]
     unique_forms = {filing.form for filing in sec_filings}
     update_forms_info_in_s3(unique_forms)
-    return {"secFilings": [filing.model_dump() for filing in sec_filings]}
+    return {
+        "secFilings": [filing.model_dump() for filing in sec_filings],
+        "hasMore": paginated_result["hasMore"],
+    }
 
 
 # --- Main Function ---
