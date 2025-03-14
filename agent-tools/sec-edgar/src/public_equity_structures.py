@@ -24,8 +24,8 @@ class SecFilingAttachment(BaseModel):
     attachmentDocumentName: str
     attachmentPurpose: Optional[str] = None
     attachmentUrl: str
-    matchedPercentage: float
-    latest10QContent: str
+    relevance: Optional[float] = None
+    attachmentContent: Optional[str] = None
 
 
 class CriterionMatch(BaseModel):
@@ -85,6 +85,9 @@ class CriterionDefinition(BaseModel):
     name: str = Field(description="Descriptive name of the criteria.")
     shortDescription: str = Field(
         description="Brief overview of the criteria and its intended evaluation purpose."
+    )
+    matchingInstruction: str = Field(
+        description="Instructions on how to match the criteria with the latest 10-Q report."
     )
     importantMetrics: List[MetricItemDefinition] = Field(
         description="List of key metrics that are used to evaluate this criteria."

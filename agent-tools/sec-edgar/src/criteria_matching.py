@@ -39,7 +39,7 @@ class AttachmentWithContent(BaseModel):
     attachmentDocumentName: str
     attachmentPurpose: Optional[str]
     attachmentUrl: str
-    matchedPercentage: float
+    relevance: float
     attachmentContent: str
 
 
@@ -52,9 +52,9 @@ class CriterionMatchItem(BaseModel):
     """Criterion match item"""
 
     criterion_key: str = Field(description="The key of the matched criterion")
-    matched: bool = Field(description="Whether the criterion matched")
-    matched_amount: float = Field(
-        description="The percentage of the content that matched the keyword"
+    relevant: bool = Field(description="Whether the criterion is relevant")
+    relevance_amount: float = Field(
+        description="On the scale of 0-100 how relevant was the content based on the matching instruction provided for this particular criterion"
     )
 
 
@@ -120,7 +120,7 @@ def create_criteria_match_analysis(
 
     criteria_json = json.dumps(
         [
-            {"key": kw.key, "name": kw.name, "shortDescription": kw.shortDescription}
+            {"key": kw.key, "name": kw.name, "matchingInstruction": kw.matchingInstruction}
             for kw in criteria
         ],
         indent=2,
@@ -128,31 +128,26 @@ def create_criteria_match_analysis(
 
     prompt = f"""
     You are analyzing a section from an SEC 10-Q filing named '{attachment_name}'.
-    Determine how relevant the section is to each of the following criteria.
+    Determine how relevant the section is to to the provided criterion items.
 
-    ### **Importance of Precision**
-        - We are collecting only **highly relevant** sections, as they will later be analyzed for financial ratios and investment insights.
-        - **Loose or partial relevance is NOT enough**—a section should match **only if it contains direct, substantial information** about a topic.
-        - A section **must be strongly and directly related** to the topic to be considered a match.
-
-    For each criterion, output:
-    - 'matched': true or false
-    - 'matched_amount': a percentage (0-100) indicating how much of the section is directly relevant
-    (Only return true if more than 60% is genuinely relevant).
-    - You can match at most two criteria as 'true'.
+    For each criterion item, output:
+    - 'relevant': true or false
+    - 'relevance_amount': a percentage (0-100) indicating how much of the section is directly relevant based on matchingInstruction from the critera Json data given below
+    (Only return true if the matchingInstruction is satisfied for the criterion from the criteria Json data given below by the attachmet given below).
+    - You can match at most four criteria as 'true'.
+    - Make sure that the content matches to the exact matchingInstruction provided in each of the criterion items.
 
     Return JSON that fits the EXACT structure of 'CriterionMatchResponse':
     {{
     "criterion_matches": [
         {{
         "criterion_key": "...",
-        "matched": true/false,
-        "matched_amount": 0-100
+        "relevant": true/false,
+        "relevance_amount": 0-100
         }},
         ...
     ],
     "status": "success" or "failure",
-    "confidence": 1-10,
     "failureReason": "optional"
     }}
 
@@ -230,7 +225,7 @@ def get_matched_attachments(
         attachment_purpose = str(attach.purpose or "").lower()
         attachment_document_name = str(attach.document or "")  # e.g. "R10.htm"
         attachment_sequence_number: str = attach.sequence_number  # e.g. "R10.htm"
-        attachment_content = str(attach.text() or "")
+        attachment_text = str(attach.text() or "")
         attachment_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
 
         print(
@@ -246,13 +241,13 @@ def get_matched_attachments(
         if not attachment_document_name:
             print(f"Warning: Attachment {attach.purpose} has empty filename; skipping.")
             continue
-        if not attachment_content:
+        if not attachment_text:
             print(f"Warning: Attachment {attach.purpose} has empty content; skipping.")
             continue
 
         match_analysis = create_criteria_match_analysis(
             attachment_name=attachment_purpose,
-            attachment_content=attachment_content,
+            attachment_content=attachment_text,
             criteria=criteria,
         )
 
@@ -263,9 +258,9 @@ def get_matched_attachments(
             continue
 
         for criterion_match_result in match_analysis.criterion_matches:
-            if criterion_match_result.matched:
+            if criterion_match_result.relevant:
                 print(
-                    f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.matched_amount}"
+                    f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.relevance_amount}"
                 )
                 attachments_by_criterion_map[
                     criterion_match_result.criterion_key
@@ -275,34 +270,35 @@ def get_matched_attachments(
                         attachmentDocumentName=attachment_document_name,
                         attachmentPurpose=attachment_purpose,
                         attachmentUrl=attachment_url,
-                        attachmentContent=attachment_content,
-                        matchedPercentage=criterion_match_result.matched_amount,
+                        attachmentContent=attachment_text,
+                        relevance=criterion_match_result.relevance_amount,
                     )
-                )
-                print(
-                    f"Number of matched attachments for {criterion_match_result.criterion_key} - {len(attachments_by_criterion_map[criterion_match_result.criterion_key])}"
                 )
 
     criterion_to_matched_attachments: List[CriterionMatch] = []
 
     for c_key, matched_list in attachments_by_criterion_map.items():
+        current_criterion: CriterionDefinition = next(
+            (cm for cm in criteria if cm.key == c_key)
+        )
         print(
             f"Criterion: {c_key} - Number of matched attachments: {len(matched_list)}"
         )
-        top_attachments = sorted(
+        for attachment in matched_list:
+            print(
+                f"Matched attachment: {attachment.attachmentDocumentName} - {attachment.relevance}- {attachment.attachmentUrl}"
+            )
+        top_attachments = sorted(   
             matched_list,
-            key=lambda x: x.matchedPercentage,
+            key=lambda x: x.relevance,
             reverse=True,
-        )[:5]
+        )[:7]
 
-        refined_texts: list[str] = list()
+        top_attachments_texts: list[str] = list()
         matched_attachments: list[SecFilingAttachment] = list()
         for attachment in top_attachments:
             print(
-                f"Top attachment: {attachment.attachmentDocumentName} - {attachment.matchedPercentage}"
-            )
-            matched_attachment_content = filter_text_to_latest_quarter(
-                attachment.attachmentContent
+                f"Top attachment: {attachment.attachmentDocumentName} - {attachment.relevance}"
             )
             print(
                 f"Done with filtering latest 10q content for : {attachment.attachmentDocumentName}"
@@ -312,19 +308,23 @@ def get_matched_attachments(
                 attachmentDocumentName=attachment.attachmentDocumentName,
                 attachmentPurpose=attachment.attachmentPurpose,
                 attachmentUrl=attachment.attachmentUrl,
-                matchedPercentage=attachment.matchedPercentage,
-                latest10QContent=matched_attachment_content,
+                relevance=attachment.relevance,
+                attachmentContent=attachment.attachmentContent,
             )
             matched_attachments.append(sec_attachment)
-            refined_texts.append(
-                filter_text_to_latest_quarter(attachment.attachmentContent)
-            )
+            top_attachments_texts.append(attachment.attachmentContent)
+
+        matched_raw_content = "\n\n".join(top_attachments_texts)
+
+        matched_content = get_content_for_criterion_and_latest_quarter(
+            matched_raw_content, current_criterion
+        )
 
         criterion_to_matched_attachments.append(
             CriterionMatch(
                 criterionKey=c_key,
                 matchedAttachments=matched_attachments,
-                matchedContent="\n\n".join(refined_texts),
+                matchedContent=matched_content,
             )
         )
         print(
@@ -339,29 +339,35 @@ def get_matched_attachments(
 
 
 # TODO: This prompt should be generic. Right now its a bit specific like “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”
-def filter_text_to_latest_quarter(raw_text: str) -> str:
+def get_content_for_criterion_and_latest_quarter(raw_text: str, current_criterion: CriterionDefinition) -> str:
     """
     Calls GPT-4o-mini to filter out older periods and keep only
     the latest quarter. Preserves original formatting.
     """
     llm = ChatOpenAI(
         temperature=0,
-        model="gpt-4o-mini",
+        model="gpt-4o",
     )
 
-    system_prompt = """
+    system_prompt = f"""
     You are a financial data extraction assistant. The user has provided some
     text from a 10-Q attachment. It may contain multiple time periods
     (e.g. “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”).
 
     Your job:
-    1) Remove any older periods/columns, retaining only the latest quarter or period.
-    2) Preserve the rest of the text exactly as it is, including spacing and line breaks,
-    except for the removed columns/rows.
-    3) Do not reformat or summarize; do not alter numbers or wording.
-    4) If there is only one set of data, keep it entirely.
-    5) Preserve all headings and subheadings as lines above the table.
-    6) Return the final data in Markdown tabular format.
+    1) Make sure the keep the information matching the following criterion: {current_criterion.key} - {current_criterion.name} - {current_criterion.matchingInstruction}
+    2) Remove any older periods/columns, retaining only the latest quarter or period.
+    3) format the content in proper markdown format and use tables where necessary.
+    4) Dont skip any qualitative information that is relevant to the criterion.
+    5) Dont skip any qualitative information that is relevant to the criterion.
+    6) Do not reduce or skip any relevant information
+    7) Preserve all headings and subheadings as lines above the table.
+    8) In the content if in tables or otherwise always include the information about the period or quarter to which the data belongs.
+    9) The dates or quarter should be very very explicit.
+    10) Don't miss any relevant information that is related to the criterion.
+    11) Normalize the information to real dollar amount, or to the real numerical value if its captured in thousands or millions.
+    12) Normalize the information to real dollar amount, or to the real numerical value if its captured in thousands or millions.
+    
     """
 
     user_prompt = f"""
