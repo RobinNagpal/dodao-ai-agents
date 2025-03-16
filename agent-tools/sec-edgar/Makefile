@@ -18,3 +18,6 @@ run-test-local:
 
 run-get-filings:
 	source .venv/bin/activate && python -m src.all_filings
+
+run-edgar:
+	source .venv/bin/activate && python -m src.test_file
