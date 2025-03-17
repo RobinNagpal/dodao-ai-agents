@@ -1,18 +1,14 @@
-# Part I - Financial Information
+# PART I
 
 
 
-## Item 1: Financial Statements (unaudited)
+## ITEM 1
 
 Part I – Financial Information
 
 Item 1. Financial Statements
 
 ### Index To Financial Statements
-
-
-
-#### Consolidated Balance Sheets as of September 30, 2024 and December 31, 2023
 
 Equity LifeStyle Properties, Inc.
 
@@ -26,7 +22,21 @@ The accompanying notes are an integral part of the consolidated financial statem
 
 3
 
-#### Consolidated Statements of Income and Comprehensive Income for the quarters and nine months ended September 30, 2024 and 2023
+#### Consolidated Balance Sheets - September 30, 2024 and December 31, 2023
+
+Equity LifeStyle Properties, Inc.
+
+Consolidated Balance Sheets
+
+(amounts in thousands, except share and per share data)
+
+<table><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td colspan="3"></td><td colspan="3"><span>September 30, 2024</span></td><td colspan="3"></td><td colspan="3"><span>December 31, 2023</span></td></tr><tr><td colspan="3"></td><td colspan="3"><span>(unaudited)</span></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><span>Assets</span></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><span>Investment in real estate:</span></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><span>Land</span></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:Land" format="ixt:num-dot-decimal" scale="3" id="f-31">2,088,682</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:Land" format="ixt:num-dot-decimal" scale="3" id="f-32">2,088,657</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Land improvements</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:LandImprovements" format="ixt:num-dot-decimal" scale="3" id="f-33">4,536,573</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:LandImprovements" format="ixt:num-dot-decimal" scale="3" id="f-34">4,380,649</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Buildings and other depreciable property</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:BuildingsAndImprovementsGross" format="ixt:num-dot-decimal" scale="3" id="f-35">1,230,614</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:BuildingsAndImprovementsGross" format="ixt:num-dot-decimal" scale="3" id="f-36">1,236,985</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:RealEstateInvestmentPropertyAtCost" format="ixt:num-dot-decimal" scale="3" id="f-37">7,855,869</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:RealEstateInvestmentPropertyAtCost" format="ixt:num-dot-decimal" scale="3" id="f-38">7,706,291</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Accumulated depreciation</span></td><td colspan="2"><span>(<ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:RealEstateInvestmentPropertyAccumulatedDepreciation" format="ixt:num-dot-decimal" scale="3" id="f-39">2,592,258</ix:nonfraction>)</span></td><td></td><td colspan="3"></td><td colspan="2"><span>(<ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:RealEstateInvestmentPropertyAccumulatedDepreciation" format="ixt:num-dot-decimal" scale="3" id="f-40">2,448,876</ix:nonfraction>)</span></td><td></td></tr><tr><td colspan="3"><span>Net investment in real estate</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:RealEstateInvestmentPropertyNet" format="ixt:num-dot-decimal" scale="3" id="f-41">5,263,611</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:RealEstateInvestmentPropertyNet" format="ixt:num-dot-decimal" scale="3" id="f-42">5,257,415</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Cash and restricted cash</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents" format="ixt:num-dot-decimal" scale="3" id="f-43">40,398</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents" format="ixt:num-dot-decimal" scale="3" id="f-44">29,937</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Notes receivable, net</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:NotesReceivableNet" format="ixt:num-dot-decimal" scale="3" id="f-45">55,037</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:NotesReceivableNet" format="ixt:num-dot-decimal" scale="3" id="f-46">49,937</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Investment in unconsolidated joint ventures</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures" format="ixt:num-dot-decimal" scale="3" id="f-47">84,834</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:InvestmentsInAffiliatesSubsidiariesAssociatesAndJointVentures" format="ixt:num-dot-decimal" scale="3" id="f-48">85,304</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Deferred commission expense</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:CapitalizedContractCostNet" format="ixt:num-dot-decimal" scale="3" id="f-49">56,050</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:CapitalizedContractCostNet" format="ixt:num-dot-decimal" scale="3" id="f-50">53,641</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Other assets, net</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:OtherAssets" format="ixt:num-dot-decimal" scale="3" id="f-51">144,189</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:OtherAssets" format="ixt:num-dot-decimal" scale="3" id="f-52">137,499</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Total Assets</span></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:Assets" format="ixt:num-dot-decimal" scale="3" id="f-53">5,644,119</ix:nonfraction></span><span>&nbsp;</span></td><td></td><td colspan="3"></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:Assets" format="ixt:num-dot-decimal" scale="3" id="f-54">5,613,733</ix:nonfraction></span><span>&nbsp;</span></td><td></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><span>Liabilities and Equity</span></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><span>Liabilities:</span></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><span>Mortgage notes payable, net</span></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:SecuredDebt" format="ixt:num-dot-decimal" scale="3" id="f-55">2,943,999</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:SecuredDebt" format="ixt:num-dot-decimal" scale="3" id="f-56">2,989,959</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Term loans, net</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:UnsecuredDebt" format="ixt:num-dot-decimal" scale="3" id="f-57">497,873</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:UnsecuredDebt" format="ixt:num-dot-decimal" scale="3" id="f-58">497,648</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Unsecured line of credit</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:LineOfCredit" format="ixt:num-dot-decimal" scale="3" id="f-59">32,500</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:LineOfCredit" format="ixt:num-dot-decimal" scale="3" id="f-60">31,000</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Accounts payable and other liabilities</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:AccountsPayableAndAccruedLiabilitiesCurrentAndNoncurrent" format="ixt:num-dot-decimal" scale="3" id="f-61">207,603</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:AccountsPayableAndAccruedLiabilitiesCurrentAndNoncurrent" format="ixt:num-dot-decimal" scale="3" id="f-62">151,567</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Deferred membership revenue</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:ContractWithCustomerLiability" format="ixt:num-dot-decimal" scale="3" id="f-63">232,862</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:ContractWithCustomerLiability" format="ixt:num-dot-decimal" scale="3" id="f-64">218,337</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Accrued interest payable</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:InterestPayableCurrentAndNoncurrent" format="ixt:num-dot-decimal" scale="3" id="f-65">11,991</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:InterestPayableCurrentAndNoncurrent" format="ixt:num-dot-decimal" scale="3" id="f-66">12,657</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Rents and other customer payments received in advance and security deposits</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:AdvanceRent" format="ixt:num-dot-decimal" scale="3" id="f-67">128,345</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:AdvanceRent" format="ixt:num-dot-decimal" scale="3" id="f-68">126,451</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Distributions payable</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:DividendsPayableCurrentAndNoncurrent" format="ixt:num-dot-decimal" scale="3" id="f-69">93,407</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:DividendsPayableCurrentAndNoncurrent" format="ixt:num-dot-decimal" scale="3" id="f-70">87,493</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Total Liabilities</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:Liabilities" format="ixt:num-dot-decimal" scale="3" id="f-71">4,148,580</ix:nonfraction></span><span>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:Liabilities" format="ixt:num-dot-decimal" scale="3" id="f-72">4,115,112</ix:nonfraction></span><span>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Equity:</span></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><span>Stockholders' Equity:</span></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><div><span>Preferred stock, $<ix:nonfraction unitref="usdPerShare" contextref="c-3" decimals="INF" name="us-gaap:PreferredStockParOrStatedValuePerShare" scale="0" id="f-73"><ix:nonfraction unitref="usdPerShare" contextref="c-4" decimals="INF" name="us-gaap:PreferredStockParOrStatedValuePerShare" scale="0" id="f-74">0.01</ix:nonfraction></ix:nonfraction> par value, <ix:nonfraction unitref="shares" contextref="c-3" decimals="INF" name="us-gaap:PreferredStockSharesAuthorized" format="ixt:num-dot-decimal" scale="0" id="f-75"><ix:nonfraction unitref="shares" contextref="c-4" decimals="INF" name="us-gaap:PreferredStockSharesAuthorized" format="ixt:num-dot-decimal" scale="0" id="f-76">10,000,000</ix:nonfraction></ix:nonfraction> shares authorized as of September 30, 2024 and December 31, 2023; <ix:nonfraction unitref="shares" contextref="c-3" decimals="INF" name="us-gaap:PreferredStockSharesIssued" format="ixt:fixed-zero" scale="0" id="f-77"><ix:nonfraction unitref="shares" contextref="c-4" decimals="INF" name="us-gaap:PreferredStockSharesIssued" format="ixt:fixed-zero" scale="0" id="f-78"><ix:nonfraction unitref="shares" contextref="c-4" decimals="INF" name="us-gaap:PreferredStockSharesOutstanding" format="ixt:fixed-zero" scale="0" id="f-79"><ix:nonfraction unitref="shares" contextref="c-3" decimals="INF" name="us-gaap:PreferredStockSharesOutstanding" format="ixt:fixed-zero" scale="0" id="f-80">none</ix:nonfraction></ix:nonfraction></ix:nonfraction></ix:nonfraction> issued and outstanding. </span></div></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:PreferredStockValue" format="ixt:fixed-zero" scale="3" id="f-81">—</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:PreferredStockValue" format="ixt:fixed-zero" scale="3" id="f-82">—</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><div><span>Common stock, $<ix:nonfraction unitref="usdPerShare" contextref="c-4" decimals="INF" name="us-gaap:CommonStockParOrStatedValuePerShare" scale="0" id="f-83"><ix:nonfraction unitref="usdPerShare" contextref="c-3" decimals="INF" name="us-gaap:CommonStockParOrStatedValuePerShare" scale="0" id="f-84">0.01</ix:nonfraction></ix:nonfraction> par value, <ix:nonfraction unitref="shares" contextref="c-4" decimals="INF" name="us-gaap:CommonStockSharesAuthorized" format="ixt:num-dot-decimal" scale="0" id="f-85"><ix:nonfraction unitref="shares" contextref="c-3" decimals="INF" name="us-gaap:CommonStockSharesAuthorized" format="ixt:num-dot-decimal" scale="0" id="f-86">600,000,000</ix:nonfraction></ix:nonfraction> shares authorized as of September 30, 2024 and December 31, 2023; <ix:nonfraction unitref="shares" contextref="c-3" decimals="INF" name="us-gaap:CommonStockSharesOutstanding" format="ixt:num-dot-decimal" scale="0" id="f-87"><ix:nonfraction unitref="shares" contextref="c-3" decimals="INF" name="us-gaap:CommonStockSharesIssued" format="ixt:num-dot-decimal" scale="0" id="f-88">186,512,609</ix:nonfraction></ix:nonfraction> and <ix:nonfraction unitref="shares" contextref="c-4" decimals="INF" name="us-gaap:CommonStockSharesIssued" format="ixt:num-dot-decimal" scale="0" id="f-89"><ix:nonfraction unitref="shares" contextref="c-4" decimals="INF" name="us-gaap:CommonStockSharesOutstanding" format="ixt:num-dot-decimal" scale="0" id="f-90">186,426,281</ix:nonfraction></ix:nonfraction> shares issued and outstanding as of September 30, 2024 and December 31, 2023, respectively.</span></div></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:CommonStockValue" format="ixt:num-dot-decimal" scale="3" id="f-91">1,917</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:CommonStockValue" format="ixt:num-dot-decimal" scale="3" id="f-92">1,917</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Paid-in capital</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:AdditionalPaidInCapitalCommonStock" format="ixt:num-dot-decimal" scale="3" id="f-93">1,648,384</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:AdditionalPaidInCapitalCommonStock" format="ixt:num-dot-decimal" scale="3" id="f-94">1,644,319</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Distributions in excess of accumulated earnings</span></td><td colspan="2"><span>(<ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:AccumulatedDistributionsInExcessOfNetIncome" format="ixt:num-dot-decimal" scale="3" id="f-95">219,724</ix:nonfraction>)</span></td><td></td><td colspan="3"></td><td colspan="2"><span>(<ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:AccumulatedDistributionsInExcessOfNetIncome" format="ixt:num-dot-decimal" scale="3" id="f-96">223,576</ix:nonfraction>)</span></td><td></td></tr><tr><td colspan="3"><span>Accumulated other comprehensive income</span></td><td colspan="2"><span>(<ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" sign="-" name="us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax" format="ixt:num-dot-decimal" scale="3" id="f-97">4,764</ix:nonfraction>)</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:AccumulatedOtherComprehensiveIncomeLossNetOfTax" format="ixt:num-dot-decimal" scale="3" id="f-98">6,061</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Total Stockholders’ Equity</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:StockholdersEquity" format="ixt:num-dot-decimal" scale="3" id="f-99">1,425,813</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:StockholdersEquity" format="ixt:num-dot-decimal" scale="3" id="f-100">1,428,721</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Non-controlling interests – Common OP Units</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:MinorityInterestInOperatingPartnerships" format="ixt:num-dot-decimal" scale="3" id="f-101">69,726</ix:nonfraction>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:MinorityInterestInOperatingPartnerships" format="ixt:num-dot-decimal" scale="3" id="f-102">69,900</ix:nonfraction>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Total Equity</span></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest" format="ixt:num-dot-decimal" scale="3" id="f-103">1,495,539</ix:nonfraction></span><span>&nbsp;</span></td><td></td><td colspan="3"></td><td colspan="2"><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest" format="ixt:num-dot-decimal" scale="3" id="f-104">1,498,621</ix:nonfraction></span><span>&nbsp;</span></td><td></td></tr><tr><td colspan="3"><span>Total Liabilities and Equity</span></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-3" decimals="-3" name="us-gaap:LiabilitiesAndStockholdersEquity" format="ixt:num-dot-decimal" scale="3" id="f-105">5,644,119</ix:nonfraction></span><span>&nbsp;</span></td><td></td><td colspan="3"></td><td><span>$</span></td><td><span><ix:nonfraction unitref="usd" contextref="c-4" decimals="-3" name="us-gaap:LiabilitiesAndStockholdersEquity" format="ixt:num-dot-decimal" scale="3" id="f-106">5,613,733</ix:nonfraction></span><span>&nbsp;</span></td><td></td></tr></tbody></table>
+
+The accompanying notes are an integral part of the consolidated financial statements.
+
+3
+
+#### Consolidated Statements of Income and Comprehensive Income - 2024 and 2023
 
 Equity LifeStyle Properties, Inc.
 
@@ -42,7 +52,7 @@ The accompanying notes are an integral part of the consolidated financial statem
 
 4
 
-#### Consolidated Statements of Changes in Equity for the quarters and nine months ended September 30, 2024 and 2023
+#### Consolidated Statements of Changes in Equity - 2024 and 2023
 
 Equity LifeStyle Properties, Inc.
 
@@ -72,7 +82,7 @@ The accompanying notes are an integral part of the consolidated financial statem
 
 6
 
-#### Consolidated Statements of Cash Flows for the nine months ended September 30, 2024 and 2023
+#### Consolidated Statements of Cash Flows - 2024 and 2023
 
 Equity LifeStyle Properties, Inc.
 
@@ -720,7 +730,7 @@ Pursuant to the requirements of the Securities Exchange Act of 1934, the Registr
 
 39
 
-## Item 2: Management’s Discussion and Analysis of Financial Condition and Results of Operations
+## ITEM 2
 
 Item 2.    Management’s Discussion and Analysis of Financial Condition and Results of Operations
 
@@ -1170,13 +1180,13 @@ These forward-looking statements are based on management’s present expectation
 
 36
 
-## Item 3: Quantitative and Qualitative Disclosures About Market Risk
+## ITEM 3
 
 Item 3.Quantitative and Qualitative Disclosures About Market Risk
 
 We disclosed a quantitative and qualitative analysis regarding market risk in Part II, Item 7A. Quantitative and Qualitative Disclosures About Market Risk in our 2023 Form 10-K. There have been no material changes in the assumptions used or results obtained regarding market risk since December 31, 2023.
 
-## Item 4: Controls and Procedures
+## ITEM 4
 
 Item 4.Controls and Procedures
 
@@ -1233,93 +1243,3 @@ Pursuant to the requirements of the Securities Exchange Act of 1934, the Registr
 <table><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td colspan="3"></td><td colspan="6"><span>EQUITY LIFESTYLE PROPERTIES, INC.</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><div><span>Date: October&nbsp;30, 2024</span></div></td><td colspan="3"><span>By:</span></td><td colspan="3"><span>/s/ Marguerite Nader</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>Marguerite Nader</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>President and Chief Executive Officer</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>(Principal Executive Officer)</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><div><span>Date: October&nbsp;30, 2024</span></div></td><td colspan="3"><span>By:</span></td><td colspan="3"><span>/s/ Paul Seavey</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>Paul Seavey</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>Executive Vice President and Chief Financial Officer</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>(Principal Financial and Accounting Officer)</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr></tbody></table>
 
 39
-
-# Part II - Other Information
-
-
-
-## Item 1: Legal Proceedings
-
-Item 1.Legal Proceedings
-
-See Part I. Item 1. Financial Statements—Note 12. Commitments and Contingencies accompanying the Consolidated Financial Statements in this Quarterly Report on Form 10-Q.
-
-## Item 1A: Risk Factors
-
-Item 1A.Risk Factors
-
-There have been no material changes to the Item 1A. Risk Factors discussed in our 2023 Form 10-K other than those disclosed in our Quarterly Report on Form 10-Q for the quarter ended March 31, 2024.
-
-## Item 2: Unregistered Sales of Equity Securities and Use of Proceeds
-
-Item 2.Unregistered Sales of Equity Securities and Use of Proceeds
-
-None.
-
-## Item 3: Defaults Upon Senior Securities
-
-Item 3.Defaults Upon Senior Securities
-
-None.
-
-## Item 4: Mine Safety Disclosures
-
-Item 4.Mine Safety Disclosures
-
-None.
-
-## Item 5: Other Information
-
-Item 5.Other Information
-
-During the quarter ended September 30, 2024, none of the Company’s directors or officers adopted, terminated or modified any Rule 10b5-1 trading arrangement or non-Rule 10b5-1 trading arrangement (as such terms are defined in Item 408 of Regulation S-K of the Securities Act of 1933).
-
-## Item 6: Exhibits
-
-Item 6.Exhibits
-
-<table><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td colspan="3"><div><span>10.1 </span><span>(a)</span></div></td><td colspan="3"><div><span><a href="https://www.sec.gov/Archives/edgar/data/895417/000089541724000083/a2024elssecondamendmentt.htm">Second Amendment, dated July 18, 2024, to the Third Amended and Restated Credit Agreement, dated April 19, 2021, by and among MHC Operating Limited Partnership, as Borrower, Equity LifeStyle Properties, Inc., as Parent, Wells Fargo Bank, National Association, as Administrative Agent, and each of the Lenders set forth therein.</a></span></div></td></tr><tr><td colspan="3"><div><span>10.2 </span><span>(b)</span></div></td><td colspan="3"><div><span><a href="https://www.sec.gov/Archives/edgar/data/895417/000089541721000027/thirdarcreditagreement.htm">Third Amended and Restated Credit Agreement, dated as of April 19, 2021, by and among MHC Operating Limited Partnership, as Borrower, Equity LifeStyle Properties, Inc., as Parent, Wells Fargo Bank, National Association, as Administrative Agent, and each of the Lenders set forth therein.</a></span></div></td></tr><tr><td colspan="3"><span>31.1</span></td><td colspan="3"><div><span><a href="exhibit311-certificationof.htm">Certification of Chief Financial Officer Pursuant to Section&nbsp;302 of the Sarbanes-Oxley Act of 2002.</a></span></div></td></tr><tr><td colspan="3"><span>31.2</span></td><td colspan="3"><div><span><a href="exhibit312-certificationof.htm">Certification of Chief Executive Officer Pursuant to Section&nbsp;302 of the Sarbanes-Oxley Act of 2002.</a></span></div></td></tr><tr><td colspan="3"><span>32.1</span></td><td colspan="3"><div><span><a href="exhibit321-certificationof.htm">Certification of Chief Financial Officer Pursuant to 18 U.S.C. Section&nbsp;1350.</a></span></div></td></tr><tr><td colspan="3"><span>32.2</span></td><td colspan="3"><div><span><a href="exhibit322-certificationof.htm">Certification of Chief Executive Officer Pursuant to 18 U.S.C. Section&nbsp;1350.</a></span></div></td></tr><tr><td colspan="3"><span>101.INS</span></td><td colspan="3"><span>XBRL Instance Document - the instance document does not appear in the Interactive Data File because its XBRL tags are embedded within the Inline XBRL document.</span></td></tr><tr><td colspan="3"><span>101.SCH</span></td><td colspan="3"><span>Inline XBRL Taxonomy Extension Schema Document</span></td></tr><tr><td colspan="3"><span>101.CAL</span></td><td colspan="3"><span>Inline XBRL Taxonomy Extension Calculation Linkbase Document</span></td></tr><tr><td colspan="3"><span>101.LAB</span></td><td colspan="3"><span>Inline XBRL Taxonomy Extension Label Linkbase Document</span></td></tr><tr><td colspan="3"><span>101.PRE</span></td><td colspan="3"><span>Inline XBRL Taxonomy Extension Presentation Linkbase Document</span></td></tr><tr><td colspan="3"><span>101.DEF</span></td><td colspan="3"><span>Inline XBRL Taxonomy Extension Definition Linkbase Document</span></td></tr><tr><td colspan="3"><span>104</span></td><td colspan="3"><span>Cover Page Interactive Data File included as Exhibit 101 (embedded within the Inline XBRL document)</span></td></tr></tbody></table>
-
-The following documents are incorporated by reference
-
-(a) Included as an exhibit to our Report on Form 8-K filed on July 23, 2024.
-
-(b) Included as an exhibit to our Report on Form 8-K filed on April 23, 2021.
-
-38
-
-Pursuant to the requirements of the Securities Exchange Act of 1934, the Registrant has duly caused this Report to be signed on its behalf by the undersigned thereunto duly authorized.
-
-<table><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td colspan="3"></td><td colspan="6"><span>EQUITY LIFESTYLE PROPERTIES, INC.</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><div><span>Date: October&nbsp;30, 2024</span></div></td><td colspan="3"><span>By:</span></td><td colspan="3"><span>/s/ Marguerite Nader</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>Marguerite Nader</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>President and Chief Executive Officer</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>(Principal Executive Officer)</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr><tr><td colspan="3"><div><span>Date: October&nbsp;30, 2024</span></div></td><td colspan="3"><span>By:</span></td><td colspan="3"><span>/s/ Paul Seavey</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>Paul Seavey</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>Executive Vice President and Chief Financial Officer</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"><span>(Principal Financial and Accounting Officer)</span></td></tr><tr><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td></tr></tbody></table>
-
-39
-
-### 10.1 (a) Second Amendment, dated July 18, 2024
-
-### 10.2 (b) Third Amended and Restated Credit Agreement, dated as of April 19, 2021
-
-### 31.1 Certification of Chief Financial Officer Pursuant to Section 302 of the Sarbanes-Oxley Act of 2002
-
-### 31.2 Certification of Chief Executive Officer Pursuant to Section 302 of the Sarbanes-Oxley Act of 2002
-
-### 32.1 Certification of Chief Financial Officer Pursuant to 18 U.S.C. Section 1350
-
-### 32.2 Certification of Chief Executive Officer Pursuant to 18 U.S.C. Section 1350
-
-### Inline XBRL Documents
-
-
-
-#### 101.INS XBRL Instance Document
-
-#### 101.SCH Inline XBRL Taxonomy Extension Schema Document
-
-#### 101.CAL Inline XBRL Taxonomy Extension Calculation Linkbase Document
-
-#### 101.LAB Inline XBRL Taxonomy Extension Label Linkbase Document
-
-#### 101.PRE Inline XBRL Taxonomy Extension Presentation Linkbase Document
-
-#### 101.DEF Inline XBRL Taxonomy Extension Definition Linkbase Document
-
-#### 104 Cover Page Interactive Data File included as Exhibit 101

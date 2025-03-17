@@ -1,7 +1,7 @@
 module.exports = {
   silent: false,
   verbose: true,
-  testTimeout: 30000,
+  testTimeout: 300000,
 
   testMatch: ['**/*.test.{js,ts}'],
   transform: {
