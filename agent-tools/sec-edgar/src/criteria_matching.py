@@ -32,6 +32,7 @@ class TickersInfoAndAttachments(TypedDict):
     cik: str
     acc_number_no_dashes: str
     attachments: List[Attachment]
+    management_discussions: str
 
 
 class AttachmentWithContent(BaseModel):
@@ -188,8 +189,13 @@ def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
 
     attachments = latest_10q.attachments
 
+    filing_obj = latest_10q.obj()
+
     return TickersInfoAndAttachments(
-        cik=cik, acc_number_no_dashes=acc_number_no_dashes, attachments=attachments
+        cik=cik,
+        acc_number_no_dashes=acc_number_no_dashes,
+        attachments=attachments,
+        management_discussions=filing_obj['Item 2']
     )
 
 
@@ -325,12 +331,25 @@ def get_matched_attachments(
         matched_content = get_content_for_criterion_and_latest_quarter(
             matched_raw_content, current_criterion
         )
+        # Add another prompt to extract information from management discussion for the criteria
+        management_discussions_content = ticker_info.get("management_discussions")
+        matched_management_discussion_content = get_content_for_criterion_and_latest_quarter(
+            management_discussions_content, current_criterion
+        )
+
+        all_matched_content = (
+            "#Content From Attachments\n"
+            f"{matched_content}"
+            "\n\n"
+            "# Content From Management Discussion\n"
+            f"{matched_management_discussion_content}"
+        )
 
         criterion_to_matched_attachments.append(
             CriterionMatch(
                 criterionKey=c_key,
                 matchedAttachments=matched_attachments,
-                matchedContent=matched_content,
+                matchedContent=all_matched_content,
             )
         )
         print(

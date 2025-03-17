@@ -1,11 +1,13 @@
 import supertest from 'supertest';
 
-import { app } from './app';
+import {app} from './app';
 
 describe('Express app', () => {
   describe('Routing', () => {
     it.only('should return `Hello world` when GET index', async () => {
-      const response = await supertest(app).get('/');
+      const response = await supertest(app).post('/latest-ten-q-parsed').send({
+        latestTenQUrl: "https://www.sec.gov/Archives/edgar/data/1988494/000095017024127114/fvr-20240930.htm"
+      });
 
       expect(response.statusCode).toEqual(200);
       expect(response.body.msg).toEqual('Hello World');
