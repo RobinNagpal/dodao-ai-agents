@@ -90,9 +90,9 @@ class SimpleAPIRequestComponent(Component):
             async with httpx.AsyncClient() as client:
                 if method in {"GET", "DELETE"}:
                     # GET/DELETE usually send no JSON body
-                    response = await client.request(method, url, headers=headers)
+                    response = await client.request(method, url, headers=headers, timeout=10)
                 else:
-                    response = await client.request(method, url, headers=headers, json=body_content)
+                    response = await client.request(method, url, headers=headers, json=body_content, timeout=10)
 
                 # Attempt to parse the response as JSON
                 try:
@@ -110,4 +110,9 @@ class SimpleAPIRequestComponent(Component):
 
         except Exception as exc:
             # If there's a network error, timeouts, etc., return an error structure
-            return Data(data={"error": str(exc)})
+            return Data(
+                    data={
+                        "status_code": 500,
+                        "response": str(exc),
+                    }
+                )
