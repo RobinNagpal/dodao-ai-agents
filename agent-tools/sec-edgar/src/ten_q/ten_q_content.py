@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup, Tag
 from pydantic import BaseModel
-from typing import List, Optional, Tuple, Set, Dict, TypedDict
+from typing import List, Optional, Tuple, Dict, TypedDict
 import copy
 import pandas as pd
 
@@ -124,10 +124,6 @@ class TenQSectionsWithContent(BaseModel):
 # --- Helper Functions ---
 
 def flatten_toc(toc: TocDict) -> List[TocNode]:
-    """
-    Recursively traverses the TOC structure (with 'parts', 'items', and 'subItems')
-    and returns a flattened list of nodes that have a non-empty "anchorId".
-    """
     flattened: List[TocNode] = []
 
     def traverse(node: TocNode) -> None:
@@ -143,35 +139,26 @@ def flatten_toc(toc: TocDict) -> List[TocNode]:
 
 
 def build_id_to_element(soup: BeautifulSoup) -> Tuple[Dict[str, Tag], List[Tag]]:
-    """
-    Returns a mapping from element id to element and a list of all elements.
-    """
     all_elements: List[Tag] = list(soup.find_all(True))
     id_to_element: Dict[str, Tag] = {el.get("id"): el for el in all_elements if el.get("id")}
     return id_to_element, all_elements
 
 
 def get_ordered_elements(id_to_element: Dict[str, Tag], anchor_list: List[str]) -> List[Tag]:
-    """
-    Orders the HTML elements according to the list of anchors.
-    """
     return [id_to_element[aid] for aid in anchor_list if aid in id_to_element]
 
 
-def process_table_element(table_el: Tag, processed_table_ids: Set[int]) -> TableData:
-    """
-    Processes a table element by converting it to a markdown table using pandas.
-    Marks the table and its descendants as processed.
-    """
-    processed_table_ids.add(id(table_el))
-    for descendant in table_el.find_all():
-        processed_table_ids.add(id(descendant))
+def process_table_element(table_el: Tag) -> TableData:
+    new_table_el: Tag = copy.deepcopy(table_el)
+    # Remove nested tables so that only the current table is processed.
+    for nested in new_table_el.find_all("table"):
+        if nested != new_table_el:
+            nested.decompose()
 
     try:
-        df_list: List[pd.DataFrame] = pd.read_html(str(table_el))
+        df_list: List[pd.DataFrame] = pd.read_html(str(new_table_el))
         if df_list:
             df: pd.DataFrame = df_list[0]
-            # If column headers are numeric, assume the first row contains headers.
             if all(isinstance(col, (int, float)) for col in df.columns):
                 df.columns = df.iloc[0]
                 df = df[1:]
@@ -186,52 +173,50 @@ def process_table_element(table_el: Tag, processed_table_ids: Set[int]) -> Table
     return TableData(title=title, info=None, markdownTableContent=markdown_table)
 
 
-def process_tables_in_slice(content_slice: List[Tag]) -> Tuple[List[TableData], Set[int]]:
+def extract_all_tables(content_slice: List[Tag]) -> List[TableData]:
     """
-    Processes all table elements in the content slice and returns their data along with processed IDs.
+    Recursively traverses the content slice using the element’s children,
+    extracting any table elements found.
     """
-    processed_table_ids: Set[int] = set()
     table_data_list: List[TableData] = []
-    for sub_el in content_slice:
-        # Check if the element or any of its ancestors are already processed
-        if any(id(ancestor) in processed_table_ids for ancestor in sub_el.find_parents() + [sub_el]):
-            continue
-        if sub_el.name == 'table':
-            table_data: TableData = process_table_element(sub_el, processed_table_ids)
-            table_data_list.append(table_data)
-    return table_data_list, processed_table_ids
+    for el in content_slice:
+        if el.name == "table":
+            table_data_list.append(process_table_element(el))
+        else:
+            # Iterate over direct children.
+            children = [child for child in el.children if isinstance(child, Tag)]
+            table_data_list.extend(extract_all_tables(children))
+    return table_data_list
 
 
-def extract_text_from_slice(content_slice: List[Tag], processed_table_ids: Set[int]) -> str:
+def extract_text_without_tables(content_slice: List[Tag]) -> str:
     """
-    Extracts text from elements in the content slice, excluding those in processed tables.
+    Combines the HTML of the content slice, re-parses it,
+    removes all table elements, and then extracts text.
     """
-    text_parts: List[str] = []
-    for sub_el in content_slice:
-        # Check if the element or any of its ancestors are processed
-        if any(id(ancestor) in processed_table_ids for ancestor in sub_el.find_parents() + [sub_el]):
-            continue
-        txt: str = sub_el.get_text(separator=" ", strip=True)
-        if txt:
-            text_parts.append(txt)
-    return " ".join(text_parts).strip()
+    combined_html: str = "".join(el.decode() for el in content_slice)
+    soup = BeautifulSoup(combined_html, "html.parser")
+    for table in soup.find_all("table"):
+        table.decompose()
+
+    text_without_tables = soup.get_text(strip=True)
+    print(text_without_tables)
+
+    return text_without_tables
 
 
 def process_content_slice(content_slice: List[Tag]) -> ElementContents:
     """
-    Processes a slice of HTML elements by splitting table processing and text extraction.
+    Processes a slice of HTML elements by splitting the task into two immutable branches:
+      - A tables branch that recursively extracts and processes all tables.
+      - A text branch that extracts text after removing table elements.
     """
-    # Process tables and get their data along with processed IDs
-    table_data_list, processed_table_ids = process_tables_in_slice(content_slice)
-    # Extract text content while excluding processed tables and their descendants
-    text_content: str = extract_text_from_slice(content_slice, processed_table_ids)
+    table_data_list: List[TableData] = extract_all_tables(content_slice)
+    text_content: str = extract_text_without_tables(content_slice)
     return ElementContents(data=table_data_list, text=text_content)
 
 
 def add_content_to_toc(node: TocNode, content_map: Dict[str, ElementContents]) -> TocNode:
-    """
-    Recursively updates a TOC node with its corresponding content from content_map.
-    """
     new_node: TocNode = copy.deepcopy(node)
     if new_node.get("anchorId"):
         new_node["content"] = content_map.get(new_node["anchorId"], ElementContents(data=[], text="")).dict()
@@ -246,32 +231,27 @@ def add_content_to_toc(node: TocNode, content_map: Dict[str, ElementContents]) -
 
 def parse_html_to_sections(html_content: str, toc: BaseModel) -> TenQSectionsWithContent:
     """
-    Given the HTML content of a 10-Q document and the table-of-contents (TOC)
-    as a hierarchical JSON (with keys "parts", "items", and "subItems"),
+    Given the HTML content of a 10-Q document and a TOC (with keys "parts", "items", and "subItems"),
     this function:
-      1. Flattens the TOC to get a list of nodes with non-empty anchorId.
-      2. Parses the HTML using BeautifulSoup and builds a mapping of elements.
-      3. For each anchor, extracts all elements between it and the next anchor.
-         - Processes tables separately (converting them to markdown).
-         - Extracts plain text from non-table elements.
-      4. Recursively updates the TOC structure with the extracted content.
-
-    Returns:
-      A TenQSectionsWithContent instance with the same hierarchy but with element content.
+      1. Flattens the TOC to get nodes with non-empty anchorId.
+      2. Parses the HTML and maps elements.
+      3. For each anchor, extracts the elements between it and the next anchor.
+         - Processes tables recursively.
+         - Removes tables before capturing plain text.
+      4. Recursively updates the TOC with the extracted content.
     """
-    # Convert TOC to a dictionary. We assume the toc dict adheres to TocDict.
     toc_dict: TocDict = toc.dict()  # type: ignore
 
-    # Flatten the TOC and get the ordered list of anchorIds.
     flattened_toc: List[TocNode] = flatten_toc(toc_dict)
     anchor_list: List[str] = [node["anchorId"] for node in flattened_toc if node.get("anchorId")]
 
-    # Parse the HTML and build mappings.
     soup: BeautifulSoup = BeautifulSoup(html_content, "html.parser")
+    for tag in soup.find_all(True):
+        if tag.has_attr("style"):
+            del tag["style"]
     id_to_element, all_elements = build_id_to_element(soup)
     elements_in_order: List[Tag] = get_ordered_elements(id_to_element, anchor_list)
 
-    # Process each section corresponding to an anchor.
     content_map: Dict[str, ElementContents] = {}
     for i, elem in enumerate(elements_in_order):
         start_idx: int = all_elements.index(elem)
@@ -282,8 +262,11 @@ def parse_html_to_sections(html_content: str, toc: BaseModel) -> TenQSectionsWit
             end_idx = len(all_elements)
 
         content_slice: List[Tag] = all_elements[start_idx:end_idx]
+
         element_contents: ElementContents = process_content_slice(content_slice)
         content_map[elem["id"]] = element_contents
-    # Recursively add content to the TOC nodes.
-    processed_toc: Dict[str, List[TocNode]] = {"parts": [add_content_to_toc(part, content_map) for part in toc_dict.get("parts", [])]}
+
+    processed_toc: Dict[str, List[TocNode]] = {
+        "parts": [add_content_to_toc(part, content_map) for part in toc_dict.get("parts", [])]
+    }
     return TenQSectionsWithContent(**processed_toc)
