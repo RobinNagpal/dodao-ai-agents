@@ -288,43 +288,36 @@ def get_matched_attachments(
                 )
 
     criterion_to_matched_attachments: List[CriterionMatch] = []
-
-    for c_key, matched_list in attachments_by_criterion_map.items():
-        current_criterion: CriterionDefinition = next(
-            (cm for cm in criteria if cm.key == c_key)
-        )
+    
+    for current_criterion in criteria:
+        # Get matched attachments if available, else an empty list.
+        matched_list = attachments_by_criterion_map.get(current_criterion.key, [])
         print(
-            f"Criterion: {c_key} - Number of matched attachments: {len(matched_list)}"
+            f"Criterion: {current_criterion.key} - Number of matched attachments: {len(matched_list)}"
         )
-        for attachment in matched_list:
-            print(
-                f"Matched attachment: {attachment.attachmentDocumentName} - {attachment.relevance}- {attachment.attachmentUrl}"
-            )
-        top_attachments = sorted(
-            matched_list,
-            key=lambda x: x.relevance,
-            reverse=True,
-        )[:7]
-
         top_attachments_texts: list[str] = list()
         matched_attachments: list[SecFilingAttachment] = list()
-        for attachment in top_attachments:
-            print(
-                f"Top attachment: {attachment.attachmentDocumentName} - {attachment.relevance}"
-            )
-            print(
-                f"Done with filtering latest 10q content for : {attachment.attachmentDocumentName}"
-            )
-            sec_attachment = SecFilingAttachment(
-                attachmentSequenceNumber=attachment.attachmentSequenceNumber,
-                attachmentDocumentName=attachment.attachmentDocumentName,
-                attachmentPurpose=attachment.attachmentPurpose,
-                attachmentUrl=attachment.attachmentUrl,
-                relevance=attachment.relevance,
-                attachmentContent=attachment.attachmentContent,
-            )
-            matched_attachments.append(sec_attachment)
-            top_attachments_texts.append(attachment.attachmentContent)
+        if not matched_list:
+            # No attachments matched for this criterion.
+            top_attachments_texts = [""]
+        else:
+            top_attachments = sorted(
+                matched_list,
+                key=lambda x: x.relevance,
+                reverse=True,
+            )[:7]
+
+            for attachment in top_attachments:
+                sec_attachment = SecFilingAttachment(
+                    attachmentSequenceNumber=attachment.attachmentSequenceNumber,
+                    attachmentDocumentName=attachment.attachmentDocumentName,
+                    attachmentPurpose=attachment.attachmentPurpose,
+                    attachmentUrl=attachment.attachmentUrl,
+                    relevance=attachment.relevance,
+                    attachmentContent=attachment.attachmentContent,
+                )
+                matched_attachments.append(sec_attachment)
+                top_attachments_texts.append(attachment.attachmentContent)
 
         matched_raw_content = "\n\n".join(top_attachments_texts)
 
@@ -344,16 +337,17 @@ def get_matched_attachments(
             "# Content From Management Discussion\n"
             f"{matched_management_discussion_content}"
         )
+        print(f'All matched content: {all_matched_content}')
 
         criterion_to_matched_attachments.append(
             CriterionMatch(
-                criterionKey=c_key,
+                criterionKey=current_criterion.key,
                 matchedAttachments=matched_attachments,
                 matchedContent=all_matched_content,
             )
         )
         print(
-            f"Done with adding matched attachments latest 10q content for criterion: {c_key}"
+            f"Done with adding matched attachments latest 10q content for criterion: {current_criterion.key}"
         )
 
     return CriterionMatchesOfLatest10Q(
@@ -377,29 +371,30 @@ def get_content_for_criterion_and_latest_quarter(
     )
 
     system_prompt = f"""
-    You are a financial data extraction assistant. The user has provided some
-    text from a 10-Q attachment. It may contain multiple time periods
-    (e.g. “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”).
+    You are a financial data assistant. Your task is:
+    a. To analyze text-based financial statements that may contain tables (Markdown or HTML format) and remove older columns while keeping the latest quarter.
+    And also convert the numbers to full dollar amount if its captured in thousands or millions.
 
-    Your job:
-    1) Make sure the keep the information matching the following criterion: {current_criterion.key} - {current_criterion.name} - {current_criterion.matchingInstruction}
-    2) Remove any older periods/columns, retaining only the latest quarter or period.
-    3) format the content in proper markdown format and use tables where necessary.
-    4) Dont skip any qualitative information that is relevant to the criterion.
-    5) Dont skip any qualitative information that is relevant to the criterion.
-    6) Do not reduce or skip any relevant information
-    7) Preserve all headings and subheadings as lines above the table.
-    8) In the content if in tables or otherwise always include the information about the period or quarter to which the data belongs.
-    9) The dates or quarter should be very very explicit.
-    10) Don't miss any relevant information that is related to the criterion.
-    11) Normalize the information to real dollar amount, or to the real numerical value if its captured in thousands or millions.
-    12) Normalize the information to real dollar amount, or to the real numerical value if its captured in thousands or millions.
+    Instructions:
+    1) Identify tables in the text (both Markdown and HTML tables).
+    2) Identify the columns that correspond to older financial periods.
+    3) Remove the older columns while **keeping the latest quarter**.
+    4) Keep the rest of the text exactly as it is, including any non-tabular content.
+    5) Maintain the original table formatting (Markdown tables should remain Markdown; HTML tables should remain HTML).
+    6) Do NOT alter or summarize numbers. Only remove older columns.
+    7) Convert the numbers to full dollar amount if its captured in thousands or millions.
+
+    b. To keep the information matching the following criterion: {current_criterion.key} - {current_criterion.name} - {current_criterion.matchingInstruction}
     
+    Instructions:
+    1) Format the content in proper markdown format and use tables where necessary.
+    2) Dont skip any qualitative information that is relevant to the criterion.
+    3) Do not reduce or skip any relevant information
+    4) Preserve all headings and subheadings as lines above the table.    
     """
 
     user_prompt = f"""
     Here is the raw financial statement text from one 10-Q attachment.
-    Please remove older periods but keep the latest quarter/period.
 
     Raw text:
     {raw_text}
