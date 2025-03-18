@@ -1,5 +1,6 @@
 # Summary
 - [About KoalaGains](./001_about_koala_gains.md)
+  - [Task List](./001_z01_task_list.md)
   - [Use Cases](./001_z02_use_cases.md)
 - [Main Milestones](./002_main_milestones.md)
   - [Crowdfunding](./002_z01_crowd_funding.md)
