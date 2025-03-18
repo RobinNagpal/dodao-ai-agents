@@ -22,4 +22,10 @@ Go to [Debug Page](https://koalagains.com/public-equities/debug/ticker-reports/F
 
 ## Regenerate checklist
 
+- In case you want to regenrate performance checklist click on encircled arrow below
+  ![Specific Criterion](./images/criteira_and_report/specific_criterion.png)
+- Now you will see
+  ![Regenerate Specific Criterion](./images/criteira_and_report/regenerate-checklist.png)
+- Click on the button to regenerate the checklist
+
 ## Regeneerate Important Metrics
