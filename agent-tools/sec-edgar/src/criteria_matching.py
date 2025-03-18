@@ -1,12 +1,14 @@
-import json
 import boto3
+import json
 import os
+import traceback
+from dotenv import load_dotenv
 from edgar import *
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
-from typing import Optional, Literal, List, TypedDict
 from pydantic import BaseModel, Field
-from dotenv import load_dotenv
+from typing import Optional, Literal, List, TypedDict
+
 from src.public_equity_structures import (
     IndustryGroupCriteriaDefinition,
     CriterionMatchesOfLatest10Q,
@@ -19,8 +21,6 @@ from src.public_equity_structures import (
     CriterionDefinition,
     SecFilingAttachment,
 )
-from collections import defaultdict
-import traceback
 
 load_dotenv()
 
@@ -30,6 +30,7 @@ S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 class TickersInfoAndAttachments(TypedDict):
     cik: str
+    period_of_report: str
     acc_number_no_dashes: str
     attachments: List[Attachment]
     management_discussions: str
@@ -49,20 +50,22 @@ class AttachmentsByCriterion(BaseModel):
     attachments: List[SecFilingAttachment]
 
 
-class CriterionMatchItem(BaseModel):
+class CriterionMatchTextItem(BaseModel):
     """Criterion match item"""
 
     criterion_key: str = Field(description="The key of the matched criterion")
-    relevant: bool = Field(description="Whether the criterion is relevant")
+    relevant_text: str = Field(
+        description="The information that is relevant to the criterion which is extracted as per the matching instruction. Leave blank if no relevant information is found."
+    )
     relevance_amount: float = Field(
-        description="On the scale of 0-100 how relevant was the content based on the matching instruction provided for this particular criterion"
+        description="On the scale of 0-100 how relevant was the extracted content based on the matching instruction provided for this particular criterion"
     )
 
 
-class CriterionMatchResponse(BaseModel):
+class CriterionMatchResponseNew(BaseModel):
     """Return LLM response in a structured format"""
 
-    criterion_matches: List[CriterionMatchItem] = Field(
+    criterion_matches: List[CriterionMatchTextItem] = Field(
         description="List of criterion matches"
     )
     status: Literal["success", "failure"] = Field(
@@ -115,8 +118,11 @@ def put_ticker_report_to_s3(ticker: str, report: TickerReport):
 
 
 def create_criteria_match_analysis(
-    attachment_name: str, attachment_content: str, criteria: List[CriterionDefinition]
-) -> CriterionMatchResponse:
+    period_of_report: str,
+    attachment_name: Optional[str],
+    attachment_content: str,
+    criteria: List[CriterionDefinition],
+) -> CriterionMatchResponseNew:
     """
     Calls GPT-4o-mini to analyze if the content is relevant to provided topics.
     """
@@ -135,21 +141,31 @@ def create_criteria_match_analysis(
 
     prompt = f"""
     You are analyzing a section from an SEC 10-Q filing named '{attachment_name}'.
-    Determine how relevant the section is to to the provided criterion items.
+    Extract the relevant information based on the matching instructions provided for each criterion. Don't exclude any 
+    relevant information.
 
     For each criterion item, output:
-    - 'relevant': true or false
-    - 'relevance_amount': a percentage (0-100) indicating how much of the section is directly relevant based on matchingInstruction from the critera Json data given below
-    (Only return true if the matchingInstruction is satisfied for the criterion from the criteria Json data given below by the attachmet given below).
-    - You can match at most four criteria as 'true'.
-    - Make sure that the content matches to the exact matchingInstruction provided in each of the criterion items.
+    - 'relevantText': All the relevant information that is extracted as per the matching instruction provided for this criterion.
+    - 'relevance_amount': on a scale of (0-100) how relevant was the extracted content based on the matching instruction provided for this particular criterion.
 
+    When extracting the relevant information:
+    - Extract all the tabular data in the form of markdown tables.
+    - Extract information only for the period_of_report: {period_of_report}
+    - If the dats is present for three months ending for {period_of_report}, then only consider that column and ignore other columns like nine months ending, etc.
+    - If three months ending data is not present, then consider the data for other columns also
+    - Don't extract any other time periods.
+    - Always Always Always capture the information about if the numbers are in thousands or millions, and include that information in the extracted content.
+    - Always Always Always capture the information about if the numbers are in thousands or millions, and include that information in the extracted content.
+    
+    For formatting the content:
+    - Make sure there are thee empty lines above and below each table.
+    
     Return JSON that fits the EXACT structure of 'CriterionMatchResponse':
     {{
     "criterion_matches": [
         {{
         "criterion_key": "...",
-        "relevant": true/false,
+        "relevant_text": "All the relevant information that is extracted as per the matching instruction provided for this criterion. Leave blank if no relevant information is found."
         "relevance_amount": 0-100
         }},
         ...
@@ -166,18 +182,62 @@ def create_criteria_match_analysis(
     """
 
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-    structured_llm = model.with_structured_output(CriterionMatchResponse)
-    response: CriterionMatchResponse = structured_llm.invoke(
+    structured_llm = model.with_structured_output(CriterionMatchResponseNew)
+    response: CriterionMatchResponseNew = structured_llm.invoke(
         [HumanMessage(content=prompt)]
     )
     # print(f"LLM analysis response: \n\n{response.model_dump_json(indent=2)}")
     return response
 
 
+def get_content_for_criterion_and_latest_quarter(
+    period_of_report: str, raw_text: str, current_criterion: CriterionDefinition
+) -> str:
+    """
+    Calls GPT-4o-mini to filter out older periods and keep only
+    the latest quarter. Preserves original formatting.
+    """
+    llm = ChatOpenAI(
+        temperature=0,
+        model="gpt-4o",
+    )
+
+    system_prompt = f"""
+    You are a financial data extraction assistant. The user has provided some
+    text from a 10-Q attachment. It may contain multiple time periods
+    (e.g. “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”).
+
+    Your job:
+    - Make sure the keep the information matching the following criterion: {current_criterion.key} - {current_criterion.name} - {current_criterion.matchingInstruction}
+    - Extract all the tabular data in the form of markdown tables.
+    - Extract information only for the period_of_report: {period_of_report}
+    - If the dats is present for three months ending for {period_of_report}, then only consider that column and ignore other columns like nine months ending, etc.
+    - If three months ending data is not present, then consider the data for other columns also
+    - Don't extract any other time periods.
+    - Always Always Always capture the information about if the numbers are in thousands or millions, and include that information in the extracted content.
+    - Always Always Always capture the information about if the numbers are in thousands or millions, and include that information in the extracted content.
+    
+    """
+
+    user_prompt = f"""
+    Here is part of the raw content from 10q.
+
+    Raw text:
+    {raw_text}
+    """
+
+    response = llm.invoke(
+        [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
+    )
+
+    return response.content
+
+
 def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
     set_identity("dodao@gmail.com")
     company = Company(ticker)
     filings = company.get_filings(form="10-Q")
+    period_of_report = company.latest_tenq.period_of_report
 
     if not filings:
         raise Exception(f"Error: No 10-Q filings found for {ticker}.")
@@ -193,9 +253,10 @@ def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
 
     return TickersInfoAndAttachments(
         cik=cik,
+        period_of_report=period_of_report,
         acc_number_no_dashes=acc_number_no_dashes,
         attachments=attachments,
-        management_discussions=filing_obj['Item 2']
+        management_discussions=filing_obj["Item 2"],
     )
 
 
@@ -206,13 +267,14 @@ def get_matched_attachments(
     Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
     """
 
-    attachments_by_criterion_map = defaultdict(list[AttachmentWithContent])
-
     ticker_info = get_ticker_info_and_attachments(ticker)
     cik = ticker_info.get("cik")
     acc_number_no_dashes = ticker_info.get("acc_number_no_dashes")
     attachments = ticker_info.get("attachments")
 
+    print(
+        f"Processing {len(attachments)} attachments for {ticker} for {ticker_info.get('period_of_report')}."
+    )
     excluded_purposes = [
         "cover",
         "balance sheet",
@@ -227,184 +289,109 @@ def get_matched_attachments(
 
     attachment_start_index = 0
 
+    criterion_to_matched_attachments_map: dict[str, CriterionMatch] = dict(
+        {
+            criterion.key: CriterionMatch(
+                criterionKey=criterion.key, matchedAttachments=list(), matchedContent=""
+            )
+            for criterion in criteria
+        }
+    )
+
     for attach in attachments:
-
-        attachment_start_index += 1
-
-        if attach.document_type != "HTML":
-            continue
-
         attachment_purpose = str(attach.purpose or "").lower()
         attachment_document_name = str(attach.document or "")  # e.g. "R10.htm"
         attachment_sequence_number: str = attach.sequence_number  # e.g. "R10.htm"
-        attachment_text = str(attach.text() or "")
         attachment_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
+        try:
+            attachment_start_index += 1
 
-        print(
-            f"Processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}"
-        )
-        # Skipping conditions
-        if any(excluded in attachment_purpose for excluded in excluded_purposes):
-            continue
+            if attach.document_type != "HTML":
+                continue
 
-        if not attachment_purpose:
-            print(f"Warning: Attachment {attach.purpose} has empty purpose; skipping.")
-            continue
-        if not attachment_document_name:
-            print(f"Warning: Attachment {attach.purpose} has empty filename; skipping.")
-            continue
-        if not attachment_text:
-            print(f"Warning: Attachment {attach.purpose} has empty content; skipping.")
-            continue
+            attachment_text = str(attach.text() or "")
 
-        match_analysis = create_criteria_match_analysis(
-            attachment_name=attachment_purpose,
-            attachment_content=attachment_text,
-            criteria=criteria,
-        )
-
-        if match_analysis and match_analysis.status == "failure":
             print(
-                f"Error: LLM analysis failed for attachment {attachment_document_name}."
+                f"Processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}"
             )
-            continue
+            # Skipping conditions
+            if any(excluded in attachment_purpose for excluded in excluded_purposes):
+                continue
 
-        for criterion_match_result in match_analysis.criterion_matches:
-            if criterion_match_result.relevant:
+            if not attachment_text:
                 print(
-                    f"Matched criterion: {criterion_match_result.criterion_key} - {criterion_match_result.relevance_amount}"
+                    f"Warning: Attachment {attach.purpose} has empty content; skipping."
                 )
-                attachments_by_criterion_map[
+                continue
+
+            match_analysis: CriterionMatchResponseNew = create_criteria_match_analysis(
+                period_of_report=ticker_info.get("period_of_report"),
+                attachment_name=attachment_purpose,
+                attachment_content=attachment_text,
+                criteria=criteria,
+            )
+            if match_analysis.status == "failure":
+                print(
+                    f"Error: LLM analysis failed for attachment {attachment_document_name}."
+                )
+                continue
+
+            for criterion_match_result in match_analysis.criterion_matches:
+                relevant_text = criterion_match_result.relevant_text
+                if not relevant_text or not relevant_text.strip() or len(relevant_text) == 0:
+                    continue
+
+                relevant_text = f"### {attachment_document_name} - {attachment_purpose}\n\n\n{relevant_text.strip()}\n\n\n"
+
+                print(
+                    f"matched content for criterion: {criterion_match_result.criterion_key}\n\n\n{relevant_text}"
+                )
+                criterion_to_matched_attachments_map[
                     criterion_match_result.criterion_key
-                ].append(
-                    AttachmentWithContent(
+                ].matchedAttachments.append(
+                    SecFilingAttachment(
                         attachmentSequenceNumber=attachment_sequence_number,
                         attachmentDocumentName=attachment_document_name,
                         attachmentPurpose=attachment_purpose,
                         attachmentUrl=attachment_url,
-                        attachmentContent=attachment_text,
+                        attachmentContent=relevant_text,
                         relevance=criterion_match_result.relevance_amount,
                     )
                 )
 
-    criterion_to_matched_attachments: List[CriterionMatch] = []
-    
-    for current_criterion in criteria:
-        # Get matched attachments if available, else an empty list.
-        matched_list = attachments_by_criterion_map.get(current_criterion.key, [])
-        print(
-            f"Criterion: {current_criterion.key} - Number of matched attachments: {len(matched_list)}"
-        )
-        top_attachments_texts: list[str] = list()
-        matched_attachments: list[SecFilingAttachment] = list()
-        if not matched_list:
-            # No attachments matched for this criterion.
-            top_attachments_texts = [""]
-        else:
-            top_attachments = sorted(
-                matched_list,
-                key=lambda x: x.relevance,
-                reverse=True,
-            )[:7]
-
-            for attachment in top_attachments:
-                sec_attachment = SecFilingAttachment(
-                    attachmentSequenceNumber=attachment.attachmentSequenceNumber,
-                    attachmentDocumentName=attachment.attachmentDocumentName,
-                    attachmentPurpose=attachment.attachmentPurpose,
-                    attachmentUrl=attachment.attachmentUrl,
-                    relevance=attachment.relevance,
-                    attachmentContent=attachment.attachmentContent,
-                )
-                matched_attachments.append(sec_attachment)
-                top_attachments_texts.append(attachment.attachmentContent)
-
-        matched_raw_content = "\n\n".join(top_attachments_texts)
-
-        matched_content = get_content_for_criterion_and_latest_quarter(
-            matched_raw_content, current_criterion
-        )
+                criterion_to_matched_attachments_map[
+                    criterion_match_result.criterion_key
+                ].matchedContent += f"\n{relevant_text}\n"
+        except Exception as e:
+            print(
+                f"Error processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}"
+            )
+            print(f"Error: {str(e)}")
+            print(traceback.format_exc())
+            continue
+    for criterion in criteria:
         # Add another prompt to extract information from management discussion for the criteria
         management_discussions_content = ticker_info.get("management_discussions")
-        matched_management_discussion_content = get_content_for_criterion_and_latest_quarter(
-            management_discussions_content, current_criterion
-        )
-
-        all_matched_content = (
-            "#Content From Attachments\n"
-            f"{matched_content}"
-            "\n\n"
-            "# Content From Management Discussion\n"
-            f"{matched_management_discussion_content}"
-        )
-        print(f'All matched content: {all_matched_content}')
-
-        criterion_to_matched_attachments.append(
-            CriterionMatch(
-                criterionKey=current_criterion.key,
-                matchedAttachments=matched_attachments,
-                matchedContent=all_matched_content,
+        matched_management_discussion_content = (
+            get_content_for_criterion_and_latest_quarter(
+                ticker_info.get("period_of_report"),
+                management_discussions_content,
+                criterion,
             )
         )
-        print(
-            f"Done with adding matched attachments latest 10q content for criterion: {current_criterion.key}"
+        matched_content = criterion_to_matched_attachments_map[
+            criterion.key
+        ].matchedContent
+        all_matched_content = f"{matched_content}\n\n\n## From Management Discussion\n\n{matched_management_discussion_content}"
+        criterion_to_matched_attachments_map[criterion.key].matchedContent = (
+            all_matched_content
         )
 
     return CriterionMatchesOfLatest10Q(
-        criterionMatches=criterion_to_matched_attachments,
+        criterionMatches=list(criterion_to_matched_attachments_map.values()),
         status="Completed",
         failureReason=None,
     )
-
-
-# TODO: This prompt should be generic. Right now its a bit specific like “3 months ended” vs “9 months ended,” or “Sep. 30, 2024” vs “Dec. 31, 2023”
-def get_content_for_criterion_and_latest_quarter(
-    raw_text: str, current_criterion: CriterionDefinition
-) -> str:
-    """
-    Calls GPT-4o-mini to filter out older periods and keep only
-    the latest quarter. Preserves original formatting.
-    """
-    llm = ChatOpenAI(
-        temperature=0,
-        model="gpt-4o",
-    )
-
-    system_prompt = f"""
-    You are a financial data assistant. Your task is:
-    a. To analyze text-based financial statements that may contain tables (Markdown or HTML format) and remove older columns while keeping the latest quarter.
-    And also convert the numbers to full dollar amount if its captured in thousands or millions.
-
-    Instructions:
-    1) Identify tables in the text (both Markdown and HTML tables).
-    2) Identify the columns that correspond to older financial periods.
-    3) Remove the older columns while **keeping the latest quarter**.
-    4) Keep the rest of the text exactly as it is, including any non-tabular content.
-    5) Maintain the original table formatting (Markdown tables should remain Markdown; HTML tables should remain HTML).
-    6) Do NOT alter or summarize numbers. Only remove older columns.
-    7) Convert the numbers to full dollar amount if its captured in thousands or millions.
-
-    b. To keep the information matching the following criterion: {current_criterion.key} - {current_criterion.name} - {current_criterion.matchingInstruction}
-    
-    Instructions:
-    1) Format the content in proper markdown format and use tables where necessary.
-    2) Dont skip any qualitative information that is relevant to the criterion.
-    3) Do not reduce or skip any relevant information
-    4) Preserve all headings and subheadings as lines above the table.    
-    """
-
-    user_prompt = f"""
-    Here is the raw financial statement text from one 10-Q attachment.
-
-    Raw text:
-    {raw_text}
-    """
-
-    response = llm.invoke(
-        [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
-    )
-
-    return response.content
 
 
 def populate_criteria_matches(ticker: str):

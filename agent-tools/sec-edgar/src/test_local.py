@@ -16,7 +16,8 @@ def _invoke_endpoint(raw_path, body_data):
     print(f"=== {raw_path} response ===")
     print("statusCode:", response["statusCode"])
     response_body = json.loads(response["body"])
-    print("body:", json.dumps(response_body, indent=2))
+    # print("body:", json.dumps(response_body, indent=2))
+    return response_body
 
 
 def local_invoke_search(ticker, report_type):
@@ -24,7 +25,9 @@ def local_invoke_search(ticker, report_type):
 
 
 def local_invoke_financials(ticker):
-    _invoke_endpoint("/financials", {"ticker": ticker})
+    body = _invoke_endpoint("/financials", {"ticker": ticker})
+    print("=== Financials ===")
+    print(body.get("data"))
 
 
 def local_invoke_populate_criteria(ticker):
@@ -51,5 +54,5 @@ if __name__ == "__main__":
     # print()
 
     # 2) Financials route for ticker=AMT
-    local_get_all_filings("FVR")
+    local_invoke_populate_criteria("FVR")
     # local_invoke_get_criteria("FVR", "financial_performance")

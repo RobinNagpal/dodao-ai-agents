@@ -9,9 +9,10 @@ load_dotenv()
 use_local_storage()
 set_identity("your_email@example.com")
 
+
 def filter_older_columns(df):
     """
-    Uses LLM to identify and remove older columns in financial statement tables, 
+    Uses LLM to identify and remove older columns in financial statement tables,
     keeping only the latest quarter's data.
     """
     if df is None or df.empty:
@@ -19,10 +20,7 @@ def filter_older_columns(df):
 
     columns_text = "\n".join(df.columns)  # Convert column names to text
 
-    llm = ChatOpenAI(
-        temperature=0,
-        model="gpt-4o-mini"
-    )
+    llm = ChatOpenAI(temperature=0, model="gpt-4o-mini")
 
     system_prompt = "You are an expert in financial statement analysis."
 
@@ -49,7 +47,10 @@ def filter_older_columns(df):
     # Drop only existing columns to prevent KeyErrors
     existing_excluded_columns = [col for col in excluded_columns if col in df.columns]
 
-    return df.drop(columns=existing_excluded_columns, errors="ignore")  # Use errors="ignore" to prevent KeyErrors
+    return df.drop(
+        columns=existing_excluded_columns, errors="ignore"
+    )  # Use errors="ignore" to prevent KeyErrors
+
 
 def get_xbrl_financials(ticker: str) -> str:
     company = Company(ticker)
@@ -59,7 +60,7 @@ def get_xbrl_financials(ticker: str) -> str:
     statements = {
         "Balance Sheet": tenq.balance_sheet.get_dataframe(),
         "Income Statement": tenq.income_statement.get_dataframe(),
-        "Cash Flow Statement": tenq.cash_flow_statement.get_dataframe()
+        "Cash Flow Statement": tenq.cash_flow_statement.get_dataframe(),
     }
 
     filtered_statements = []
@@ -67,10 +68,14 @@ def get_xbrl_financials(ticker: str) -> str:
         if df is not None and not df.empty:
             print(f"Processing {statement_name} for {ticker}...")
             cleaned_df = filter_older_columns(df)
-            markdown_output = f"### {statement_name}\n" + cleaned_df.to_markdown(floatfmt='')
+            markdown_output = f"### {statement_name}\n" + cleaned_df.to_markdown(
+                floatfmt=""
+            )
             filtered_statements.append(markdown_output)
 
     if not filtered_statements:
-        return f"No relevant financial statements found in the latest 10-Q for '{ticker}'."
+        return (
+            f"No relevant financial statements found in the latest 10-Q for '{ticker}'."
+        )
 
-    return "\n\n".join(filtered_statements)
+    return "\n\n\n\n".join(filtered_statements)

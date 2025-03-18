@@ -21,7 +21,7 @@ class Sector(BaseModel):
 
 class SecFilingAttachment(BaseModel):
     attachmentSequenceNumber: str
-    attachmentDocumentName: str
+    attachmentDocumentName: Optional[str] = None
     attachmentPurpose: Optional[str] = None
     attachmentUrl: str
     relevance: Optional[float] = None
