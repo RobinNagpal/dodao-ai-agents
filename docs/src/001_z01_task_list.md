@@ -1,1 +1,6 @@
 - [ ] Add the docs created by Shayan for "Creating criterion and creating first report"
+- [ ] Add the docs about getting started
+- [ ] Add the docs about "Creating the performance checklist and important metrics for first time"
+- [ ] Add the docs about "Regeneration of matching Criteria ,crterions and specifc report ,performance checklist, important metrics"
+- [ ] Add the docs for authentication
+- [ ] Add the docs about the usage of langflow components that we have created like those of SEC 10Q Data
