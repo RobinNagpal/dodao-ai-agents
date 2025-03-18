@@ -4,6 +4,7 @@ from typing import List, Optional, Tuple, Dict, TypedDict
 import copy
 import pandas as pd
 
+
 # --- TypedDicts for TOC structures ---
 class TocNode(TypedDict, total=False):
     anchorId: str
@@ -12,6 +13,7 @@ class TocNode(TypedDict, total=False):
     subItems: List["TocNode"]
     # This field will be added dynamically:
     content: Dict[str, object]
+
 
 class TocDict(TypedDict):
     parts: List[TocNode]
@@ -123,6 +125,7 @@ class TenQSectionsWithContent(BaseModel):
 
 # --- Helper Functions ---
 
+
 def flatten_toc(toc: TocDict) -> List[TocNode]:
     flattened: List[TocNode] = []
 
@@ -140,11 +143,15 @@ def flatten_toc(toc: TocDict) -> List[TocNode]:
 
 def build_id_to_element(soup: BeautifulSoup) -> Tuple[Dict[str, Tag], List[Tag]]:
     all_elements: List[Tag] = list(soup.find_all(True))
-    id_to_element: Dict[str, Tag] = {el.get("id"): el for el in all_elements if el.get("id")}
+    id_to_element: Dict[str, Tag] = {
+        el.get("id"): el for el in all_elements if el.get("id")
+    }
     return id_to_element, all_elements
 
 
-def get_ordered_elements(id_to_element: Dict[str, Tag], anchor_list: List[str]) -> List[Tag]:
+def get_ordered_elements(
+    id_to_element: Dict[str, Tag], anchor_list: List[str]
+) -> List[Tag]:
     return [id_to_element[aid] for aid in anchor_list if aid in id_to_element]
 
 
@@ -216,20 +223,28 @@ def process_content_slice(content_slice: List[Tag]) -> ElementContents:
     return ElementContents(data=table_data_list, text=text_content)
 
 
-def add_content_to_toc(node: TocNode, content_map: Dict[str, ElementContents]) -> TocNode:
+def add_content_to_toc(
+    node: TocNode, content_map: Dict[str, ElementContents]
+) -> TocNode:
     new_node: TocNode = copy.deepcopy(node)
     if new_node.get("anchorId"):
-        new_node["content"] = content_map.get(new_node["anchorId"], ElementContents(data=[], text="")).dict()
+        new_node["content"] = content_map.get(
+            new_node["anchorId"], ElementContents(data=[], text="")
+        ).dict()
     else:
         new_node["content"] = ElementContents(data=[], text="").dict()
 
     for key in ["parts", "items", "subItems"]:
         if key in new_node:
-            new_node[key] = [add_content_to_toc(child, content_map) for child in new_node[key]]
+            new_node[key] = [
+                add_content_to_toc(child, content_map) for child in new_node[key]
+            ]
     return new_node
 
 
-def parse_html_to_sections(html_content: str, toc: BaseModel) -> TenQSectionsWithContent:
+def parse_html_to_sections(
+    html_content: str, toc: BaseModel
+) -> TenQSectionsWithContent:
     """
     Given the HTML content of a 10-Q document and a TOC (with keys "parts", "items", and "subItems"),
     this function:
@@ -243,7 +258,9 @@ def parse_html_to_sections(html_content: str, toc: BaseModel) -> TenQSectionsWit
     toc_dict: TocDict = toc.dict()  # type: ignore
 
     flattened_toc: List[TocNode] = flatten_toc(toc_dict)
-    anchor_list: List[str] = [node["anchorId"] for node in flattened_toc if node.get("anchorId")]
+    anchor_list: List[str] = [
+        node["anchorId"] for node in flattened_toc if node.get("anchorId")
+    ]
 
     soup: BeautifulSoup = BeautifulSoup(html_content, "html.parser")
     for tag in soup.find_all(True):
@@ -267,6 +284,8 @@ def parse_html_to_sections(html_content: str, toc: BaseModel) -> TenQSectionsWit
         content_map[elem["id"]] = element_contents
 
     processed_toc: Dict[str, List[TocNode]] = {
-        "parts": [add_content_to_toc(part, content_map) for part in toc_dict.get("parts", [])]
+        "parts": [
+            add_content_to_toc(part, content_map) for part in toc_dict.get("parts", [])
+        ]
     }
     return TenQSectionsWithContent(**processed_toc)

@@ -14,7 +14,7 @@ from src.ten_q.ten_q_content import parse_html_to_sections
 from src.ten_q.ten_q_toc import (
     find_table_elements_with_toc,
     create_table_of_contents_structure,
-    TableOfContents
+    TableOfContents,
 )
 
 load_dotenv()
@@ -38,6 +38,7 @@ def fetch_sec_html(url):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching document: {str(e)}")
         return None
+
 
 toc_json = """
 {
