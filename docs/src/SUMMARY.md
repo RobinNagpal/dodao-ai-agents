@@ -34,3 +34,4 @@
 - [Creating First report](./creating_first_report.md)
 - [Creating Performance Checklist](./creating_performance_checklist.md)
 - [Regeneration](./regeneration.md)
+- [Custom Langflow Tools](./custom_langflow_tools.md)
