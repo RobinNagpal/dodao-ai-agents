@@ -10,6 +10,8 @@ There are lots of public equities which can be divided into different categories
 
 GICS (Global Industry Classification Standard) is an industry taxonomy which divides which consists of 11 sectors,25 industry groups 74 industries and 163 sub industries
 
+![GICS](./images/gics.svg)
+
 ### Why GICS?
 
 - We at koalagains chose GICS as it is one of the best classification standard that exists for the industries developed by developed by MSCI in collaboration with S&P Dow Jones Indices.
@@ -30,6 +32,10 @@ The criteria is finalized at industry group level because the at sector level it
 - Each of the criterion is provided with the SEC 10 Q data and matching instruction for that criterion based on which factual information is extracted
 - Also all the criterions are provided with matching instruction which helps in calculating criteria
 - Spider Chart is also shown which consits of all the criterions
+
+- For Example for REITS Industry Group
+
+![CUstom-Crietria](./images/criteira_and_report/custom-criteria.png)
 
 ## Reports
 
@@ -104,6 +110,8 @@ Now based on the reportKey one of the following occurs:
 ## Showing of the Reports
 
 - Now after the saving of the reports these reports will be visible on the platform
+
+  ![Report](./images/criteira_and_report/report-example.png)
 
 ### Processing Long SEC Filings
 
