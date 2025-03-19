@@ -13,5 +13,7 @@
 
 - Now get your admin code from Robin and enter it
 - Now click on Authenticate and you will see the folllowing screen
+
   ![Logged In](./images/authentication/logged_in.png)
+
 - Now you are Logged in as an admin and can perform all the edit and create functions
