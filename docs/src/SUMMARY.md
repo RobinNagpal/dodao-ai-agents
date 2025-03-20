@@ -1,8 +1,6 @@
 # Summary
 
-- [About KoalaGains](./001_about_koala_gains.md)
-  - [Task List](./001_z01_task_list.md)
-  - [Use Cases](./001_z02_use_cases.md)
+- [Intro To KoalaGains](./001_intro_to_koala_gains.md)
 - [Evaluating Public Equities](./evaluating_public_equities.md)
   - [Need For Specific Criteria Evaluation](./need_for%20specific_criteria_evaluation.md)
   - [GICS](./gics.md)
@@ -27,11 +25,18 @@
   - [Chart Reports](./chart_reports.md)
   - [Regeneration](./0011_regeneration.md)
 - [Developers](./developers.md)
+
   - [Tools](./004_tools.md)
     - [Latest 10Q Financial Info](./004_z01_latest_10Q_financials.md)
     - [Criterion Info from Latest 10Q](./004_z02_latest_10Q_criterion_info.md)
     - [Custom Langflow Tools](./0012_custom_langflow_tools.md)
   - [Processing Long SEC Filings](./003_z02_processing_long_sec_filings.md)
+  - [Tasks](./005_tasks.md)
+    - [Push/Pull agent-status.json to s3 using tool](./005_z01_push_pull_agent_status_fom_s3.md)
+    - [Extracting Information from Latest 10Q](./005_z05_extracting_info_from_latest_10q.md)
+    - [Structured LLM Prompt Editor](./005_z02_structured_llm_prompt_editor.md)
+    - [Compare SEC Filing Libraries](./005_z04_compare_sec_filing_libs.md)
+
 - [Koalagains contributors](./koalagains_contributors.md)
 
   - [Main Milestones](./002_main_milestones.md)
@@ -48,15 +53,11 @@
     - [REITs](./002_z02_reits.md)
     - [SEC Filings](./002_z03_sec_filings.md)
     - [Custom Finance Agents](./002_z04_custom_finance_agents.md)
+  - [Use Cases](./001_z02_use_cases.md)
+  - [Vision](./vision.md)
+  - [Architecture](./koalagains_architecture.md)
 
 - [Investment Strategies](./006_investment_strategies.md)
 
   - [Intrinsic Value](./006_z01_intrinsic_value.md))
   - [Buffet & Munger](./006_z02_warren_buffet_charlie_munger.md) - [Warren Buffet - Fundamental Analysis](./006_z02_z01_fundamental_analysis.md) - [Warren Buffet - Leadership and Governance](./006_z02_z02_leadership_and_governance.md)
-
-- [Architecture](./003_architecture.md)
-- [Tasks](./005_tasks.md)
-  - [Push/Pull agent-status.json to s3 using tool](./005_z01_push_pull_agent_status_fom_s3.md)
-  - [Extracting Information from Latest 10Q](./005_z05_extracting_info_from_latest_10q.md)
-  - [Structured LLM Prompt Editor](./005_z02_structured_llm_prompt_editor.md)
-  - [Compare SEC Filing Libraries](./005_z04_compare_sec_filing_libs.md)
