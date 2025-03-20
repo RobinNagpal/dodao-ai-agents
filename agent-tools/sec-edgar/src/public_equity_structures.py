@@ -20,12 +20,12 @@ class Sector(BaseModel):
 
 
 class SecFilingAttachment(BaseModel):
-    attachmentSequenceNumber: str
-    attachmentDocumentName: Optional[str] = None
-    attachmentPurpose: Optional[str] = None
-    attachmentUrl: str
+    sequenceNumber: str
+    documentName: str
+    purpose: Optional[str] = None
+    url: str
     relevance: Optional[float] = None
-    attachmentContent: Optional[str] = None
+    content: Optional[str] = None
 
 
 class CriterionMatch(BaseModel):
@@ -42,9 +42,10 @@ class CriterionMatchesOfLatest10Q(BaseModel):
 
 
 class TickerReport(BaseModel):
-    ticker: str
-    selectedIndustryGroup: IndustryGroup
-    selectedSector: Sector
+    tickerKey: str
+    industryGroupId: int
+    sectorId: int
+    latest10QFinancialStatements: Optional[str] = None
     evaluationsOfLatest10Q: Any = None
     criteriaMatchesOfLatest10Q: Optional[CriterionMatchesOfLatest10Q] = None
 

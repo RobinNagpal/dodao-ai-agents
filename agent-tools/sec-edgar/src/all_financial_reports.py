@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from edgar import Company, use_local_storage, set_identity
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
-
+from src.criteria_matching import get_ticker_report, save_latest10Q_financial_statements
 load_dotenv()
 
 # Initialize edgar settings
@@ -53,6 +53,15 @@ def filter_older_columns(df):
 
 
 def get_xbrl_financials(ticker: str) -> str:
+    latest10Q_financial_statements = ''
+    try:
+        ticker_report = get_ticker_report(ticker)
+        latest10Q_financial_statements = ticker_report.latest10QFinancialStatements
+    except Exception as e:
+        print(f"Error getting ticker report: {str(e)}")
+    if latest10Q_financial_statements:
+        return latest10Q_financial_statements
+
     company = Company(ticker)
     tenq = company.latest_tenq
 
@@ -77,5 +86,10 @@ def get_xbrl_financials(ticker: str) -> str:
         return (
             f"No relevant financial statements found in the latest 10-Q for '{ticker}'."
         )
-
-    return "\n\n\n\n".join(filtered_statements)
+    
+    latest10Q_financial_statements =  "\n\n\n\n".join(filtered_statements)
+    try:
+        save_latest10Q_financial_statements(ticker, latest10Q_financial_statements)
+    except Exception as e:
+        print(f"Error saving latest10q financial statements: {str(e)}")
+    return latest10Q_financial_statements
