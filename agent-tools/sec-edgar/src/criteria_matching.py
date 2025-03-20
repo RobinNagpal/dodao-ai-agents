@@ -1,3 +1,5 @@
+import json
+import requests
 import boto3
 import json
 import os
@@ -37,12 +39,12 @@ class TickersInfoAndAttachments(TypedDict):
 
 
 class AttachmentWithContent(BaseModel):
-    attachmentSequenceNumber: str
-    attachmentDocumentName: str
-    attachmentPurpose: Optional[str]
-    attachmentUrl: str
+    sequenceNumber: str
+    documentName: str
+    purpose: Optional[str]
+    url: str
     relevance: float
-    attachmentContent: str
+    content: str
 
 
 class AttachmentsByCriterion(BaseModel):
@@ -87,34 +89,58 @@ def get_object_from_s3(key: str) -> dict:
         print(traceback.format_exc())
         raise Exception(f"Error: {str(e)}")
 
-
-def get_criteria(
-    sector_name: str, industry_group_name: str
-) -> IndustryGroupCriteriaDefinition:
-    key = get_criteria_file_key(sector_name, industry_group_name)
-    data = get_object_from_s3(key)
-    return IndustryGroupCriteriaDefinition(**data)
-
-
 def get_ticker_report(ticker: str) -> TickerReport:
-    key = get_ticker_file_key(ticker)
-    data = get_object_from_s3(key)
+    base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
+    endpoint = f"{base_url}/api/tickers/{ticker}"
+    response = requests.get(endpoint)
+    response.raise_for_status()  # This will raise an error if the response is not 200 OK
+    
+    data = response.json()
     return TickerReport(**data)
 
+def get_criteria_definition(ticker: str) -> IndustryGroupCriteriaDefinition:
+    base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
+    endpoint = f"{base_url}/api/tickers/{ticker}/criteria-definition"
+    response = requests.get(endpoint)
+    response.raise_for_status()  # This will raise an error if the response is not 200 OK
+    data = response.json()
+    return IndustryGroupCriteriaDefinition(**data)
+    
+def save_criteria_matches(ticker: str, criteria_matches: CriterionMatchesOfLatest10Q):
+    """
+    Sends the updated ticker report JSON to an API endpoint via POST.
+    """
+    base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
+    endpoint = f"{base_url}/api/tickers/{ticker}/criteria-matches"
+    payload = {
+        "criterionMatchesOfLatest10Q": criteria_matches.model_dump()
+    }
+    data = json.dumps(payload, indent=2)
+    print(f"Sending POST request to {endpoint} with data:")
+    print(data)
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(endpoint, data=data.encode("utf-8"), headers=headers)
+    response.raise_for_status()  # Raises an error if the response status is not 2xx
+    
+    print(f"Saved criteria matches for {ticker}.")
 
-def put_ticker_report_to_s3(ticker: str, report: TickerReport):
-    """Writes the updated info JSON to S3."""
-    key = get_ticker_file_key(ticker)
-    data = report.model_dump_json(indent=2)
-    print(f"Writing to S3: {key}")
-    s3_client.put_object(
-        Bucket=S3_BUCKET_NAME,
-        Key=key,
-        Body=data.encode("utf-8"),
-        ContentType="application/json",
-        ACL="public-read",
-    )
-    print(f"Updated {key} uploaded to S3.")
+def save_latest10Q_financial_statements(ticker: str, latest10Q_financial_statements: str):
+    """
+    Sends the updated ticker report JSON to an API endpoint via POST.
+    """
+    base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
+    endpoint = f"{base_url}/api/tickers/{ticker}/financial-statements"
+    payload = {
+        "latest10QFinancialStatements": latest10Q_financial_statements
+    }
+    data = json.dumps(payload, indent=2)
+    print(f"Sending POST request to {endpoint} with data:")
+    print(data)
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(endpoint, data=data.encode("utf-8"), headers=headers)
+    response.raise_for_status()  # Raises an error if the response status is not 2xx
+    
+    print(f"Saved latest10Q Financial Statements for {ticker}.")
 
 
 def create_criteria_match_analysis(
@@ -350,11 +376,11 @@ def get_matched_attachments(
                     criterion_match_result.criterion_key
                 ].matchedAttachments.append(
                     SecFilingAttachment(
-                        attachmentSequenceNumber=attachment_sequence_number,
-                        attachmentDocumentName=attachment_document_name,
-                        attachmentPurpose=attachment_purpose,
-                        attachmentUrl=attachment_url,
-                        attachmentContent=relevant_text,
+                        sequenceNumber=attachment_sequence_number,
+                        documentName=attachment_document_name,
+                        purpose=attachment_purpose,
+                        url=attachment_url,
+                        content=relevant_text,
                         relevance=criterion_match_result.relevance_amount,
                     )
                 )
@@ -395,22 +421,17 @@ def get_matched_attachments(
 
 
 def populate_criteria_matches(ticker: str):
-    report: TickerReport = get_ticker_report(ticker)
     try:
-        sector: Sector = report.selectedSector
-        industry_group: IndustryGroup = report.selectedIndustryGroup
-        industry_group_criteria = get_criteria(sector.name, industry_group.name)
+        industry_group_criteria = get_criteria_definition(ticker)
         criteria: List[CriterionDefinition] = industry_group_criteria.criteria
         criteria_matches = get_matched_attachments(ticker, criteria)
-        report.criteriaMatchesOfLatest10Q = criteria_matches
-        put_ticker_report_to_s3(ticker, report)
+        save_criteria_matches(ticker, criteria_matches)
     except Exception as e:
         print(f"Error: {str(e)}")
         criteria_matches = CriterionMatchesOfLatest10Q(
             criterionMatches=[], status="Failed", failureReason=str(e)
         )
-        report.criteriaMatchesOfLatest10Q = criteria_matches
-        put_ticker_report_to_s3(ticker, report)
+        save_criteria_matches(ticker, criteria_matches)
         raise e
 
 
