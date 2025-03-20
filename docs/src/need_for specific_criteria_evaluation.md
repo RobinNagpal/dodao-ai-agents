@@ -1,0 +1,3 @@
+# Need for specific evaluation criteria based on type
+
+Each company operates within a specific industry, and industries have distinct risks and success factors. For instance manufacturing companies focus on supply chain and production costs. Similarly, financial institutions are assessed on capital adequacy, and risk exposure, while real estate firms are evaluated based on location, occupancy rates, and rental revenue. Because of these variations, a one-size-fits-all evaluation approach is ineffective. Instead, tailored evaluation parameters are necessary for a more accurate and meaningful assessment of each company.
