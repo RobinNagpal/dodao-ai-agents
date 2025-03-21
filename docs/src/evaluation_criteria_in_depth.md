@@ -7,12 +7,12 @@ correctly and carefully so that all these reports are correct and comprehensive
 
 This evaluation criterion has attributes:
 
-- key
-- name
-- mathching instruction
-- reports
-- webhookUrl
-- important Metrics
+- Name - name of the criterion
+- Key - same as name but all lowercase and underscores inplace of spaces
+- Matching instruction - instructions to match the SEC filing attachment with the criterion
+- Important Metrics - numerical metrics related to the criterion
+- Reports - define the reports to be made for the criterion
+- webhookUrl - webhook url of the AI agent
 
 It can be edited for a specific idsutry group like REITS here by folling this [link](https://koalagains.com/public-equities/industry-group-criteria/real-estate/equity-real-estate-investment-trusts-reits/create)
 

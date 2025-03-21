@@ -1,3 +1,11 @@
 # Creating first report For Test Ticker
 
-Now after all the previous steps you have a flow in langflow and the criteria also so now for a test ticker you can generate a first report by adding a suitable prompt in the OpenAI component which will create a simple report for you which can be seen as explained [Here](./004_seeing_your_report.md)
+## Make the Flow
+
+- Build the flow
+
+  ![Copy Criteria](./images/criteira_and_report/flow.png)
+
+## Run and Test the Flow
+
+- You can Run and test your flow either through inspecting the tools outputs or by using chat output to see the stuff in Playground
