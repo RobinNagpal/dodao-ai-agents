@@ -5,7 +5,7 @@
 ### How report is generated?
 
 - To generate the reports for the criterion the criterion info along with ticker is passed to an AI agent
-- We at koalagains have used langflow to create the AI Agents
+- We at KoalaGains have used langflow to create the AI Agents
 - The AI Agent can be created using langflow or any other tool and than this AI Agent can be used using its URL and passing the the information in payload which contains:
   - ticker
   - reportKey
@@ -48,9 +48,9 @@ The AI Agents that we have made using langflow till now can be called using thei
 Now based on the reportKey one of the following occurs:
 
 - If reportKey is `all` then the whole flow will run including performance checklist, important metrics and all specific reports
-- If reportKEy is `performanceCheckist` the flow for performance checklist will run only
-- If reportKEy is `importantMetrics` the flow for important metrics will run only
-- If reportKEy is a specific report e.g `debt_information` the flow for the debt information report will run only
+- If reportKey is `performanceCheckist` the flow for performance checklist will run only
+- If reportKey is `importantMetrics` the flow for important metrics will run only
+- If reportKey is a specific report e.g `debt_information` the flow for the debt information report will run only
 
 ### Generation of Reports
 

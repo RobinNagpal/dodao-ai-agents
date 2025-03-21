@@ -4,7 +4,7 @@
 
 ![Criteria Table](./images/criteira_and_report/criteria-table.png)
 
-- If the criteria is already generated e.g if your company falls under | industries - transportation| proceed to step 5 else follow the steps below
+- If the criteria is already generated e.g if your company falls under | industries - transportation| proceed to last step else follow the steps below
 
 ## Generating the criteria for your company industry group
 
@@ -18,13 +18,13 @@
 
 ## Customizing the AI generated criteria
 
-- You may need to make changes to the ai generated criteria according to your needs.
+- You may need to make changes to the AI generated criteria according to your needs.
 - Click on the + sign under the “custom criteria” column once the AI content is generated
 - (make change)
 
   ![Copy Criteria](./images/criteira_and_report/copy-criteria.png)
 
-- The ai criteria will be copied and viewing it will show the following screen
+- The AI criteria will be copied and viewing it will show the following screen
 
   ![Edit Criterion](./images/criteira_and_report/edit-criterion.png)
 
@@ -44,7 +44,7 @@
 
 ## Regenerating the evaluation criteria
 
-- Headover to https://koalagains.com/public-equities/debug/ticker-reports/FVR and click “Regenerate Matching Criteria”
+- Headover to https://koalagains.com/public-equities/debug/ticker-reports/FVR (FVR will be replaced by your ticker) and click “Regenerate Matching Criteria”
 
   ![Regenerate Matching Criteria](./images/criteira_and_report/regenerate-matching-criteria.png)
 

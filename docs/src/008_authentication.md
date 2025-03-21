@@ -16,4 +16,4 @@
 
   ![Logged In](./images/authentication/logged_in.png)
 
-- Now you are Logged in as an admin and can perform all the edit and create functions
+- Now you are Logged in as an admin and can perform all the edit and create operations

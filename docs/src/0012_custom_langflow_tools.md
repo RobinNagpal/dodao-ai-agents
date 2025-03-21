@@ -3,7 +3,7 @@
 ## SEC 10Q Data Tool
 
 - This tool is custom tool made by us to extract the important information from the SEC 10 Q report.
-- The information it can extract includes financial statements, criteria related information,specific reports etc
+- The information it can extract includes financial statements, criteria related information etc
 
   ![Sec 10Q Tool](./images/criteira_and_report/SEC-10Q-tool.png)
 
