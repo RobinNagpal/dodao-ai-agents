@@ -8,7 +8,7 @@ First of all make sure that criteria for the desired company's industry group is
 
   ![Copy Criteria](./images/criteira_and_report/flow-for-checklist.png)
 
-- After the OpenAI component when creating data use "PerformanceChecklist" as the report Type.
+- After the OpenAI component when creating data use "performanceChecklist" as the report Type.
 - Carefully fill the fileds whcih are in yellow rectangle in image
 - The Api Request should be sent to https://kolagains.com/api/langflow/save-performance-checklist
 
@@ -35,7 +35,7 @@ Remember, the output must be a valid JSON array of five objects only—no additi
 - "score"
 ```
 
-- Then the output of this prompt will be passed to the Open AI component where the propmpt will be set as
+- Then the output of this prompt will be passed to the Open AI component where the prompt will be set as
 
 ```
 You are a highly knowledgeable REIT performance analyst. Your role is to evaluate the provided financial statements and stock types data to create five key performance criteria for assessing this REIT’s health and risk. Each checklist item must be scored 0 or 1 based on whether the REIT meets the criterion, with clear reasoning. Return the results only as a JSON list of 5 objects.
