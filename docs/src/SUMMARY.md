@@ -31,7 +31,7 @@
     - [Criterion Info from Latest 10Q](./004_z02_latest_10Q_criterion_info.md)
     - [Custom Langflow Tools](./0012_custom_langflow_tools.md)
   - [Processing Long SEC Filings](./003_z02_processing_long_sec_filings.md)
-  - [Other Functions or Tools](./other_functions_or_tools.md)
+  - [Other Functions and Tools](./other_functions_or_tools.md)
     - [Push/Pull agent-status.json to s3 using tool](./005_z01_push_pull_agent_status_fom_s3.md)
     - [Extracting Information from Latest 10Q](./005_z05_extracting_info_from_latest_10q.md)
     - [Structured LLM Prompt Editor](./005_z02_structured_llm_prompt_editor.md)
