@@ -4,15 +4,13 @@ First of all make sure that criteria for the desired company's industry group is
 
 ## Generating the Checklist
 
-- Locate the dodao sec tools
-
-  ![Copy Criteria](./images/criteira_and_report/dodao_sec_tools.png)
-
 - Build the flow
 
   ![Copy Criteria](./images/criteira_and_report/flow-for-checklist.png)
 
 - After the OpenAI component when creating data use "PerformanceChecklist" as the report Type.
+- Carefully fill the fileds whcih are in yellow rectangle in image
+- The Api Request should be sent to https://kolagains.com/api/langflow/save-performance-checklist
 
 ## Prompts for checklists:
 

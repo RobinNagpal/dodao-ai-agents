@@ -9,4 +9,4 @@ The Chart reports at Koalagains are evry important as they offer various benfits
 - These charts may be providing support to some text reports a s well and vice versa
 - These charts along withe chart s may also have the respective reports which have their detailed table providing the comprehensive view of the chart
 
-![Pie Chart Report](./images/criteira_and_report/report-example4.png)
+![Pie Chart Report](./images/criteira_and_report/report-example5.png)
