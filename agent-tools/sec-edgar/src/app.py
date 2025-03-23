@@ -6,6 +6,7 @@ from src.all_filings import get_all_filings_and_update_forms_info_in_s3
 from src.all_financial_reports import get_xbrl_financials
 from src.criteria_matching import (
     get_criterion_attachments_content,
+    get_single_criteria_matching,
     populate_criteria_matches,
 )
 from src.specific_10Q_report import specific_report_text
@@ -49,10 +50,17 @@ def lambda_handler(event, context):
             data = populate_criteria_matches(ticker)
             return json_response(200, {"status": 200, "data": data})
 
-        elif path == "/all-filings-for-ticker":  # route 4
+        elif path == "/all-filings-for-ticker":  # route 5
             page = body.get("page", 0)
             page_size = body.get("pageSize", 50)
             data = get_all_filings_and_update_forms_info_in_s3(ticker, page, page_size)
+
+            return json_response(200, data)
+        
+        elif path == "/single-criteria-matching":  # route 6
+            sequence_no = body.get("sequence_no", 0)
+            criterion_key = body.get("criterion_key", "")
+            data = get_single_criteria_matching(ticker, sequence_no, criterion_key)
 
             return json_response(200, data)
 

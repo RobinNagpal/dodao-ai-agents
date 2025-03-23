@@ -464,3 +464,67 @@ def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
         raise Exception(f"Error: No criterion match found for {criterion_key}.")
 
     return criterion_match.matchedContent
+
+
+def get_single_criteria_matching(ticker: str, sequence_no: str, criterion_key: str) -> str:
+    try:
+        ticker_info = get_ticker_info_and_attachments(ticker)
+        industry_group_criteria = get_criteria_definition(ticker)
+        criteria: List[CriterionDefinition] = industry_group_criteria.criteria
+        print(f'ticker {ticker} - sequence number {sequence_no} - criteria key {criterion_key}')
+        print(f' criteria list: {criteria}')
+        # If a specific criterion key is provided, filter the criteria accordingly.
+        if criterion_key != 'all':
+            single_criterion = next((c for c in criteria if c.key == criterion_key), None)
+            if not single_criterion:
+                raise Exception(f"No criteria found with key {criterion_key}")
+            # Use only the matching criterion for the analysis.
+            criteria = [single_criterion]
+        
+        attachments = ticker_info.get('attachments', [])
+        
+        # Find the attachment with the matching sequence number.
+        attachment = next(
+            (att for att in attachments if att.sequence_number == sequence_no),
+            None
+        )
+        if not attachment:
+            raise Exception(f"No attachment found with sequence number {sequence_no}")
+        
+        attachment_purpose = str(attachment.purpose or "").lower()
+        attachment_text = str(attachment.text() or "")
+        if not attachment_purpose:
+            raise Exception('No attachment purpose for this sequence number')
+        if not attachment_text:
+            raise Exception('No attachment content for this sequence number')
+        
+        match_analysis: CriterionMatchResponseNew = create_criteria_match_analysis(
+            period_of_report=ticker_info.get("period_of_report"),
+            attachment_name=attachment_purpose,
+            attachment_content=attachment_text,
+            criteria=criteria,
+        )
+        
+        # If matching failed, return the failure reason.
+        if match_analysis.status == "failure":
+            return match_analysis.failureReason or "Unknown failure reason"
+        
+        # If the user requested all criteria, return the concatenated relevant texts.
+        if criterion_key == "all":
+            all_text = " ".join(
+                cm.relevant_text for cm in match_analysis.criterion_matches if cm.relevant_text
+            )
+            return all_text if all_text else "No relevant text found in any criterion."
+        else:
+            # Otherwise, find the criterion match that corresponds to the provided criterion key.
+            criterion_match = next(
+                (cm for cm in match_analysis.criterion_matches if cm.criterion_key == criterion_key),
+                None
+            )
+            if criterion_match:
+                return criterion_match.relevant_text
+            else:
+                return "No matching criterion found in analysis."
+        
+    except Exception as e:
+        return f'Error occurred: {e}'
