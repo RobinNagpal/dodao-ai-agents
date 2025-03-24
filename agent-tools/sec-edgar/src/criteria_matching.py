@@ -441,9 +441,7 @@ def populate_criteria_matches(ticker_key: str):
         raise e
 
 
-def get_criteria_matching_for_an_attachment(
-    ticker_key: str, sequence_no: str
-) -> dict:
+def get_criteria_matching_for_an_attachment(ticker_key: str, sequence_no: str) -> dict:
     if not sequence_no:
         raise Exception("Error: Sequence number is required.")
 

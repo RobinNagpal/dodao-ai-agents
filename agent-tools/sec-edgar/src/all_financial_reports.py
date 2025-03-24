@@ -53,15 +53,17 @@ def filter_older_columns(df):
     )  # Use errors="ignore" to prevent KeyErrors
 
 
-def get_xbrl_financials(ticker: str) -> str:
+def get_xbrl_financials(ticker: str, force_refresh: bool = False) -> str:
     latest10Q_financial_statements = ""
     try:
         ticker_report = get_ticker_report(ticker)
         latest10Q_financial_statements = ticker_report.latest10QFinancialStatements
     except Exception as e:
         print(f"Error getting ticker report: {str(e)}")
-    if latest10Q_financial_statements:
+    if latest10Q_financial_statements and not force_refresh:
         return latest10Q_financial_statements
+
+    print(f"Fetching Financial Statements from scratch...")
 
     company = Company(ticker)
     tenq = company.latest_tenq

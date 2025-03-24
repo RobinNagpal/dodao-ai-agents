@@ -38,7 +38,8 @@ def lambda_handler(event, context):
             return json_response(200, {"status": 200, "data": result_text})
 
         elif path == "/financials":  # route 2
-            data = get_xbrl_financials(ticker)
+            force_refresh = body.get("force_refresh", False)
+            data = get_xbrl_financials(ticker, force_refresh)
             return json_response(200, {"status": 200, "data": data})
 
         elif path == "/get-matching-criteria-attachments":  # route 3
