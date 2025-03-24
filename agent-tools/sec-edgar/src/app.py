@@ -6,7 +6,7 @@ from src.all_filings import get_all_filings_and_update_forms_info_in_s3
 from src.all_financial_reports import get_xbrl_financials
 from src.criteria_matching import (
     get_criterion_attachments_content,
-    get_single_criteria_matching,
+    get_criteria_matching_for_an_attachment,
     populate_criteria_matches,
 )
 from src.specific_10Q_report import specific_report_text
@@ -24,7 +24,6 @@ def lambda_handler(event, context):
         # event["rawPath"] is for Lambda Function URLs and new HTTP API Gateway
         # Or event["path"] if you're using REST API Gateway
         path = event.get("rawPath") or event.get("path") or ""
-        method = event.get("requestContext", {}).get("http", {}).get("method", "POST")
 
         # parse JSON body
         body = json.loads(event["body"]) if "body" in event and event["body"] else {}
@@ -57,24 +56,23 @@ def lambda_handler(event, context):
 
             return json_response(200, data)
         
-        elif path == "/single-criteria-matching":  # route 6
-            sequence_no = body.get("sequence_no", 0)
-            criterion_key = body.get("criterion_key", "")
-            data = get_single_criteria_matching(ticker, sequence_no, criterion_key)
+        elif path == "/criteria-matching-for-an-attachment":  # route 6
+            sequence_no = body.get("sequence_no")
+            data = get_criteria_matching_for_an_attachment(ticker, sequence_no)
 
             return json_response(200, data)
 
         else:
             # If path not recognized, return 404
             return json_response(
-                404, {"status": 404, "message": f"No route found for path={path}"}
+                404, {"message": f"No route found for path={path}"}
             )
 
     except Exception as e:
         # If something goes really wrong, return 500
         print(traceback.format_exc())
         return json_response(
-            500, {"status": 500, "message": f"Internal server error: {str(e)}"}
+            500, {"message": f"Internal server error: {str(e)}"}
         )
 
 
