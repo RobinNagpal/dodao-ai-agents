@@ -56,12 +56,14 @@ def local_invoke_get_single_criteria(ticker, sequence_no):
     )
     print(response)
 
+
 def local_invoke_get_single_management_discussion(ticker, criterion_key):
     response = _invoke_endpoint(
         "/criteria-matching-for-management-discussion",
         {"ticker": ticker, "criterion_key": criterion_key},
     )
     print(response)
+
 
 if __name__ == "__main__":
     # EXAMPLES OF LOCAL CALLS:

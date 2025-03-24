@@ -31,8 +31,8 @@ def lambda_handler(event, context):
 
         ticker = body.get("ticker", "")
         if not ticker:
-            raise Exception(f'Ticker is missing in the request body.')
-        
+            raise Exception(f"Ticker is missing in the request body.")
+
         criterion_key = body.get("criterion_key", "")
 
         # Simple routing logic:
@@ -68,10 +68,12 @@ def lambda_handler(event, context):
             return json_response(200, data)
 
         elif path == "/criteria-matching-for-management-discussion":  # route 7
-            data = get_criteria_matching_for_management_discussion(ticker, criterion_key)
+            data = get_criteria_matching_for_management_discussion(
+                ticker, criterion_key
+            )
 
             return json_response(200, {"data": data})
-        
+
         else:
             # If path not recognized, return 404
             return json_response(404, {"message": f"No route found for path={path}"})

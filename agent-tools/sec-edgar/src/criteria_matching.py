@@ -466,12 +466,17 @@ def get_criteria_matching_for_an_attachment(ticker_key: str, sequence_no: str) -
 
     return match_analysis.model_dump()
 
-def get_criteria_matching_for_management_discussion(ticker_key: str, criterion_key: str) -> str:
+
+def get_criteria_matching_for_management_discussion(
+    ticker_key: str, criterion_key: str
+) -> str:
     if not criterion_key:
         raise Exception("Criterion key is required.")
 
     industry_group_criteria = get_criteria_definition(ticker_key)
-    criterion = next(c for c in industry_group_criteria.criteria if c.key == criterion_key)
+    criterion = next(
+        c for c in industry_group_criteria.criteria if c.key == criterion_key
+    )
     ticker_info = get_ticker_info_and_attachments(ticker_key)
     management_discussions_content = ticker_info.get("management_discussions")
 
