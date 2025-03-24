@@ -2,7 +2,7 @@
 
 Whenever evalauating a company(ticker) the criteria for the evaluation should be related to the industry group so that reports and graphs make sense to the investor while he is making a decison
 
-So for that purpose the we define a criteria on the basis of which the data is collected and tha all these report or grpahs including spider chart,performance checklist, metrics ,text report and chart reports are generated based on that data collected so this evaluations criteria must be defined
+So for that purpose the we define a criteria on the basis of which the data is collected and tha all these report or grpahs including spider chart,performance checklist, metrics ,text report and chart reports are generated based on that data collected so this evaluation criteria must be defined
 correctly and carefully so that all these reports are correct and comprehensive
 
 This evaluation criterion has attributes:

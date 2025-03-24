@@ -18,5 +18,5 @@
 
 - Mode lets you select the info you want to extract from the 10Q
 - All_financials will fetch data of all financial statements
-- Specific_report will fetch data of a particular financial statement
-  Criteria_related_info will fetch the criteria related info.
+- Specific_report will fetch data according to the report type
+- Criteria_related_info will fetch the criteria related info.

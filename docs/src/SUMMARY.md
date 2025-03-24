@@ -18,7 +18,7 @@
 - [Reports in Koalagains](./reports_in_koala_gains.md)
   - [Spider Chart](./spider_chart_report.md)
   - [Evaluation criteria in depth](./evaluation_criteria_in_depth.md)
-  - [Performance Checklist](./peformance_checklist_report.md)
+  - [Performance Checklist](./performance_checklist_report.md)
     - [Creating Performance Checklist](./0010_creating_performance_checklist.md)
   - [Metrics](./metrics_report.md)
   - [Text Reports](./text_report.md)
