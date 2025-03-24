@@ -2,7 +2,7 @@
 
 ![Spider Chart](./images/criteira_and_report/spider-chart.gif)
 
-One of the report types that helps the investors make better decision is Spider/Radar chart which helps him in these ways:
+One of the report types that helps the investors make better decision is Spider/Radar chart.It helps them in these ways:
 
 - The spider chart shows complete picture of the equity
 - For each of evaluating criterion it shows the score out of 5 on the graph
