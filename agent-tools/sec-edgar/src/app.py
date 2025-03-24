@@ -5,6 +5,7 @@ from edgar import use_local_storage, set_identity
 from src.all_filings import get_all_filings_and_update_forms_info_in_s3
 from src.all_financial_reports import get_xbrl_financials
 from src.criteria_matching import (
+    get_criteria_matching_for_management_discussion,
     get_criterion_attachments_content,
     get_criteria_matching_for_an_attachment,
     populate_criteria_matches,
@@ -28,8 +29,11 @@ def lambda_handler(event, context):
         # parse JSON body
         body = json.loads(event["body"]) if "body" in event and event["body"] else {}
 
-        ticker = body.get("ticker", "AAPL")
-        criterion_key = body.get("criterion_key", "debt")
+        ticker = body.get("ticker", "")
+        if not ticker:
+            raise Exception(f'Ticker is missing in the request body.')
+        
+        criterion_key = body.get("criterion_key", "")
 
         # Simple routing logic:
         if path == "/search":  # route 1
@@ -63,6 +67,11 @@ def lambda_handler(event, context):
 
             return json_response(200, data)
 
+        elif path == "/criteria-matching-for-management-discussion":  # route 7
+            data = get_criteria_matching_for_management_discussion(ticker, criterion_key)
+
+            return json_response(200, {"data": data})
+        
         else:
             # If path not recognized, return 404
             return json_response(404, {"message": f"No route found for path={path}"})

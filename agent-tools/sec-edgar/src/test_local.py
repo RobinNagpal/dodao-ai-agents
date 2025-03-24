@@ -24,8 +24,10 @@ def local_invoke_search(ticker, report_type):
     _invoke_endpoint("/search", {"ticker": ticker, "report_type": report_type})
 
 
-def local_invoke_financials(ticker):
-    body = _invoke_endpoint("/financials", {"ticker": ticker})
+def local_invoke_financials(ticker, force_refresh=False):
+    body = _invoke_endpoint(
+        "/financials", {"ticker": ticker, "force_refresh": force_refresh}
+    )
     print("=== Financials ===")
     print(body.get("data"))
 
@@ -54,6 +56,12 @@ def local_invoke_get_single_criteria(ticker, sequence_no):
     )
     print(response)
 
+def local_invoke_get_single_management_discussion(ticker, criterion_key):
+    response = _invoke_endpoint(
+        "/criteria-matching-for-management-discussion",
+        {"ticker": ticker, "criterion_key": criterion_key},
+    )
+    print(response)
 
 if __name__ == "__main__":
     # EXAMPLES OF LOCAL CALLS:
@@ -62,5 +70,6 @@ if __name__ == "__main__":
     # print()
 
     # 2) Financials route for ticker=AMT
-    local_invoke_get_single_criteria("FVR", "22")
+    local_invoke_populate_criteria("CCI")
+    # local_invoke_get_single_management_discussion("FVR", "debt_and_leverage")
     # local_invoke_get_criteria("FVR", "financial_performance")
