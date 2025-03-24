@@ -443,7 +443,7 @@ def populate_criteria_matches(ticker_key: str):
 
 def get_criteria_matching_for_an_attachment(
     ticker_key: str, sequence_no: str
-) -> CriterionMatchResponseNew:
+) -> dict:
     if not sequence_no:
         raise Exception("Error: Sequence number is required.")
 
@@ -466,7 +466,7 @@ def get_criteria_matching_for_an_attachment(
         criteria=industry_group_criteria.criteria,
     )
 
-    return match_analysis
+    return match_analysis.model_dump()
 
 
 def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
