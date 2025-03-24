@@ -47,10 +47,10 @@ def local_invoke_get_criteria(ticker, criterion_key):
     )
 
 
-def local_invoke_get_single_criteria(ticker, sequence_no, criterion_key):
+def local_invoke_get_single_criteria(ticker, sequence_no):
     response = _invoke_endpoint(
-        "/single-criteria-matching",
-        {"ticker": ticker, "sequence_no": sequence_no, "criterion_key": criterion_key},
+        "/criteria-matching-for-an-attachment",
+        {"ticker": ticker, "sequence_no": sequence_no},
     )
     print(response)
 
@@ -62,5 +62,5 @@ if __name__ == "__main__":
     # print()
 
     # 2) Financials route for ticker=AMT
-    local_invoke_get_single_criteria("CCI", "22", "debt_and_leverage")
+    local_invoke_get_single_criteria("FVR", "22")
     # local_invoke_get_criteria("FVR", "financial_performance")
