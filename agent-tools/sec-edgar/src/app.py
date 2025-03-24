@@ -55,7 +55,7 @@ def lambda_handler(event, context):
             data = get_all_filings_and_update_forms_info_in_s3(ticker, page, page_size)
 
             return json_response(200, data)
-        
+
         elif path == "/criteria-matching-for-an-attachment":  # route 6
             sequence_no = body.get("sequence_no")
             data = get_criteria_matching_for_an_attachment(ticker, sequence_no)
@@ -64,16 +64,12 @@ def lambda_handler(event, context):
 
         else:
             # If path not recognized, return 404
-            return json_response(
-                404, {"message": f"No route found for path={path}"}
-            )
+            return json_response(404, {"message": f"No route found for path={path}"})
 
     except Exception as e:
         # If something goes really wrong, return 500
         print(traceback.format_exc())
-        return json_response(
-            500, {"message": f"Internal server error: {str(e)}"}
-        )
+        return json_response(500, {"message": f"Internal server error: {str(e)}"})
 
 
 def json_response(http_status, payload):

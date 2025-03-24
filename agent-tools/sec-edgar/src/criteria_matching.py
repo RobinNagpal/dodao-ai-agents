@@ -89,14 +89,16 @@ def get_object_from_s3(key: str) -> dict:
         print(traceback.format_exc())
         raise Exception(f"Error: {str(e)}")
 
+
 def get_ticker_report(ticker: str) -> TickerReport:
     base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
     endpoint = f"{base_url}/api/tickers/{ticker}"
     response = requests.get(endpoint)
     response.raise_for_status()  # This will raise an error if the response is not 200 OK
-    
+
     data = response.json()
     return TickerReport(**data)
+
 
 def get_criteria_definition(ticker: str) -> IndustryGroupCriteriaDefinition:
     base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
@@ -105,41 +107,41 @@ def get_criteria_definition(ticker: str) -> IndustryGroupCriteriaDefinition:
     response.raise_for_status()  # This will raise an error if the response is not 200 OK
     data = response.json()
     return IndustryGroupCriteriaDefinition(**data)
-    
+
+
 def save_criteria_matches(ticker: str, criteria_matches: CriterionMatchesOfLatest10Q):
     """
     Sends the updated ticker report JSON to an API endpoint via POST.
     """
     base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
     endpoint = f"{base_url}/api/tickers/{ticker}/criteria-matches"
-    payload = {
-        "criterionMatchesOfLatest10Q": criteria_matches.model_dump()
-    }
+    payload = {"criterionMatchesOfLatest10Q": criteria_matches.model_dump()}
     data = json.dumps(payload, indent=2)
     print(f"Sending POST request to {endpoint} with data:")
     print(data)
     headers = {"Content-Type": "application/json"}
     response = requests.post(endpoint, data=data.encode("utf-8"), headers=headers)
     response.raise_for_status()  # Raises an error if the response status is not 2xx
-    
+
     print(f"Saved criteria matches for {ticker}.")
 
-def save_latest10Q_financial_statements(ticker: str, latest10Q_financial_statements: str):
+
+def save_latest10Q_financial_statements(
+    ticker: str, latest10Q_financial_statements: str
+):
     """
     Sends the updated ticker report JSON to an API endpoint via POST.
     """
     base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
     endpoint = f"{base_url}/api/tickers/{ticker}/financial-statements"
-    payload = {
-        "latest10QFinancialStatements": latest10Q_financial_statements
-    }
+    payload = {"latest10QFinancialStatements": latest10Q_financial_statements}
     data = json.dumps(payload, indent=2)
     print(f"Sending POST request to {endpoint} with data:")
     print(data)
     headers = {"Content-Type": "application/json"}
     response = requests.post(endpoint, data=data.encode("utf-8"), headers=headers)
     response.raise_for_status()  # Raises an error if the response status is not 2xx
-    
+
     print(f"Saved latest10Q Financial Statements for {ticker}.")
 
 
@@ -364,7 +366,11 @@ def get_matched_attachments(
 
             for criterion_match_result in match_analysis.criterion_matches:
                 relevant_text = criterion_match_result.relevant_text
-                if not relevant_text or not relevant_text.strip() or len(relevant_text) == 0:
+                if (
+                    not relevant_text
+                    or not relevant_text.strip()
+                    or len(relevant_text) == 0
+                ):
                     continue
 
                 relevant_text = f"### {attachment_document_name} - {attachment_purpose}\n\n\n{relevant_text.strip()}\n\n\n"
@@ -434,7 +440,10 @@ def populate_criteria_matches(ticker_key: str):
         save_criteria_matches(ticker_key, criteria_matches)
         raise e
 
-def get_criteria_matching_for_an_attachment(ticker_key: str, sequence_no: str) -> CriterionMatchResponseNew:
+
+def get_criteria_matching_for_an_attachment(
+    ticker_key: str, sequence_no: str
+) -> CriterionMatchResponseNew:
     if not sequence_no:
         raise Exception("Error: Sequence number is required.")
 
@@ -458,6 +467,7 @@ def get_criteria_matching_for_an_attachment(ticker_key: str, sequence_no: str) -
     )
 
     return match_analysis
+
 
 def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
     """

@@ -46,13 +46,14 @@ def local_invoke_get_criteria(ticker, criterion_key):
         {"ticker": ticker, "criterion_key": criterion_key},
     )
 
+
 def local_invoke_get_single_criteria(ticker, sequence_no, criterion_key):
     response = _invoke_endpoint(
         "/single-criteria-matching",
         {"ticker": ticker, "sequence_no": sequence_no, "criterion_key": criterion_key},
     )
     print(response)
-    
+
 
 if __name__ == "__main__":
     # EXAMPLES OF LOCAL CALLS:
