@@ -50,6 +50,10 @@ class TickerReport(BaseModel):
     criteriaMatchesOfLatest10Q: Optional[CriterionMatchesOfLatest10Q] = None
 
 
+class Markdown(BaseModel):
+    markdown: str
+
+
 # Renamed to align with TS "MetricItemDefinition"
 class MetricItemDefinition(BaseModel):
     key: str = Field(

@@ -22,6 +22,7 @@ from src.public_equity_structures import (
     IndustryGroup,
     CriterionDefinition,
     SecFilingAttachment,
+    Markdown,
 )
 
 load_dotenv()
@@ -184,9 +185,10 @@ def create_criteria_match_analysis(
     - Don't extract any other time periods.
     - Always Always Always capture the information about if the numbers are in thousands or millions, and include that information in the extracted content.
     - Always Always Always capture the information about if the numbers are in thousands or millions, and include that information in the extracted content.
+    - There can be html tables in the attachment content, so make sure to consider the colspan to locate the correct values.
     
     For formatting the content:
-    - Make sure there are thee empty lines above and below each table.
+    - Make sure there are three empty lines above and below each table.
     
     Return JSON that fits the EXACT structure of 'CriterionMatchResponse':
     {{
@@ -288,6 +290,23 @@ def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
     )
 
 
+def get_markdown_content(html_content: str) -> Markdown:
+    """
+    Sends HTML content to the backend endpoint and returns the resulting Markdown.
+    """
+    base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
+    endpoint = f"{base_url}/api/actions/html-to-markdown"
+    payload = {"htmlContent": html_content}
+    data = json.dumps(payload, indent=2)
+    print(f"Sending POST request to {endpoint} with data:")
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(endpoint, data=data.encode("utf-8"), headers=headers)
+    response.raise_for_status()  # Raises an error if the response status is not 2xx
+
+    data = response.json()
+    return Markdown(**data)
+
+
 def get_matched_attachments(
     ticker: str, criteria: List[CriterionDefinition]
 ) -> CriterionMatchesOfLatest10Q:
@@ -337,7 +356,7 @@ def get_matched_attachments(
             if attach.document_type != "HTML":
                 continue
 
-            attachment_text = str(attach.text() or "")
+            attachment_content = str(attach.content or "")
 
             print(
                 f"Processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}"
@@ -346,16 +365,17 @@ def get_matched_attachments(
             if any(excluded in attachment_purpose for excluded in excluded_purposes):
                 continue
 
-            if not attachment_text:
+            if not attachment_content:
                 print(
                     f"Warning: Attachment {attach.purpose} has empty content; skipping."
                 )
                 continue
 
+            attachment_markdown = get_markdown_content(attachment_content).markdown
             match_analysis: CriterionMatchResponseNew = create_criteria_match_analysis(
                 period_of_report=ticker_info.get("period_of_report"),
                 attachment_name=attachment_purpose,
-                attachment_content=attachment_text,
+                attachment_content=attachment_markdown,
                 criteria=criteria,
             )
             if match_analysis.status == "failure":
@@ -451,16 +471,17 @@ def get_criteria_matching_for_an_attachment(ticker_key: str, sequence_no: str) -
 
     attachment = next(a for a in attachments if a.sequence_number == sequence_no)
 
-    attachment_text = str(attachment.text() or "")
-    if not attachment_text:
+    attachment_content = str(attachment.content or "")
+    if not attachment_content:
         raise Exception(f"Error: Attachment {sequence_no} has empty content.")
 
     attachment_purpose = str(attachment.purpose or "").lower()
+    attachment_markdown = get_markdown_content(attachment_content).markdown
 
     match_analysis: CriterionMatchResponseNew = create_criteria_match_analysis(
         period_of_report=ticker_info.get("period_of_report"),
         attachment_name=attachment_purpose,
-        attachment_content=attachment_text,
+        attachment_content=attachment_markdown,
         criteria=industry_group_criteria.criteria,
     )
 
