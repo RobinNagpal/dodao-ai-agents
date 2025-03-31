@@ -77,8 +77,8 @@ class CriterionReportDefinition(BaseModel):
     description: str = Field(
         description="Comprehensive description outlining the content and purpose of the report."
     )
-    outputType: Literal["Text", "BarGraph", "PieChart", "WaterfallChart"] = Field(
-        description="Specifies the type of output to produce: Text, BarGraph, PieChart, or WaterfallChart."
+    outputType: Literal["Text", "BarGraph", "PieChart", "WaterfallChart", "DoughnutChart"] = Field(
+        description="Specifies the type of output to produce: Text, BarGraph, PieChart, WaterfallChart or DoughnutChart."
     )
 
 
