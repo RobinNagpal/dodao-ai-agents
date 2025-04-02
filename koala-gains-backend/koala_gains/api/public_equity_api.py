@@ -43,6 +43,7 @@ from koala_gains.utils.ticker_utils import (
     trigger_criteria_matching,
 )
 from koala_gains.utils.env_variables import PE_US_REITS_WEBHOOK_URL
+from koala_gains.utils.criteria_matching import populate_criteria_matches
 
 
 class CreateCriteriaRequest(BaseModel):
@@ -151,6 +152,10 @@ class SaveCriterionMetricsRequest(BaseModel):
                 return []
             parsed_list = ast.literal_eval(v)
             return [MetricValueItem(**item) for item in parsed_list]
+
+
+class PopulateCriteriaMatchesRequest(BaseModel):
+    ticker: str
 
 
 public_equity_api = Blueprint("public_equity_api", __name__)
@@ -663,6 +668,27 @@ def copy_ai_criteria_to_custom(body: CreateCriteriaRequest):
                     "success": True,
                     "message": "AI criteria file copied successfully.",
                     "filePath": custom_criteria_url,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        return handle_exception(e)
+
+
+@public_equity_api.route("/populate-criteria-matches", methods=["POST"])
+@validate(body=PopulateCriteriaMatchesRequest)
+def populate_and_save_criteria_matches(body: PopulateCriteriaMatchesRequest):
+    try:
+        print(f"Populate criteria matches for ticker: {body.ticker}")
+        data = populate_criteria_matches(body.ticker)
+
+        return (
+            jsonify(
+                {
+                    "message": "Populated criteria matches successfully.",
+                    "data": data,
                 }
             ),
             200,

@@ -1,5 +1,5 @@
 import re
-from typing import TypedDict, List, Optional, Literal
+from typing import List, Optional, Literal, Any
 import os
 from pydantic import BaseModel, Field
 
@@ -52,12 +52,12 @@ class CriteriaEvaluation(BaseModel):
 
 
 class SecFilingAttachment(BaseModel):
-    attachmentSequenceNumber: str
-    attachmentDocumentName: str
-    attachmentPurpose: Optional[str]
-    attachmentUrl: str
-    matchedPercentage: float
-    latest10QContent: str
+    sequenceNumber: str
+    documentName: str
+    purpose: Optional[str] = None
+    url: str
+    relevance: Optional[float] = None
+    content: Optional[str] = None
 
 
 class CriterionMatch(BaseModel):
@@ -67,17 +67,22 @@ class CriterionMatch(BaseModel):
 
 
 class CriterionMatchesOfLatest10Q(BaseModel):
-    criterionMatches: List[CriterionMatch]
+    criterionMatches: Optional[List[CriterionMatch]] = None
     status: ProcessingStatus
-    failureReason: Optional[str]
+    failureReason: Optional[str] = None
 
 
 class TickerReport(BaseModel):
-    ticker: str
-    selectedIndustryGroup: IndustryGroup
-    selectedSector: Sector
-    evaluationsOfLatest10Q: Optional[List[CriteriaEvaluation]]
-    criteriaMatchesOfLatest10Q: Optional[CriterionMatchesOfLatest10Q]
+    tickerKey: str
+    industryGroupId: int
+    sectorId: int
+    latest10QFinancialStatements: Optional[str] = None
+    evaluationsOfLatest10Q: Any = None
+    criteriaMatchesOfLatest10Q: Optional[CriterionMatchesOfLatest10Q] = None
+
+
+class Markdown(BaseModel):
+    markdown: str
 
 
 class MetricDefinitionItem(BaseModel):
@@ -120,6 +125,64 @@ class IndustryGroupCriterion(BaseModel):
     reports: List[CriterionReportDefinitionItem] = Field(
         description="List of reports generated based on the criteria's evaluation."
     )
+
+
+# Renamed to align with TS "MetricItemDefinition"
+class MetricItemDefinition(BaseModel):
+    key: str = Field(
+        description="Unique identifier for the metric, formatted in lower case with underscores."
+    )
+    name: str = Field(description="Descriptive name of the metric.")
+    description: str = Field(
+        description="Detailed explanation of what the metric measures."
+    )
+    formula: str = Field(
+        description="Mathematical formula used to calculate the metric (e.g., 'occupied_units / total_units')."
+    )
+
+
+# Renamed to align with TS "CriterionReportDefinition"
+class CriterionReportDefinition(BaseModel):
+    key: str = Field(
+        description="Unique identifier for the report associated with the criteria."
+    )
+    name: str = Field(description="Name of the report.")
+    description: str = Field(
+        description="Comprehensive description outlining the content and purpose of the report."
+    )
+    outputType: Literal[
+        "Text", "BarGraph", "PieChart", "WaterfallChart", "DoughnutChart"
+    ] = Field(
+        description="Specifies the type of output to produce: Text, BarGraph, PieChart, WaterfallChart or DoughnutChart."
+    )
+
+
+# Renamed from IndustryGroupCriterion to CriterionDefinition and updated field types.
+class CriterionDefinition(BaseModel):
+    key: str = Field(
+        description="Unique identifier for the criteria, formatted in lower case with underscores."
+    )
+    name: str = Field(description="Descriptive name of the criteria.")
+    shortDescription: str = Field(
+        description="Brief overview of the criteria and its intended evaluation purpose."
+    )
+    matchingInstruction: str = Field(
+        description="Instructions on how to match the criteria with the latest 10-Q report."
+    )
+    importantMetrics: List[MetricItemDefinition] = Field(
+        description="List of key metrics that are used to evaluate this criteria."
+    )
+    reports: List[CriterionReportDefinition] = Field(
+        description="List of reports generated based on the criteria's evaluation."
+    )
+
+
+# Renamed to align with TS "IndustryGroupCriteriaDefinition"
+class IndustryGroupCriteriaDefinition(BaseModel):
+    tickers: List[str]
+    selectedSector: Sector
+    selectedIndustryGroup: IndustryGroup
+    criteria: List[CriterionDefinition]
 
 
 class IndustryGroupCriteria(BaseModel):
