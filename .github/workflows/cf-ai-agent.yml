@@ -80,7 +80,8 @@ jobs:
                   "AWS_SECRET_ACCESS_KEY": "${{ secrets.AI_AGENT_AWS_SECRET_ACCESS_KEY }}",
                   "ADMIN_CODES": "${{ secrets.ADMIN_CODES }}",
                   "S3_BUCKET_NAME": "dodao-ai-insights-agent",
-                  "AWS_DEFAULT_REGION": "us-east-1"
+                  "AWS_DEFAULT_REGION": "us-east-1",
+                  "KOALAGAINS_BACKEND_URL": "https://koalagains.com"
                 }
               }
             }' \

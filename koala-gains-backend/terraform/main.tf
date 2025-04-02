@@ -50,20 +50,21 @@ resource "aws_lightsail_container_service_deployment_version" "cf_deployment" {
     command = []
 
     environment = {
-      OPENAI_API_KEY        = var.openai_api_key
-      SCRAPINGANT_API_KEY   = var.scrapingant_api_key
-      SERPER_API_KEY        = var.serper_api_key
-      SCRAPIN_API_KEY       = var.scrapin_api_key
-      GOOGLE_CSE_ID         = var.google_cse_id
-      GOOGLE_API_KEY        = var.google_api_key
-      AWS_ACCESS_KEY_ID     = var.aws_access_key_id
-      AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
-      AWS_DEFAULT_REGION    = var.aws_default_region
-      S3_BUCKET_NAME        = var.s3_bucket_name
-      LINKEDIN_EMAIL        = var.linkedin_email
-      LINKEDIN_PASSWORD     = var.linkedin_password
-      PROXYCURL_API_KEY     = var.proxycurl_api_key
-      ADMIN_CODES           = var.admin_codes
+      OPENAI_API_KEY         = var.openai_api_key
+      SCRAPINGANT_API_KEY    = var.scrapingant_api_key
+      SERPER_API_KEY         = var.serper_api_key
+      SCRAPIN_API_KEY        = var.scrapin_api_key
+      GOOGLE_CSE_ID          = var.google_cse_id
+      GOOGLE_API_KEY         = var.google_api_key
+      AWS_ACCESS_KEY_ID      = var.aws_access_key_id
+      AWS_SECRET_ACCESS_KEY  = var.aws_secret_access_key
+      AWS_DEFAULT_REGION     = var.aws_default_region
+      S3_BUCKET_NAME         = var.s3_bucket_name
+      LINKEDIN_EMAIL         = var.linkedin_email
+      LINKEDIN_PASSWORD      = var.linkedin_password
+      PROXYCURL_API_KEY      = var.proxycurl_api_key
+      ADMIN_CODES            = var.admin_codes
+      KOALAGAINS_BACKEND_URL = "https://koalagains.com"
     }
 
     ports = {
