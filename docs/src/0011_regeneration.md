@@ -1,60 +1,74 @@
-# How to regenerate criteria macthing,criterions and specifc report ,performance checklist, important metrics
+# How to Regenerate Criteria Matching, Criterions, and Specific Reports
 
-If you are not logged in as admin then go to [Authentication](./authentication.md)
+If you're not already logged in as an admin, please complete the steps outlined in the [Authentication Guide](./authentication.md) before proceeding.
 
-Go to [Debug Page](https://koalagains.com/public-equities/debug/ticker-reports/FVR). This link is for FVR you can replace it with your own ticker
+To manage or regenerate any report-related data, go to the **Debug Page**:  
+👉 [https://koalagains.com/public-equities/debug/ticker-reports/FVR](https://koalagains.com/public-equities/debug/ticker-reports/FVR)
 
-## Regenrate criteria matching
+> _(Replace `FVR` with the ticker symbol of the company you are working on.)_
 
-- In case of criteria matching to regenerate click on the button below as shown in the image
+## Regenerate Criteria Matching
 
-  ![Regenerate Criteria](./images/criteira_and_report/regenerate-matching-criteria.png)
+If the evaluation criteria are not aligning correctly with the SEC data, you can regenerate the **criteria matching** by clicking the button shown below:
 
-## Regenerate criterions
+![Regenerate Criteria](./images/criteira_and_report/regenerate-matching-criteria.png)
 
-- In case you want to regenerate all the criterions at once click on the button below as shown in the image
+This process ensures that your matching instructions are re-applied and up to date.
 
-  ![Regenearte All criterions](./images/criteira_and_report/regenerate-all-criterions.png)
+## Regenerate All Criterions
 
-## Regenerate specific criteiron
+To regenerate **all criteria** for the company at once:
 
-- In case you want to regenerate a specific criteriion first off all enter its AI Agent Webhook URL in the box below
-- Next step is to click save and then regenerate
+- Click the **"Regenerate All Criterions"** button as shown below.
 
-  ![Regenerate Specific Criterion](./images/criteira_and_report/regenerate-specific-criterion.png)
+![Regenerate All criterions](./images/criteira_and_report/regenerate-all-criterions.png)
 
-## Regenerate checklist
+This will refresh all AI-generated content related to each evaluation criterion.
 
-- In case you want to regenerate performance checklist click on encircled arrow below
+## Regenerate a Specific Criterion
 
-  ![Specific Criterion](./images/criteira_and_report/specific_criterion.png)
+To regenerate a **single criterion**:
 
-- Now you will see
+1. Paste the **AI Agent Webhook URL** into the input box.
+2. Click **Save** to confirm the webhook URL.
+3. Click the **Regenerate** button for that specific criterion.
 
-  ![Regenerate Specific Criterion checklist](./images/criteira_and_report/regenerate-checklist.png)
+![Regenerate Specific Criterion](./images/criteira_and_report/regenerate-specific-criterion.png)
 
-- Click on the button to regenerate the checklist
+## Regenerate Performance Checklist
+
+To refresh the **performance checklist** for a specific criterion:
+
+1. Click on the **encircled arrow** as shown:
+
+![Specific Criterion](./images/criteira_and_report/specific_criterion.png)
+
+2. Then, click the checklist regeneration button:
+
+![Regenerate Specific Criterion checklist](./images/criteira_and_report/regenerate-checklist.png)
 
 ## Regenerate Important Metrics
 
-- In case you want to regenerate important metrics click on encircled arrow below
+To regenerate **important metrics**:
 
-  ![Specific Criterion](./images/criteira_and_report/specific_criterion.png)
+1. Click on the encircled arrow under the relevant criterion:
 
-- Now you will see
+![Specific Criterion](./images/criteira_and_report/specific_criterion.png)
 
-  ![Regenerate Specific Criterion metrics](./images/criteira_and_report/regenerate-important-metrics.png)
+2. Click the button shown below to regenerate the metrics:
 
-- Click on the button to regenerate the important metrics
+![Regenerate Important Metrics](./images/criteira_and_report/regenerate-important-metrics.png)
 
 ## Regenerate Specific Report
 
-- In case you want to regenerate a specifc report click on encircled arrow below
+To regenerate a **specific text or chart report** for a given criterion:
 
-  ![Specific Criterion](./images/criteira_and_report/specific_criterion.png)
+1. Again, click the encircled arrow:
 
-- Now you will see
+![Specific Criterion](./images/criteira_and_report/specific_criterion.png)
 
-  ![Regenerate Specific Criterion metrics](./images/criteira_and_report/regenerate-specific_report.png)
+2. Then, click the specific report regeneration button:
 
-- Click on the button to regenerate the specifc report
+![Regenerate Specific Criterion Report](./images/criteira_and_report/regenerate-specific_report.png)
+
+This will trigger a fresh generation of the selected report using the latest data and AI logic.

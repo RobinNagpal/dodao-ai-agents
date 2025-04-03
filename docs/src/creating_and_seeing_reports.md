@@ -1,77 +1,73 @@
 # Creating and Seeing Reports
 
+KoalaGains uses AI-powered workflows to generate insightful reports based on specific evaluation criteria. These reports can be either text-based or visual (such as pie charts or spider charts) and are designed to help investors understand a company's performance in a clear and structured way.
+
 ## Creating Reports
 
-### How report is generated?
+### How Are Reports Generated?
 
-- To generate the reports for the criterion the criterion info along with ticker is passed to an AI agent
-- We at KoalaGains have used langflow to create the AI Agents
-- The AI Agent can be created using langflow or any other tool and than this AI Agent can be used using its URL and passing the the information in payload which contains:
-  - ticker
-  - reportKey
-  - criterion
-    - key
-    - name
-    - shortDescription
-    - importantMetrics
-    - reports
-- Now this information is passed to the AI Agent and as a return the Agent generates a report and returns back to the platform.
-- This report is than shown on the platform
+To generate a report, the KoalaGains platform sends specific information—including the company’s ticker and evaluation criteria—to an **AI Agent**. These AI Agents are built using **LangFlow**, a tool for designing and deploying AI workflows.
 
-### How Do AI Agent Works Here?
+Here's how the process works:
 
-The AI Agents that we have made using langflow till now can be called using their URLs and giving them the payload which includes:
+- A **payload** containing the following information is prepared:
 
-- ticker
-- reportKey
-- criterion
-  - key
-  - name
-  - shortDescription
-  - importantMetrics
-  - reports
+  - `ticker`: the stock symbol of the company.
+  - `reportKey`: identifies which type of report to generate.
+  - `criterion`: includes the key, name, a short description, important metrics, and report types.
 
-### Extraction
+- This payload is sent to the AI Agent via its unique URL.
+- The AI Agent processes the information and returns a generated report.
+- The generated report is then displayed on the KoalaGains platform.
 
-- The above data is in Json format so firstly it is converted to message form which is processable by different components in langflow
-- Now the reportKey which comes in payload decides that what part of flow will run.
+### How Do the AI Agents Work?
 
-### SEC 10Q Data
+The AI Agents created using LangFlow can be accessed via a direct URL. Each time a report is needed, the system sends the prepared JSON payload to the agent.
 
-- Also the in a while the SEC 10 Q data tool is being used to get
-  - All financial statements
-  - Criteria related information based on criterion key in the payload
-- Output of the above two is combined in a single place
+**Inside the agent’s process:**
 
-### Report Key
+- The JSON data is converted into a message format that LangFlow components can understand.
+- The value of the `reportKey` determines which part of the agent's flow will be triggered.
 
-Now based on the reportKey one of the following occurs:
+### Use of SEC 10-Q Data
 
-- If reportKey is `all` then the whole flow will run including performance checklist, important metrics and all specific reports
-- If reportKey is `performanceCheckist` the flow for performance checklist will run only
-- If reportKey is `importantMetrics` the flow for important metrics will run only
-- If reportKey is a specific report e.g `debt_information` the flow for the debt information report will run only
+In some cases, the agent also uses a tool to extract data from **SEC 10-Q filings**, including:
 
-### Generation of Reports
+- Complete financial statements.
+- Specific data related to the evaluation criteria, based on the `criterion.key` in the payload.
 
-- When this flow runs it generates a report which is either a text report or a visualization like pie chart etc
-  - The above report type also comes from the payload where the criterion has reports which have specific reportType there
+These two sets of data (financial statements and criteria-specific data) are then combined to provide a more complete report.
 
-### Saving of the Reports
+#### Role of the Report Key
 
-- After the generation of the reports these reports are saved into s3
+The `reportKey` tells the system what kind of report to generate:
 
-## Seeing Reports
+- If `reportKey` is **`all`**, the agent runs the full evaluation flow, which includes the performance checklist, important metrics, and all specific reports.
+- If it is **`performanceChecklist`**, only the checklist is generated.
+- If it is **`importantMetrics`**, only key metrics are included.
+- If it refers to a specific report (e.g., **`debt_information`**), only that particular report is generated.
+
+### Report Generation and Storage
+
+Once the report is generated:
+
+- It can be in text form or include visual elements like charts or graphs, depending on the `reportType` defined in the payload.
+- The completed report is automatically **saved to an S3 bucket** (cloud storage) for future access.
+
+## Viewing Reports
 
 ![Spider chart](./images/criteira_and_report/spider-chart.png)
 
-The full company report includes a spider chart that summarizes the criteria and scores based on performance checklist. The criterion is not just scored but also has detailed reports explaining the reasons behind each rating.
+When viewing a company report, users can explore a **spider chart** that summarizes the company's performance across different criteria. Each criterion is scored based on its performance checklist, and detailed reports are available to explain the reasons behind each score.
 
 ![Single report](./images/criteira_and_report/single-report.png)
 
-You can click on "See Full Report" to view and read the detailed report, similar to the one shown in the image. You can also use https://koalagains.com/public-equities/tickers/FVR/criteria/debt_and_leverage to read the detailed report.
+To explore further, you can click **"See Full Report"** next to any criterion. This takes you to a detailed page that includes all relevant insights, visualizations, and metrics.
 
-![Report](./images/criteira_and_report/report-example.png)
-![Report](./images/criteira_and_report/report-example2.png)
-![Report](./images/criteira_and_report/report-example3.png)
+For example, you can visit a specific report like this one:  
+👉 [Debt & Leverage Report for FVR](https://koalagains.com/public-equities/tickers/FVR/criteria/debt_and_leverage)
+
+![Report](./images/criteira_and_report/report-example.png)  
+![Report](./images/criteira_and_report/report-example2.png)  
+![Report](./images/criteira_and_report/report-example3.png)  
 ![Report](./images/criteira_and_report/report-example4.png)
