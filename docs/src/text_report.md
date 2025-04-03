@@ -1,12 +1,17 @@
 # Text Report
 
-The Text Reports are also very important as they can provide the in detail information about the things instead of just showing the overall picture like done
-by the charts and checklist reports which just show the overall picture of the project but without any expalantion or detail about that. So this detail is given by the text reports at KoalaGains. The characteristics of the text reports are:
+**Text Reports** are a valuable part of the reporting system on KoalaGains. While charts and checklists provide a high-level overview of a company's performance, **text reports deliver detailed explanations** that help investors understand the **"why" behind the numbers**.
 
-- They provide the complete and comprehensive detail about the topic being discussed in report
-- The numerical information is also provided with the information along
-- These reports not just have the general statements but rather they have facts and figures along
-- Some Text Reports may also be providing details about some of the chart reports
+These reports offer deeper context, combining data, analysis, and written interpretation—making them especially useful for investors who want a more complete understanding of a company’s position.
 
-![Text Report](./images/criteira_and_report/report-example2.png)
+## Key Characteristics of Text Reports
+
+- They provide **comprehensive insights** into the topic being evaluated, going beyond surface-level information.
+- These reports include both **narrative explanations** and **supporting numerical data**, helping investors connect the story with the facts.
+- Instead of offering vague or general statements, text reports are built on **factual observations and specific figures** pulled from trusted sources like SEC filings.
+- In some cases, text reports also provide background or elaboration for **chart-based reports**, helping users understand the visualizations more clearly.
+
+By combining written context with real data, KoalaGains' text reports give investors a deeper and more reliable view of a company's strengths, risks, and overall business health.
+
+![Text Report](./images/criteira_and_report/report-example2.png)  
 ![Text Report](./images/criteira_and_report/report-example3.png)

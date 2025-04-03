@@ -1,3 +1,13 @@
-# Need for specific evaluation criteria based on type
+# Need for Specific Evaluation Criteria Based on Company Type
 
-Each company operates within a specific industry, and industries have distinct risks and success factors. For instance manufacturing companies focus on supply chain and production costs. Similarly, financial institutions are assessed on capital adequacy, and risk exposure, while real estate firms are evaluated based on location, occupancy rates, and rental revenue. Because of these variations, a one-size-fits-all evaluation approach is ineffective. Instead, tailored evaluation parameters are necessary for a more accurate and meaningful assessment of each company.
+Every company belongs to a particular industry, and each industry comes with its own set of risks, challenges, and success factors. Because of these differences, evaluating all companies using the same criteria doesn’t give a complete or fair picture.
+
+For example:
+
+- **Manufacturing companies** are often judged based on their supply chain efficiency, production costs, and inventory management.
+- **Financial institutions** are evaluated by looking at their capital strength, risk exposure, and liquidity.
+- **Real estate firms** are assessed based on property location, occupancy rates, lease structures, and rental income.
+
+As these examples show, the factors that matter most can vary greatly between industries. That’s why using a one-size-fits-all approach to analyze companies can lead to inaccurate conclusions.
+
+Instead, KoalaGains uses **tailored evaluation criteria**—adjusted for each industry group—to ensure a more accurate, relevant, and meaningful analysis of a company’s performance and financial health.

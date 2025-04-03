@@ -1,15 +1,23 @@
-# Using Langflow
+# Using LangFlow
 
-## Setting up Langflow
+KoalaGains uses **LangFlow** to build the AI-powered flows that generate company reports. LangFlow is a visual tool that lets you create and connect components to process data and generate outputs using AI.
 
-- Headover to langflow
-  https://www.langflow.org/
+This section will guide you through the initial steps of setting up LangFlow to begin building your own custom evaluation flows.
 
-  ![Langflow Homepage](./images/criteira_and_report/langflow-homepage.png)
+## Setting Up LangFlow
 
-- Click on “Blank Flow” to start building the flow.
+1. Visit the official LangFlow site:  
+   👉 [https://www.langflow.org/](https://www.langflow.org/)
 
-  ![Langflow Sections](./images/criteira_and_report/langflow-sections.png)
+   ![Langflow Homepage](./images/criteira_and_report/langflow-homepage.png)
 
-- On the left section (1) there is a list of components that will be used to build your flow
-- On the right section (2) there is the canvas where you can drag and drop components
+2. Click on **“Blank Flow”** to start a new project.
+
+   ![Langflow Sections](./images/criteira_and_report/langflow-sections.png)
+
+## Understanding the Interface
+
+- On the **left panel (1)**, you’ll find a list of available **components**. These components include tools for processing data, calling APIs, formatting outputs, and more.
+- On the **right side (2)** is the **canvas**, where you can **drag and drop** components to design your workflow.
+
+LangFlow allows you to visually connect and configure the logic behind how reports are generated—making it easier to create customized, AI-driven outputs without writing complex code.

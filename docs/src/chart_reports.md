@@ -1,12 +1,30 @@
-# Charts Reports
+# Chart Reports
 
-Along with the text reports KoalaGains also offer the chart reports . The charts may be of different types like Pie Charts, Spider Chart, Waterfall chart, Sankey Diagram, etc. These reports are there to tackle the need of showing the important numerical inforamtion for some criterion which has some comparison among different things like given in the image below the different types of debts and their Pie Chart
+In addition to text-based reports, **KoalaGains also offers Chart Reports** to visually represent important financial and operational data. These charts are especially useful when comparing multiple data points or categories within a specific criterion.
 
-The Chart reports at KoalaGains are very important as they offer various benfits to the investors as follows:
+Chart Reports come in various formats, including:
 
-- These charts show the complete picture of the feature being compared and the weightage of all the candidates in the chart
-- These charts help the investor make the well informed decisons based on the graphical data
-- These charts may be providing support to some text reports as well and vice versa
-- These charts along with charts may also have the respective reports which have their detailed table providing the comprehensive view of the chart
+- **Pie Charts**
+- **Spider Charts**
+- **Waterfall Charts**
+- **Sankey Diagrams**
+
+Each chart type is designed to highlight specific relationships or proportions within the data, helping investors make faster and more informed decisions.
+
+## Why Chart Reports Matter
+
+- **Clear Visual Comparisons**  
+  Chart Reports provide a complete visual summary of the topic being analyzed. For example, a pie chart can show the breakdown of different debt types, giving investors a quick view of how each part contributes to the whole.
+
+- **Better Decision-Making**  
+  Visual data is often easier to interpret than raw numbers alone. These reports help investors quickly identify trends, imbalances, or strengths across categories.
+
+- **Works Alongside Text Reports**  
+  Chart Reports can stand alone or be paired with **Text Reports**. Sometimes a chart will be supported by a detailed explanation, and other times the chart is used to visually enhance the written insights.
+
+- **Detailed Table Support**  
+  Many charts are also accompanied by a **detailed table**, giving a complete numerical breakdown to support the visuals. This ensures transparency and helps users explore the data in more depth.
+
+By combining visuals with data and explanation, Chart Reports help KoalaGains users better understand complex information at a glance—without losing accuracy or depth.
 
 ![Pie Chart Report](./images/criteira_and_report/chart-report.gif)
