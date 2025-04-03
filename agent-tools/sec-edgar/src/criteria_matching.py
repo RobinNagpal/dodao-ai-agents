@@ -339,7 +339,7 @@ def get_matched_attachments(
     criterion_to_matched_attachments_map: dict[str, CriterionMatch] = dict(
         {
             criterion.key: CriterionMatch(
-                criterionKey=criterion.key, matchedAttachments=list(), matchedContent=""
+                criterionKey=criterion.key, matchedContent=""
             )
             for criterion in criteria
         }
@@ -397,18 +397,6 @@ def get_matched_attachments(
 
                 print(
                     f"matched content for criterion: {criterion_match_result.criterion_key}\n\n\n{relevant_text}"
-                )
-                criterion_to_matched_attachments_map[
-                    criterion_match_result.criterion_key
-                ].matchedAttachments.append(
-                    SecFilingAttachment(
-                        sequenceNumber=attachment_sequence_number,
-                        documentName=attachment_document_name,
-                        purpose=attachment_purpose,
-                        url=attachment_url,
-                        content=relevant_text,
-                        relevance=criterion_match_result.relevance_amount,
-                    )
                 )
 
                 criterion_to_matched_attachments_map[

@@ -30,7 +30,6 @@ class SecFilingAttachment(BaseModel):
 
 class CriterionMatch(BaseModel):
     criterionKey: str
-    matchedAttachments: List[SecFilingAttachment]
     matchedContent: str
 
 
