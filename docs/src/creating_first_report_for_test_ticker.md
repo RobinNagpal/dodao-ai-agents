@@ -1,13 +1,34 @@
-# Creating first report For Test Ticker
+# Creating Your First Report for a Test Ticker
 
-## Make the Flow
+Once you’ve set up your flow and configured the SEC tools, you’re ready to generate your first report using a test ticker. This section will walk you through how to build the flow and send the final report for saving on the KoalaGains platform.
 
-- Build the flow
+## Step 1: Build the Flow
 
-  ![Copy Criteria](./images/criteira_and_report/flow.png)
+Start by assembling your flow in LangFlow as shown below:
 
-- In first step we get the related SEC data for the specific ticker, criterion and report type
-- In second step we give the SEC data to OpenAI and also the prompt about the report Type to be generated
-- In third step generated report is passed to next component as data which has this report content in data field
-- Carefully fill the fileds which are in yellow rectangle in image as they are to be sent for saving
-- The final body created by previous component is passed as body on post request to https://kolagains.com/api/langflow/save-report
+![Copy Criteria](./images/criteira_and_report/flow.png)
+
+The flow generally follows these steps:
+
+1. **Retrieve SEC Data**
+
+   - The first component pulls in the relevant SEC data based on the **ticker**, **criterion**, and **report type**.
+
+2. **Generate the Report**
+
+   - The second component sends this data, along with a prompt describing the report type, to **OpenAI**, which generates the actual report content.
+
+3. **Prepare the Final Output**
+   - The generated report is passed to the next component, which wraps the content into a structured format.
+   - Make sure to **fill in all fields highlighted in yellow** in the LangFlow interface. These fields are essential for saving the report correctly.
+
+## Step 2: Save the Report
+
+Once the final report is structured, it is sent as the **body of a POST request** to the KoalaGains platform:
+
+**Endpoint:**  
+👉 `https://koalagains.com/api/langflow/save-report`
+
+The system will save the report, making it available for viewing directly on the platform.
+
+This completes the process of generating and saving your first report using a test ticker. You can now repeat these steps for any public company ticker of your choice.

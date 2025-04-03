@@ -1,19 +1,30 @@
-# How to authencticate as an admin
+# How to Authenticate as an Admin
 
-## Step1 : Go to the Authentication Page
+To access admin features on the KoalaGains platform—such as creating or editing evaluation criteria—you’ll need to authenticate yourself using a valid admin code. This section will guide you through the steps to log in as an admin.
 
-- Go to authentication Page:
+## Step 1: Visit the Authentication Page
 
-  - https://koalagains.com/authenticate
-  - Following screen will show up
+Start by opening the authentication page in your browser:
 
-  ![Authentication](./images/authentication/authentication.png)
+👉 [https://koalagains.com/authenticate](https://koalagains.com/authenticate)
 
-## Step 2 : Get the Admin Code and Enter it
+You’ll see the following screen:
 
-- Now get your admin code from Robin and enter it
-- Now click on Authenticate and you will see the folllowing screen
+![Authentication](./images/authentication/authentication.png)
 
-  ![Logged In](./images/authentication/logged_in.png)
+## Step 2: Enter Your Admin Code
 
-- Now you are Logged in as an admin and can perform all the edit and create operations
+- Obtain your **admin code** from **Robin** (or the relevant administrator).
+- Enter the code in the provided field and click the **"Authenticate"** button.
+
+After successful authentication, the following screen will appear:
+
+![Logged In](./images/authentication/logged_in.png)
+
+Once logged in, you’ll have admin access and can perform actions such as:
+
+- Creating new evaluation criteria
+- Editing existing ones
+- Managing reports and configurations
+
+This access gives you full control over the evaluation process within the platform.

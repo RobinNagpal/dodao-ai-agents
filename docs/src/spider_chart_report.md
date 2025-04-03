@@ -2,14 +2,21 @@
 
 ![Spider Chart](./images/criteira_and_report/spider-chart.gif)
 
-One of the report types that helps the investors make better decision is Spider/Radar chart.It helps them in these ways:
+The **Spider Chart**—also known as a **Radar Chart**—is one of the key visual reports available on the KoalaGains platform. It helps investors quickly understand a company’s performance across multiple evaluation criteria in a single, easy-to-read graphic.
 
-- The spider chart shows complete picture of the equity
-- For each of evaluating criterion it shows the score out of 5 on the graph
-- This score comes from another report type [performance checklist](./performance_cheklist_report.md)
-- The investor by only seeing the graph can get the idea that what is the being offered by the equity(company)
-- The Spider Chart helps the investors easily compare two of the companies in same sector and industry group
+## How the Spider Chart Helps Investors
 
-- The Area of the chart covered shows the holistic view of the company and also the color(orange,green,yellow etc) of graph shows the companies health
+- The chart provides a **complete visual overview** of a company's performance.
+- Each axis of the chart represents an evaluation criterion, with a **score out of 5** displayed on the graph.
+- These scores are calculated based on the [**Performance Checklist**](./performance_cheklist_report.md), another report type used by KoalaGains.
+- With just a glance, investors can understand **what the company offers** and how it performs relative to its key metrics.
+- The Spider Chart also makes it easy to **compare two or more companies** within the same sector or industry group.
+
+## What the Chart Shows
+
+- The **area covered** by the chart reflects the company's overall standing. A larger, more balanced shape indicates stronger and more consistent performance.
+- The **color** of the chart (e.g., green, orange, yellow) gives a visual cue about the company’s health—ranging from strong to weak in various areas.
+
+This visual report is especially useful for investors who want to make quick comparisons and spot high-performing companies within a specific industry.
 
 ![Spider Chart](./images/criteira_and_report/spider-chart1.png) ![Spider Chart](./images/criteira_and_report/spider-chart2.png)
