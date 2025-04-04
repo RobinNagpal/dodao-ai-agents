@@ -74,7 +74,7 @@ def lambda_handler(event, context):
             )
 
             return json_response(200, {"data": data})
-        elif path == "/create-ticker":  # route 8
+        elif path == "/reporting_period_and_filing_link":  # route 8
             data = get_filing_link_and_reporting_period(ticker,)
             
             return json_response(200, {"data": data})

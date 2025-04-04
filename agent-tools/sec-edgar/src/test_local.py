@@ -64,9 +64,9 @@ def local_invoke_get_single_management_discussion(ticker, criterion_key):
     )
     print(response)
 
-def local_invoke_create_ticker(ticker):
+def local_invoke_get_reporting_period_and_filing_link(ticker):
     response = _invoke_endpoint(
-        "/create-ticker",
+        "/reporting_period_and_filing_link",
         {"ticker": ticker},
     )
     print(response)
@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     # 2) Financials route for ticker=AMT
     # local_invoke_populate_criteria("CCI")
-    local_invoke_create_ticker("FVR")
+    local_invoke_get_reporting_period_and_filing_link("FVR")
     # local_invoke_financials("AMT", force_refresh=True)
     # local_invoke_get_single_management_discussion("FVR", "debt_and_leverage")
     # local_invoke_get_criteria("FVR", "financial_performance")
