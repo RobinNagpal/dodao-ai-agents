@@ -78,6 +78,9 @@ class CriterionMatchResponseNew(BaseModel):
         description="The reason for the failure if the status is failed."
     )
 
+class FilingLinkAndReportingPeriod(BaseModel):
+    filing_link: str
+    period_of_report: str
 
 def get_object_from_s3(key: str) -> dict:
     try:
@@ -529,3 +532,21 @@ def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
         raise Exception(f"Error: No criterion match found for {criterion_key}.")
 
     return criterion_match.matchedContent
+
+def get_filing_link_and_reporting_period(ticker: str)-> FilingLinkAndReportingPeriod:
+    """
+    This function retrieves the 10-Q filing link (using the first attachment)
+    and the reporting period for a given ticker.
+    """
+    ticker_info = get_ticker_info_and_attachments(ticker)
+    cik = ticker_info.get("cik")
+    acc_number_no_dashes = ticker_info.get("acc_number_no_dashes")
+    period_of_report = ticker_info.get("period_of_report")
+    attachments = ticker_info.get("attachments")
+    
+    if not cik or not acc_number_no_dashes or not period_of_report or not attachments:
+        raise Exception(f"Error: Missing required information for {ticker}.")
+    attach=attachments[1]
+    attachment_document_name = str(attach.document or "")  # e.g. "R10.htm"
+    filing_link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
+    return filing_link, period_of_report
