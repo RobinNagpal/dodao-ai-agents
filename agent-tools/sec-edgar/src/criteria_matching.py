@@ -326,15 +326,14 @@ def get_matched_attachments(
         f"Processing {len(attachments)} attachments for {ticker} for {ticker_info.get('period_of_report')}."
     )
     excluded_purposes = [
-        "cover",
         "balance sheet",
-        "statements of cash flows",
-        "statement of cash flows",
+        "cash flows",
         "statements of comprehensive income",
-        "statements of operations and comprehensive income",
-        "statement of operations and comprehensive income",
+        "operations and comprehensive income",
         "statements of operations",
-        "statements of equity",
+        "statement of operations",
+        "statements of income",
+        "statement of income",
     ]
 
     attachment_start_index = 0
