@@ -16,7 +16,6 @@ from koala_gains.structures.public_equity_structures import (
     CriterionMatchesOfLatest10Q,
     CriterionMatch,
     CriterionDefinition,
-    SecFilingAttachment,
     Markdown,
 )
 
