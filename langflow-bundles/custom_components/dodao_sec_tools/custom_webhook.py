@@ -7,9 +7,9 @@ from langflow.schema.message import Message
 
 
 class WebhookComponent(Component):
-    display_name = "Webhook"
+    display_name = "Custom Webhook"
     description = "Defines a webhook input for the flow."
-    name = "Webhook"
+    name = "Custom Webhook"
     icon = "webhook"
 
     inputs = [
