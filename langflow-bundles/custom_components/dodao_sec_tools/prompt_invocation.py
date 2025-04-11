@@ -38,7 +38,7 @@ class PromptInvocatorComponent(Component):
             name="model",
             display_name="Model",
             options=["gpt-4o-mini", "gpt-4o", "o3-mini"],
-            value="gpt-4o-mini",
+            value="gpt-4o",
         ),
         MultilineInput(
             name="body_to_append",

@@ -144,7 +144,7 @@ class SecEdgarMergedComponent(Component):
             if "message" in response_data:
                 return Message(text=response_data["message"])
             elif "data" in response_data:
-                return Message(text=json.dumps(response_data["data"], indent=2))
+                return Message(text=response_data["data"])
             else:
                 return Message(text=json.dumps(response_data, indent=2))
 
@@ -174,7 +174,7 @@ class SecEdgarMergedComponent(Component):
             if "message" in response_data:
                 return Message(text=response_data["message"])
             elif "data" in response_data:
-                return Message(text=json.dumps(response_data["data"], indent=2))
+                return Message(text=response_data["data"])
             else:
                 return Message(text=json.dumps(response_data, indent=2))
 
