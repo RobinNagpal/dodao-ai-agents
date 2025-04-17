@@ -34,6 +34,7 @@ S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 class TickersInfoAndAttachments(TypedDict):
     cik: str
     period_of_report: str
+    filing_date: str
     acc_number_no_dashes: str
     attachments: List[Attachment]
     management_discussions: str
@@ -78,9 +79,11 @@ class CriterionMatchResponseNew(BaseModel):
         description="The reason for the failure if the status is failed."
     )
 
-class FilingLinkAndReportingPeriod(BaseModel):
-    filing_link: str
-    period_of_report: str
+class Latest10QInfo(BaseModel):
+    filingUrl: str
+    periodOfReport: str
+    filingDate: str
+    priceAtPeriodEnd: float
 
 def get_object_from_s3(key: str) -> dict:
     try:
@@ -271,6 +274,7 @@ def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
     company = Company(ticker)
     filings = company.get_filings(form="10-Q")
     period_of_report = company.latest_tenq.period_of_report
+    filing_date = company.latest_tenq.filing_date.isoformat()
 
     if not filings:
         raise Exception(f"Error: No 10-Q filings found for {ticker}.")
@@ -287,6 +291,7 @@ def get_ticker_info_and_attachments(ticker: str) -> TickersInfoAndAttachments:
     return TickersInfoAndAttachments(
         cik=cik,
         period_of_report=period_of_report,
+        filing_date=filing_date,
         acc_number_no_dashes=acc_number_no_dashes,
         attachments=attachments,
         management_discussions=filing_obj["Item 2"],
@@ -532,7 +537,7 @@ def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
 
     return criterion_match.matchedContent
 
-def get_filing_link_and_reporting_period(ticker: str)-> FilingLinkAndReportingPeriod:
+def get_latest_10q_info(ticker: str)-> Latest10QInfo:
     """
     This function retrieves the 10-Q filing link (using the first attachment)
     and the reporting period for a given ticker.
@@ -541,11 +546,73 @@ def get_filing_link_and_reporting_period(ticker: str)-> FilingLinkAndReportingPe
     cik = ticker_info.get("cik")
     acc_number_no_dashes = ticker_info.get("acc_number_no_dashes")
     period_of_report = ticker_info.get("period_of_report")
+    filing_date = ticker_info.get("filing_date")
     attachments = ticker_info.get("attachments")
     
-    if not cik or not acc_number_no_dashes or not period_of_report or not attachments:
+    if not cik or not acc_number_no_dashes or not period_of_report or not attachments or not filing_date:
         raise Exception(f"Error: Missing required information for {ticker}.")
     attach=attachments[1]
     attachment_document_name = str(attach.document or "")  # e.g. "R10.htm"
-    filing_link = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
-    return filing_link, period_of_report
+    filing_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
+    
+    price_at_period_end = get_price_at_period_of_report(ticker)
+
+    data: Latest10QInfo = {
+        "filingUrl": filing_url,
+        "periodOfReport": period_of_report,
+        "filingDate": filing_date,
+        "priceAtPeriodEnd": price_at_period_end,
+    }
+    return data
+
+def get_price_at_period_of_report(
+    ticker: str,
+    period_of_report: Optional[str] = None
+) -> float:
+    """
+    Retrieve the stock closing price for a given ticker on its reporting date.
+    If `period_of_report` is provided, use it and return 0.0 if no data.
+    If not provided, look it up; if that first query returns no data, then
+    hit the `/prev` endpoint to get the last completed day’s bar.
+    """
+    explicit = bool(period_of_report)
+
+    # Lookup if not explicit
+    if not explicit:
+        period_of_report = (
+            get_ticker_info_and_attachments(ticker)
+            .get("period_of_report")
+        )
+        if not period_of_report:
+            raise ValueError(f"Could not determine reporting period for {ticker}")
+
+    api_key = os.environ.get("POLYGON_API_KEY")
+    if not api_key:
+        raise EnvironmentError("Missing POLYGON_API_KEY in environment")
+
+    def fetch_for(date_str: str) -> float:
+        url = (
+            f"https://api.polygon.io/v2/aggs/ticker/{ticker}/range/1/day/"
+            f"{date_str}/{date_str}"
+            f"?adjusted=true&sort=asc&limit=1&apiKey={api_key}"
+        )
+        resp = requests.get(url)
+        resp.raise_for_status()
+        payload = resp.json()
+        return payload["results"][0]["c"] if payload.get("results") else 0.0
+
+    # 1) Try the reporting‐period date
+    price = fetch_for(period_of_report)
+
+    # 2) If implicit lookup and no bar, hit `/prev`
+    if not explicit and price == 0.0:
+        prev_url = (
+            f"https://api.polygon.io/v2/aggs/ticker/{ticker}/prev"
+            f"?adjusted=true&apiKey={api_key}"
+        )
+        resp = requests.get(prev_url)
+        resp.raise_for_status()
+        payload = resp.json()
+        price = payload["results"][0]["c"] if payload.get("results") else 0.0
+
+    return price

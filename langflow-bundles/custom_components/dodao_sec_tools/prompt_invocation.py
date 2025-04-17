@@ -37,7 +37,7 @@ class PromptInvocatorComponent(Component):
         DropdownInput(
             name="model",
             display_name="Model",
-            options=["gpt-4o-mini", "gpt-4o", "o3-mini"],
+            options=["gpt-4o-mini", "gpt-4o", "o3-mini", "o4-mini"],
             value="gpt-4o",
         ),
         MultilineInput(
