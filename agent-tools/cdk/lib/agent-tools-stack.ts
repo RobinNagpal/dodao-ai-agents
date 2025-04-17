@@ -91,10 +91,9 @@ export class AgentToolsStack extends cdk.Stack {
         environment: {
           SCRAPINGANT_API_KEY: process.env.SCRAPINGANT_API_KEY || "",
           OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
+          POLYGON_API_KEY: process.env.POLYGON_API_KEY!,
           EDGAR_LOCAL_DATA_DIR: "/tmp/edgar_data",
-
         },
-
       });
       
       // Add permissions so the Lambda role can access your S3 bucket
