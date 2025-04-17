@@ -45,7 +45,7 @@ class PriceComponent(Component):
         try:
             response = requests.post(self.PRICE_ENDPOINT, json=payload)
             resp_data = response.json()
-            return Message(text=resp_data["data"])
+            return Message(text=str(resp_data["data"]))
         except Exception as exc:
             return Message(text=str(exc))
 
