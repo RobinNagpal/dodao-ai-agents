@@ -8,8 +8,9 @@ from src.criteria_matching import (
     get_criteria_matching_for_management_discussion,
     get_criterion_attachments_content,
     get_criteria_matching_for_an_attachment,
+    get_price_at_period_of_report,
     populate_criteria_matches,
-    get_filing_link_and_reporting_period,
+    get_latest_10q_info,
 )
 from src.specific_10Q_report import specific_report_text
 import traceback
@@ -74,10 +75,18 @@ def lambda_handler(event, context):
             )
 
             return json_response(200, {"data": data})
-        elif path == "/reporting_period_and_filing_link":  # route 8
-            data = get_filing_link_and_reporting_period(ticker,)
+        
+        elif path == "/latest-10q-info":  # route 8
+            data = get_latest_10q_info(ticker)
             
             return json_response(200, {"data": data})
+        
+        elif path == "/price-at-period-of-report":  # route 9
+            period_of_report = body.get("period_of_report")
+            data = get_price_at_period_of_report(ticker, period_of_report)
+            
+            return json_response(200, {"data": data})
+        
         else:
             # If path not recognized, return 404
             return json_response(404, {"message": f"No route found for path={path}"})
