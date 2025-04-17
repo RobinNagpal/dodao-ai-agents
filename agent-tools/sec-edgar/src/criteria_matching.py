@@ -83,6 +83,7 @@ class Latest10QInfo(BaseModel):
     filingUrl: str
     periodOfReport: str
     filingDate: str
+    priceAtPeriodEnd: float
 
 def get_object_from_s3(key: str) -> dict:
     try:
@@ -553,11 +554,14 @@ def get_latest_10q_info(ticker: str)-> Latest10QInfo:
     attach=attachments[1]
     attachment_document_name = str(attach.document or "")  # e.g. "R10.htm"
     filing_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
+    
+    price_at_period_end = get_price_at_period_of_report(ticker)
 
     data: Latest10QInfo = {
         "filingUrl": filing_url,
         "periodOfReport": period_of_report,
         "filingDate": filing_date,
+        "priceAtPeriodEnd": price_at_period_end,
     }
     return data
 
