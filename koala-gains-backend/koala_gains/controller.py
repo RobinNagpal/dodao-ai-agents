@@ -88,7 +88,7 @@ def parse_arguments() -> AgentState:
         link.strip() for link in args.additional_links.split(",") if link.strip()
     ]
     report_type = args.report_type.strip().strip('"') if args.report_type else "all"
-    model = args.model.strip().strip('"') if args.model else "gpt-4o-mini"
+    model = args.model.strip().strip('"') if args.model else "o4-mini"
 
     project_info: ProjectInfo = {
         "project_id": project_id,

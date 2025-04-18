@@ -9,7 +9,7 @@ from koala_gains.structures.public_equity_structures import (
 )
 from koala_gains.structures.public_equity_structures import slugify
 from koala_gains.utils.env_variables import BUCKET_NAME, REGION
-from koala_gains.utils.llm_utils import structured_criteria_response, NORMAL_4_0_CONFIG
+from koala_gains.utils.llm_utils import structured_criteria_response, NORMAL_O_4_CONFIG
 from koala_gains.utils.s3_utils import s3_client, upload_to_s3_public_equities
 
 
@@ -49,7 +49,7 @@ def get_industry_group_criteria(
     Each criterion should be able to be evaluated using the SEC 10Q filings.
     """
     return structured_criteria_response(
-        NORMAL_4_0_CONFIG, f"industry_group_criteria_{sector}_{industry_group}", prompt
+        NORMAL_O_4_CONFIG, f"industry_group_criteria_{sector}_{industry_group}", prompt
     )
 
 

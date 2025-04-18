@@ -8,7 +8,7 @@ run-image:
 	docker run -it -p 9500:5000 --name cf-analysis-container 729763663166.dkr.ecr.us-east-1.amazonaws.com/koala-gains-backend:latest env
 
 activate-venv:
-	.venv/bin/activate
+	source .venv/bin/activate
 
 run-project:
 	poetry run python -m koala_gains.app

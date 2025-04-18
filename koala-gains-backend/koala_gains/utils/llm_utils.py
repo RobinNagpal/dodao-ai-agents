@@ -20,6 +20,7 @@ DEFAULT_LLM_CONFIG: Config = {"configurable": {"model": OPEN_AI_DEFAULT_MODEL}}
 MINI_4_0_CONFIG: Config = {"configurable": {"model": "gpt-4o-mini"}}
 MINI_O_3_CONFIG: Config = {"configurable": {"model": "o3-mini"}}
 NORMAL_4_0_CONFIG: Config = {"configurable": {"model": "gpt-4o"}}
+NORMAL_O_4_CONFIG: Config = {"configurable": {"model": "o4-mini"}}
 DEEP_SEEK_R1_CONFIG: Config = {
     "configurable": {"model": "deepseek-r1-distill-llama-70b"}
 }
@@ -40,7 +41,10 @@ def get_llm(config: Config) -> BaseChatModel:
             _llm_cache[model] = ChatOpenAI(model=model, temperature=0, max_tokens=16384)
             return _llm_cache[model]
         elif model == "gpt-4o":
-            _llm_cache[model] = ChatOpenAI(model=model, temperature=0, max_tokens=4000)
+            _llm_cache[model] = ChatOpenAI(model=model, temperature=0, max_tokens=6000)
+            return _llm_cache[model]
+        elif model == "o4-mini":
+            _llm_cache[model] = ChatOpenAI(model=model, temperature=1, max_tokens=4000)
             return _llm_cache[model]
         elif model == "o3-mini":
             _llm_cache[model] = ChatOpenAI(model=model, temperature=0, max_tokens=4000)

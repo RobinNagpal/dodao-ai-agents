@@ -24,7 +24,7 @@ from koala_gains.utils.llm_utils import (
     MINI_4_0_CONFIG,
     scrape_and_clean_content_with_same_details,
     get_llm,
-    NORMAL_4_0_CONFIG,
+    NORMAL_O_4_CONFIG,
 )
 from koala_gains.utils.project_utils import scrape_urls
 from koala_gains.utils.report_utils import (
@@ -171,7 +171,7 @@ def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:
     """
         + raw_content
     )
-    structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(
+    structured_llm = get_llm(NORMAL_O_4_CONFIG).with_structured_output(
         StructuredFormCResponse
     )
     response = structured_llm.invoke([HumanMessage(content=prompt)])
@@ -179,7 +179,7 @@ def get_sec_structured_response(raw_content: str) -> StructuredFormCResponse:
 
 
 def get_sec_info(sec_url: str) -> ProcessedSecInfoSchema:
-    raw_content = scrape_and_clean_content_with_same_details(sec_url, NORMAL_4_0_CONFIG)
+    raw_content = scrape_and_clean_content_with_same_details(sec_url, NORMAL_O_4_CONFIG)
     json_data = get_sec_structured_response(raw_content)
     markdown_content = get_markdown_content_from_json(
         json_data.model_dump_json(indent=4)
@@ -245,7 +245,7 @@ def get_project_industry_and_forecasts_info(
         + project_text
     )
 
-    structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(
+    structured_llm = get_llm(NORMAL_O_4_CONFIG).with_structured_output(
         IndustryDetailsAndForecastStructure
     )
 
@@ -262,7 +262,7 @@ def get_markdown_content_from_json(json_content: str) -> str:
     {json_content}
     """
 
-    llm = get_llm(NORMAL_4_0_CONFIG)
+    llm = get_llm(NORMAL_O_4_CONFIG)
     response = llm.invoke([HumanMessage(content=prompt)])
     return response.content.strip()
 

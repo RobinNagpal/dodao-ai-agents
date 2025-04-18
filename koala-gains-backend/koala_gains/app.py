@@ -11,7 +11,25 @@ from koala_gains.api.public_equity_api import public_equity_api
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
-CORS(app)  # Allow all origins by default
+CORS(app,
+     supports_credentials=True,
+     origins="*",
+     methods=["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
+     allow_headers=[
+         "X-CSRF-Token",
+         "X-Requested-With",
+         "Accept",
+         "Accept-Version",
+         "Content-Length",
+         "Content-MD5",
+         "Content-Type",
+         "Date",
+         "X-Api-Version",
+         "X-Admin-Key",
+         "x-admin-key",
+         "dodao-auth-token"
+     ]
+   )  # Allow all origins by default
 
 app.register_blueprint(crowdfunding_api)
 app.register_blueprint(public_equity_api, url_prefix="/api/public-equities/US")

@@ -30,7 +30,7 @@ def get_admin_name_from_request():
 
     # Find the matching admin code by checking if its hash matches
     admin_code = next(
-        (code for code in ADMIN_CODES if generate_hashed_key(code) == hashed_key), None
+        (code for code in ADMIN_CODES if code == hashed_key), None
     )
 
     if not admin_code:

@@ -173,7 +173,7 @@ def generate_team_member_report(startup_name: str, member: TeamMemberStructure) 
             print(
                 f"Could not find LinkedIn profile for {member.name} from {linked_in_url}"
             )
-            return f"## {member.name} - ${member.title}:\nLinkedin Info:  Could not find LinkedIn profile\n\nInfo on startup Page: {member.info}"
+            return f"## {member.name} - {member.title}:\nLinkedin Info:  Could not find LinkedIn profile\n\nInfo on startup Page: {member.info}"
 
         prompt = f"""
         Return the profile information of the team member as a markdown table which includes the following fields:

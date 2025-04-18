@@ -203,7 +203,7 @@ def get_content_for_criterion_and_latest_quarter(
     """
     llm = ChatOpenAI(
         temperature=0,
-        model="gpt-4o",
+        model="o4-mini",
     )
 
     system_prompt = f"""
