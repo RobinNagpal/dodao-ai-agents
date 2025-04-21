@@ -202,7 +202,7 @@ def get_content_for_criterion_and_latest_quarter(
     the latest quarter. Preserves original formatting.
     """
     llm = ChatOpenAI(
-        temperature=0,
+        temperature=1,
         model="o4-mini",
     )
 
