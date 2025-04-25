@@ -127,7 +127,7 @@ def create_criteria_match_analysis(
     criteria: List[CriterionDefinition],
 ) -> CriterionMatchResponseNew:
     """
-    Calls GPT-4o-mini to analyze if the content is relevant to provided topics.
+    Calls GPT-4o to analyze if the content is relevant to provided topics.
     """
 
     criteria_json = json.dumps(
@@ -185,7 +185,7 @@ def create_criteria_match_analysis(
     {attachment_content}
     """
 
-    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    model = ChatOpenAI(model="gpt-4o", temperature=0)
     structured_llm = model.with_structured_output(CriterionMatchResponseNew)
     response: CriterionMatchResponseNew = structured_llm.invoke(
         [HumanMessage(content=prompt)]
