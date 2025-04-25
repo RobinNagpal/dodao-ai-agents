@@ -9,7 +9,6 @@ from src.criteria_matching import (
     get_criterion_attachments_content,
     get_criteria_matching_for_an_attachment,
     get_price_at_period_of_report,
-    populate_criteria_matches,
     get_latest_10q_info,
 )
 from src.specific_10Q_report import specific_report_text
@@ -52,36 +51,32 @@ def lambda_handler(event, context):
             data = get_criterion_attachments_content(ticker, criterion_key)
             return json_response(200, {"status": 200, "data": data})
 
-        elif path == "/populate-criteria-matches":  # route 4
-            data = populate_criteria_matches(ticker)
-            return json_response(200, {"status": 200, "data": data})
-
-        elif path == "/all-filings-for-ticker":  # route 5
+        elif path == "/all-filings-for-ticker":  # route 4
             page = body.get("page", 0)
             page_size = body.get("pageSize", 50)
             data = get_all_filings_and_update_forms_info_in_s3(ticker, page, page_size)
 
             return json_response(200, data)
 
-        elif path == "/criteria-matching-for-an-attachment":  # route 6
+        elif path == "/criteria-matching-for-an-attachment":  # route 5
             sequence_no = body.get("sequence_no")
             data = get_criteria_matching_for_an_attachment(ticker, sequence_no)
 
             return json_response(200, data)
 
-        elif path == "/criteria-matching-for-management-discussion":  # route 7
+        elif path == "/criteria-matching-for-management-discussion":  # route 6
             data = get_criteria_matching_for_management_discussion(
                 ticker, criterion_key
             )
 
             return json_response(200, {"data": data})
         
-        elif path == "/latest-10q-info":  # route 8
+        elif path == "/latest-10q-info":  # route 7
             data = get_latest_10q_info(ticker)
             
             return json_response(200, {"data": data})
         
-        elif path == "/price-at-period-of-report":  # route 9
+        elif path == "/price-at-period-of-report":  # route 8
             period_of_report = body.get("period_of_report")
             data = get_price_at_period_of_report(ticker, period_of_report)
             

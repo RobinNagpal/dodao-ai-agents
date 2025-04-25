@@ -21,7 +21,7 @@ def filter_older_columns(df):
 
     columns_text = "\n".join(df.columns)  # Convert column names to text
 
-    llm = ChatOpenAI(temperature=0, model="o4-mini")
+    llm = ChatOpenAI(temperature=1, model="o4-mini")
 
     system_prompt = "You are an expert in financial statement analysis."
 

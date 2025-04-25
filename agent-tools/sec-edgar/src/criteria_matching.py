@@ -14,12 +14,8 @@ from typing import Optional, Literal, List, TypedDict
 from src.public_equity_structures import (
     IndustryGroupCriteriaDefinition,
     CriterionMatchesOfLatest10Q,
-    get_criteria_file_key,
     TickerReport,
     CriterionMatch,
-    get_ticker_file_key,
-    Sector,
-    IndustryGroup,
     CriterionDefinition,
     SecFilingAttachment,
     Markdown,
@@ -85,17 +81,6 @@ class Latest10QInfo(BaseModel):
     filingDate: str
     priceAtPeriodEnd: float
 
-def get_object_from_s3(key: str) -> dict:
-    try:
-        s3_obj = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key=key)
-        body = s3_obj["Body"].read().decode("utf-8")
-        data = json.loads(body)
-        return data
-    except Exception as e:
-        print(f"Error while fetching object from S3: {key} = {str(e)}")
-        print(traceback.format_exc())
-        raise Exception(f"Error: {str(e)}")
-
 
 def get_ticker_report(ticker: str) -> TickerReport:
     base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
@@ -114,24 +99,6 @@ def get_criteria_definition(ticker: str) -> IndustryGroupCriteriaDefinition:
     response.raise_for_status()  # This will raise an error if the response is not 200 OK
     data = response.json()
     return IndustryGroupCriteriaDefinition(**data)
-
-
-def save_criteria_matches(ticker: str, criteria_matches: CriterionMatchesOfLatest10Q):
-    """
-    Sends the updated ticker report JSON to an API endpoint via POST.
-    """
-    base_url = os.environ.get("KOALAGAINS_BACKEND_URL", "http://localhost:3000")
-    endpoint = f"{base_url}/api/tickers/{ticker}/criteria-matches"
-    payload = {"criterionMatchesOfLatest10Q": criteria_matches.model_dump()}
-    data = json.dumps(payload, indent=2)
-    print(f"Sending POST request to {endpoint} with data:")
-    print(data)
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(endpoint, data=data.encode("utf-8"), headers=headers)
-    response.raise_for_status()  # Raises an error if the response status is not 2xx
-
-    print(f"Saved criteria matches for {ticker}.")
-
 
 def save_latest10Q_financial_statements(
     ticker: str, latest10Q_financial_statements: str
@@ -228,7 +195,7 @@ def get_content_for_criterion_and_latest_quarter(
 ) -> str:
 
     llm = ChatOpenAI(
-        temperature=0,
+        temperature=1,
         model="o4-mini",
     )
 
@@ -307,148 +274,6 @@ def get_markdown_content(html_content: str) -> Markdown:
 
     data = response.json()
     return Markdown(**data)
-
-
-def get_matched_attachments(
-    ticker: str, criteria: List[CriterionDefinition]
-) -> CriterionMatchesOfLatest10Q:
-    """
-    Fetches the latest 10-Q filing, extracts attachments, analyzes content, and stores results.
-    """
-
-    ticker_info = get_ticker_info_and_attachments(ticker)
-    cik = ticker_info.get("cik")
-    acc_number_no_dashes = ticker_info.get("acc_number_no_dashes")
-    attachments = ticker_info.get("attachments")
-
-    print(
-        f"Processing {len(attachments)} attachments for {ticker} for {ticker_info.get('period_of_report')}."
-    )
-    excluded_purposes = [
-        "balance sheet",
-        "cash flows",
-        "statements of comprehensive income",
-        "operations and comprehensive income",
-        "statements of operations",
-        "statement of operations",
-        "statements of income",
-        "statement of income",
-    ]
-
-    attachment_start_index = 0
-
-    criterion_to_matched_attachments_map: dict[str, CriterionMatch] = dict(
-        {
-            criterion.key: CriterionMatch(
-                criterionKey=criterion.key, matchedContent=""
-            )
-            for criterion in criteria
-        }
-    )
-
-    for attach in attachments:
-        attachment_purpose = str(attach.purpose or "").lower()
-        attachment_document_name = str(attach.document or "")  # e.g. "R10.htm"
-        attachment_sequence_number: str = attach.sequence_number  # e.g. "R10.htm"
-        attachment_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
-        try:
-            attachment_start_index += 1
-
-            if attach.document_type != "HTML":
-                continue
-
-            attachment_content = str(attach.content or "")
-
-            print(
-                f"Processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}"
-            )
-            # Skipping conditions
-            if any(excluded in attachment_purpose for excluded in excluded_purposes):
-                continue
-
-            if not attachment_content:
-                print(
-                    f"Warning: Attachment {attach.purpose} has empty content; skipping."
-                )
-                continue
-
-            attachment_markdown = get_markdown_content(attachment_content).markdown
-            match_analysis: CriterionMatchResponseNew = create_criteria_match_analysis(
-                period_of_report=ticker_info.get("period_of_report"),
-                attachment_name=attachment_purpose,
-                attachment_content=attachment_markdown,
-                criteria=criteria,
-            )
-            if match_analysis.status == "failure":
-                print(
-                    f"Error: LLM analysis failed for attachment {attachment_document_name}."
-                )
-                continue
-
-            for criterion_match_result in match_analysis.criterion_matches:
-                relevant_text = criterion_match_result.relevant_text
-                if (
-                    not relevant_text
-                    or not relevant_text.strip()
-                    or len(relevant_text) == 0
-                ):
-                    continue
-
-                relevant_text = f"### {attachment_document_name} - {attachment_purpose}\n\n\n{relevant_text.strip()}\n\n\n"
-
-                print(
-                    f"matched content for criterion: {criterion_match_result.criterion_key}\n\n\n{relevant_text}"
-                )
-
-                criterion_to_matched_attachments_map[
-                    criterion_match_result.criterion_key
-                ].matchedContent += f"\n{relevant_text}\n"
-        except Exception as e:
-            print(
-                f"Error processing attachment: {attachment_sequence_number} - {attachment_document_name} - {attachment_purpose} - {attachment_url}"
-            )
-            print(f"Error: {str(e)}")
-            print(traceback.format_exc())
-            continue
-    for criterion in criteria:
-        # Add another prompt to extract information from management discussion for the criteria
-        management_discussions_content = ticker_info.get("management_discussions")
-        matched_management_discussion_content = (
-            get_content_for_criterion_and_latest_quarter(
-                ticker_info.get("period_of_report"),
-                management_discussions_content,
-                criterion,
-            )
-        )
-        matched_content = criterion_to_matched_attachments_map[
-            criterion.key
-        ].matchedContent
-        all_matched_content = f"{matched_content}\n\n\n## From Management Discussion\n\n{matched_management_discussion_content}"
-        criterion_to_matched_attachments_map[criterion.key].matchedContent = (
-            all_matched_content
-        )
-
-    return CriterionMatchesOfLatest10Q(
-        criterionMatches=list(criterion_to_matched_attachments_map.values()),
-        status="Completed",
-        failureReason=None,
-    )
-
-
-def populate_criteria_matches(ticker_key: str):
-    try:
-        industry_group_criteria = get_criteria_definition(ticker_key)
-        criteria: List[CriterionDefinition] = industry_group_criteria.criteria
-        criteria_matches = get_matched_attachments(ticker_key, criteria)
-        save_criteria_matches(ticker_key, criteria_matches)
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        criteria_matches = CriterionMatchesOfLatest10Q(
-            criterionMatches=[], status="Failed", failureReason=str(e)
-        )
-        save_criteria_matches(ticker_key, criteria_matches)
-        raise e
-
 
 def get_criteria_matching_for_an_attachment(ticker_key: str, sequence_no: str) -> dict:
     if not sequence_no:
