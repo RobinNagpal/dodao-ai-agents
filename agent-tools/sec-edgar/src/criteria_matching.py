@@ -158,9 +158,6 @@ def create_criteria_match_analysis(
     attachment_content: str,
     criteria: List[CriterionDefinition],
 ) -> CriterionMatchResponseNew:
-    """
-    Calls GPT-4o-mini to analyze if the content is relevant to provided topics.
-    """
 
     criteria_json = json.dumps(
         [
@@ -217,7 +214,7 @@ def create_criteria_match_analysis(
     {attachment_content}
     """
 
-    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    model = ChatOpenAI(model="gpt-4o", temperature=0)
     structured_llm = model.with_structured_output(CriterionMatchResponseNew)
     response: CriterionMatchResponseNew = structured_llm.invoke(
         [HumanMessage(content=prompt)]
@@ -229,13 +226,10 @@ def create_criteria_match_analysis(
 def get_content_for_criterion_and_latest_quarter(
     period_of_report: str, raw_text: str, current_criterion: CriterionDefinition
 ) -> str:
-    """
-    Calls GPT-4o-mini to filter out older periods and keep only
-    the latest quarter. Preserves original formatting.
-    """
+
     llm = ChatOpenAI(
         temperature=0,
-        model="gpt-4o",
+        model="o4-mini",
     )
 
     system_prompt = f"""
@@ -512,7 +506,7 @@ def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
     This function:
       - Retrieves existing data from S3.
       - Extracts and processes the top 5 matched attachments.
-      - Calls GPT-4o-mini to keep only the latest quarter's content.
+      - Calls GPT to keep only the latest quarter's content.
       - If data is missing, runs the full process and then returns results.
     """
     public_equity_report: TickerReport = get_ticker_report(ticker)
