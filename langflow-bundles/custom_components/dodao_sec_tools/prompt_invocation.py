@@ -93,35 +93,17 @@ class PromptInvocatorComponent(Component):
         except Exception as exc:
             return Data(data={"error": str(exc)})
 
-    def _get_invocation_result(self) -> Data:
-        """
-        Cache the API call result so that we don't call it twice.
-        """
-        if not hasattr(self, "_result"):
-            self._result = self.call_prompt_invocator()
-        return self._result
-
     def output_data(self) -> Data:
-        """
-        Returns the Data output if 'Data' is selected in the dropdown;
-        otherwise returns an empty Data.
-        """
         if self.output_type == "Data":
-            return self._get_invocation_result()
-        else:
-            return Data(data={})
+            return self.call_prompt_invocator()
+        return Data(data={})
 
     def output_message(self) -> Message:
-        """
-        Returns a Message output if 'Message' is selected in the dropdown;
-        otherwise returns an empty Message.
-        """
         if self.output_type == "Message":
-            data = self._get_invocation_result()
+            data = self.call_prompt_invocator()
             try:
-                result_string = data_to_text("{message}", data)
-                return Message(text=result_string)
+                text = data_to_text("{message}", data)
+                return Message(text=text)
             except Exception as exc:
                 return Message(text=str(exc))
-        else:
-            return Message(text="")
+        return Message(text="")
