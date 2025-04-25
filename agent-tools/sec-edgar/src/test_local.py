@@ -32,10 +32,6 @@ def local_invoke_financials(ticker, force_refresh=False):
     print(body.get("data"))
 
 
-def local_invoke_populate_criteria(ticker):
-    _invoke_endpoint("/populate-criteria-matches", {"ticker": ticker})
-
-
 def local_get_all_filings(ticker):
     _invoke_endpoint(
         "/all-filings-for-ticker", {"ticker": ticker, "page": 0, "pageSize": 2}
