@@ -19,7 +19,6 @@ DEFAULT_LLM_CONFIG: Config = {"configurable": {"model": OPEN_AI_DEFAULT_MODEL}}
 
 MINI_4_0_CONFIG: Config = {"configurable": {"model": "gpt-4o-mini"}}
 MINI_O_3_CONFIG: Config = {"configurable": {"model": "o3-mini"}}
-NORMAL_4_0_CONFIG: Config = {"configurable": {"model": "gpt-4o"}}
 NORMAL_O_4_CONFIG: Config = {"configurable": {"model": "o4-mini"}}
 DEEP_SEEK_R1_CONFIG: Config = {
     "configurable": {"model": "deepseek-r1-distill-llama-70b"}

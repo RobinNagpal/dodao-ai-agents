@@ -181,7 +181,7 @@ def create_criteria_match_analysis(
     {attachment_content}
     """
 
-    model = ChatOpenAI(model="gpt-4o", temperature=0)
+    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
     structured_llm = model.with_structured_output(CriterionMatchResponseNew)
     response: CriterionMatchResponseNew = structured_llm.invoke(
         [HumanMessage(content=prompt)]

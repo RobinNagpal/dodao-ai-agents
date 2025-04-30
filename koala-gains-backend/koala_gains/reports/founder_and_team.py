@@ -19,7 +19,7 @@ from koala_gains.utils.linkedin_utls import (
 from koala_gains.utils.llm_utils import (
     get_llm,
     structured_report_response,
-    NORMAL_4_0_CONFIG,
+    NORMAL_O_4_CONFIG,
 )
 from koala_gains.utils.prompt_utils import create_prompt_for_checklist
 from koala_gains.utils.report_utils import (
@@ -168,7 +168,7 @@ def generate_team_member_report(startup_name: str, member: TeamMemberStructure) 
         {linkedin_profile}
         """
 
-        structured_llm = get_llm(NORMAL_4_0_CONFIG).with_structured_output(
+        structured_llm = get_llm(NORMAL_O_4_CONFIG).with_structured_output(
             TeamMemberProfile
         )
         response: TeamMemberProfile = structured_llm.invoke(
