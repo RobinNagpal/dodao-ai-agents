@@ -192,7 +192,7 @@ Use these commands to manage the Langflow service:
   ```
 - **View Logs:**
   ```bash
-  sudo journalctl -u langflow.service -f
+  docker logs --tail 100 -f langflow
   ```
 
 ---
