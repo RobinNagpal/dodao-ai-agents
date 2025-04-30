@@ -16,6 +16,9 @@ from koala_gains.utils.env_variables import (
     PROXYCURL_API_KEY,
 )
 from koala_gains.utils.s3_utils import s3_client, BUCKET_NAME, upload_cf_file_to_s3
+from langchain_community.utilities import GoogleSerperAPIWrapper
+
+search = GoogleSerperAPIWrapper()
 
 
 class TeamMemberLinkedinUrl(TypedDict):
@@ -46,7 +49,10 @@ class ProxyCurlLinkedinProfile(TypedDict):
 
 def scrape_single_linkedin_profiles_with_proxycurl(
     linkedin_url: str,
-) -> ProxyCurlLinkedinProfile or None:
+) -> ProxyCurlLinkedinProfile | None:
+    if not PROXYCURL_API_KEY:
+        raise Exception("ProxyCurl API key not found")
+
     headers = {"Authorization": f"Bearer {PROXYCURL_API_KEY}"}
 
     # API endpoint for retrieving a LinkedIn person profile
@@ -263,3 +269,70 @@ def scrape_linkedin_with_linkedin_scraper(
     driver.quit()
 
     return raw_profiles
+
+
+def is_linkedin_profile_url(url: str) -> bool:
+    parsed = urlparse(url)
+    # Check if the domain is LinkedIn (including subdomains)
+    if "linkedin.com" not in parsed.netloc.lower():
+        return False
+
+    path = parsed.path.rstrip("/")  # remove optional trailing slash
+    parts = path.split("/")
+    if len(parts) == 3 and parts[1] == "in" and parts[2]:
+        return True
+
+    return False
+
+
+def search_linkedin_url(query: str, name: str) -> str:
+    print("Searching for:", query)
+    results = search.results(query)  # your existing search API
+    # Collect only valid /in/ URLs
+    candidates = [
+        r["link"]
+        for r in results.get("organic", [])
+        if is_linkedin_profile_url(r.get("link", ""))
+    ]
+    if not candidates:
+        return ""
+
+    # Split out first and last name
+    parts = name.strip().split()
+    first_name = parts[0].lower()
+    last_name = parts[-1].lower() if len(parts) > 1 else ""
+
+    # Extract the “username” portion of each URL
+    def username_of(link):
+        return urlparse(link).path.rstrip("/").split("/")[-1].lower()
+
+    # 1) Try to match on last name
+    for link in candidates:
+        if last_name and last_name in username_of(link):
+            print("Matched on last name:", link)
+            return link
+
+    # 2) Then try to match on first name
+    for link in candidates:
+        if first_name in username_of(link):
+            print("Matched on first name:", link)
+            return link
+
+    return ""
+
+
+def get_linkedIn_profile(name: str, position: str, company_name: str):
+    try:
+        query = f"Find the LinkedIn profile url of {name} working as {position} at {company_name}"
+
+        linked_in_url = search_linkedin_url(query, name)
+        if linked_in_url == "":
+            raise Exception(f"Could not find LinkedIn url for {name} from search")
+
+        linkedin_profile = get_cached_linkedin_profile(linked_in_url)
+        return linkedin_profile
+    except Exception as err:
+        print(traceback.format_exc())
+        raise Exception(
+            f"Error occurred while finding LinkedIn profile '{name} - {position} - {company_name}': {err}"
+        )

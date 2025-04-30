@@ -29,9 +29,7 @@ def get_admin_name_from_request():
         return None, (jsonify({"status": "error", "message": "Unauthorized"}), 401)
 
     # Find the matching admin code by checking if its hash matches
-    admin_code = next(
-        (code for code in ADMIN_CODES if code == hashed_key), None
-    )
+    admin_code = next((code for code in ADMIN_CODES if code == hashed_key), None)
 
     if not admin_code:
         return None, (jsonify({"status": "error", "message": "Invalid code"}), 401)

@@ -312,9 +312,7 @@ def get_matched_attachments(
 
     criterion_to_matched_attachments_map: dict[str, CriterionMatch] = dict(
         {
-            criterion.key: CriterionMatch(
-                criterionKey=criterion.key, matchedContent=""
-            )
+            criterion.key: CriterionMatch(criterionKey=criterion.key, matchedContent="")
             for criterion in criteria
         }
     )
