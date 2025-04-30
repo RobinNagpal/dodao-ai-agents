@@ -2,7 +2,6 @@ import traceback
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
-from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
@@ -13,7 +12,10 @@ from koala_gains.structures.report_structures import (
     StructuredReportResponse,
     TeamMemberStructure,
 )
-from koala_gains.utils.linkedin_utls import get_cached_linkedin_profile
+from koala_gains.utils.linkedin_utls import (
+    get_cached_linkedin_profile,
+    search_linkedin_url,
+)
 from koala_gains.utils.llm_utils import (
     get_llm,
     structured_report_response,
@@ -27,8 +29,6 @@ from koala_gains.utils.report_utils import (
 )
 
 load_dotenv()
-
-search = GoogleSerperAPIWrapper()
 
 
 class TeamMemberProfile(BaseModel):
@@ -128,33 +128,6 @@ def find_startup_info(config: Config, page_content: str) -> StartupAndTeamInfoSt
     response = structured_llm.invoke([HumanMessage(content=prompt)])
     print("Team Info Fetched", response.model_dump_json(indent=4))
     return response
-
-
-def is_linkedin_profile_url(url: str) -> bool:
-    parsed = urlparse(url)
-    # Check if the domain is LinkedIn (including subdomains)
-    if "linkedin.com" not in parsed.netloc.lower():
-        return False
-
-    path = parsed.path
-    # Check if path starts with /in/ or /pub/ and has a profile identifier
-    if path.startswith(("/in/", "/pub/")):
-        parts = path.split("/")
-        # Ensure there's a profile name (parts[2] is non-empty)
-        if len(parts) >= 3 and parts[2].strip():
-            return True
-    return False
-
-
-def search_linkedin_url(query: str) -> str:
-    print("Searching for:", query)
-    results = search.results(query)  # Ensure 'search' is defined/imported
-    for result in results.get("organic", []):
-        link = result.get("link", "")
-        if is_linkedin_profile_url(link):
-            print("Found LinkedIn profile:", link)
-            return link
-    return ""  # Return empty if no profile found
 
 
 def generate_team_member_report(startup_name: str, member: TeamMemberStructure) -> str:

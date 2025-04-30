@@ -44,6 +44,7 @@ from koala_gains.utils.ticker_utils import (
 )
 from koala_gains.utils.env_variables import PE_US_REITS_WEBHOOK_URL
 from koala_gains.utils.criteria_matching import populate_criteria_matches
+from koala_gains.utils.linkedin_utls import get_linkedIn_profile
 
 
 class CreateCriteriaRequest(BaseModel):
@@ -156,6 +157,12 @@ class SaveCriterionMetricsRequest(BaseModel):
 
 class PopulateCriteriaMatchesRequest(BaseModel):
     ticker: str
+
+
+class GetLinkedInProfileRequest(BaseModel):
+    name: str
+    position: str
+    company_name: str
 
 
 public_equity_api = Blueprint("public_equity_api", __name__)
@@ -688,6 +695,28 @@ def populate_and_save_criteria_matches(body: PopulateCriteriaMatchesRequest):
             jsonify(
                 {
                     "message": "Populated criteria matches successfully.",
+                    "data": data,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        return handle_exception(e)
+
+
+@public_equity_api.route("/get-linkedIn-profile", methods=["POST"])
+@validate(body=GetLinkedInProfileRequest)
+def get_linkedIn_profile_method(body: GetLinkedInProfileRequest):
+    try:
+        data = get_linkedIn_profile(
+            name=body.name, position=body.position, company_name=body.company_name
+        )
+
+        return (
+            jsonify(
+                {
+                    "message": "LinkedIn profile fetched successfully.",
                     "data": data,
                 }
             ),
