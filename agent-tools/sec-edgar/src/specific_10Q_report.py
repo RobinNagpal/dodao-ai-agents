@@ -10,7 +10,7 @@ use_local_storage()
 set_identity("your_email@example.com")
 
 
-def specific_report_text(ticker: str, report_type: str) -> str:
+def specific_report_text(ticker: str, report_type: str, fetch_raw_content = False) -> str:
     """
     Retrieve raw text from the latest 10-Q filing attachments based on report type.
     """
@@ -31,12 +31,16 @@ def specific_report_text(ticker: str, report_type: str) -> str:
         purpose = (attach.purpose or "").lower()
         if any(k in purpose for k in keywords):
 
-            matched_texts.append(attach.text())
+            if fetch_raw_content:
+                # If fetch_raw_content is True, return the raw content of the attachment
+                matched_texts.append(attach.content)
+            else:
+                matched_texts.append(attach.text())
 
             # For certain report types, only one or two attachments are needed.
             if (
                 report_type.lower()
-                in ["income_statement", "cash_flow", "operation_statement"]
+                in ["income_statement", "cash_flow", "operation_statement", "equity_statement"]
                 and len(matched_texts) == 1
             ):
                 break
