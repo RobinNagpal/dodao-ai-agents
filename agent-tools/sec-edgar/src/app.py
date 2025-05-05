@@ -70,18 +70,18 @@ def lambda_handler(event, context):
             )
 
             return json_response(200, {"data": data})
-        
+
         elif path == "/latest-10q-info":  # route 7
             data = get_latest_10q_info(ticker)
-            
+
             return json_response(200, {"data": data})
-        
+
         elif path == "/price-at-period-of-report":  # route 8
             period_of_report = body.get("period_of_report")
             data = get_price_at_period_of_report(ticker, period_of_report)
-            
+
             return json_response(200, {"data": data})
-        
+
         else:
             # If path not recognized, return 404
             return json_response(404, {"message": f"No route found for path={path}"})

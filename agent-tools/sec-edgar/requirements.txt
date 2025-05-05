@@ -1,6 +1,6 @@
 # Dependencies specific to the SEC Edgar tool
 boto3
-edgartools
+edgartools==4.0.1
 pytest
 requests
 langchain-core

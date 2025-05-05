@@ -11,8 +11,7 @@ search_map: Dict[str, list[str]] = {
         "statements of operations and comprehensive income",
         "statement of operations and comprehensive income",
         "consolidated statements of operations"
-        "consolidated statements of comprehensive income"
-
+        "consolidated statements of comprehensive income",
     ],
     "cash_flow": ["statements of cash flows", "statement of cash flows"],
     "equity_statement": [

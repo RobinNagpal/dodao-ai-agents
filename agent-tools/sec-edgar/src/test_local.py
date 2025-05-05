@@ -60,6 +60,7 @@ def local_invoke_get_single_management_discussion(ticker, criterion_key):
     )
     print(response)
 
+
 def local_invoke_get_latest_10q_info(ticker):
     response = _invoke_endpoint(
         "/latest-10q-info",
@@ -67,13 +68,15 @@ def local_invoke_get_latest_10q_info(ticker):
     )
     print(response)
 
+
 def local_invoke_get_price_at_period_of_report(ticker, period_of_report=None):
     response = _invoke_endpoint(
         "/price-at-period-of-report",
         {"ticker": ticker, "period_of_report": period_of_report},
     )
     print(response)
-    
+
+
 if __name__ == "__main__":
     # EXAMPLES OF LOCAL CALLS:
     # 1) Search route with ticker=AMT, report_type=balance_sheet
@@ -83,6 +86,7 @@ if __name__ == "__main__":
     # 2) Financials route for ticker=AMT
     # local_invoke_populate_criteria("CCI")
     # local_invoke_get_price_at_period_of_report("FVR", "2024-09-30")
-    local_invoke_financials("UDR", force_refresh=True)
+    local_invoke_financials("PECO", force_refresh=True)
+    # local_invoke_financials("BHM", force_refresh=True)
     # local_invoke_get_single_management_discussion("FVR", "debt_and_leverage")
     # local_invoke_get_criteria("FVR", "financial_performance")

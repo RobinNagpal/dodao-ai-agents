@@ -75,6 +75,7 @@ class CriterionMatchResponseNew(BaseModel):
         description="The reason for the failure if the status is failed."
     )
 
+
 class Latest10QInfo(BaseModel):
     filingUrl: str
     periodOfReport: str
@@ -99,6 +100,7 @@ def get_criteria_definition(ticker: str) -> IndustryGroupCriteriaDefinition:
     response.raise_for_status()  # This will raise an error if the response is not 200 OK
     data = response.json()
     return IndustryGroupCriteriaDefinition(**data)
+
 
 def save_latest10Q_financial_statements(
     ticker: str, latest10Q_financial_statements: str
@@ -275,6 +277,7 @@ def get_markdown_content(html_content: str) -> Markdown:
     data = response.json()
     return Markdown(**data)
 
+
 def get_criteria_matching_for_an_attachment(ticker_key: str, sequence_no: str) -> dict:
     if not sequence_no:
         raise Exception("Error: Sequence number is required.")
@@ -356,7 +359,8 @@ def get_criterion_attachments_content(ticker: str, criterion_key: str) -> str:
 
     return criterion_match.matchedContent
 
-def get_latest_10q_info(ticker: str)-> Latest10QInfo:
+
+def get_latest_10q_info(ticker: str) -> Latest10QInfo:
     """
     This function retrieves the 10-Q filing link (using the first attachment)
     and the reporting period for a given ticker.
@@ -367,13 +371,19 @@ def get_latest_10q_info(ticker: str)-> Latest10QInfo:
     period_of_report = ticker_info.get("period_of_report")
     filing_date = ticker_info.get("filing_date")
     attachments = ticker_info.get("attachments")
-    
-    if not cik or not acc_number_no_dashes or not period_of_report or not attachments or not filing_date:
+
+    if (
+        not cik
+        or not acc_number_no_dashes
+        or not period_of_report
+        or not attachments
+        or not filing_date
+    ):
         raise Exception(f"Error: Missing required information for {ticker}.")
-    attach=attachments[1]
+    attach = attachments[1]
     attachment_document_name = str(attach.document or "")  # e.g. "R10.htm"
     filing_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_number_no_dashes}/{attachment_document_name}"
-    
+
     price_at_period_end = get_price_at_period_of_report(ticker)
 
     data: Latest10QInfo = {
@@ -384,9 +394,9 @@ def get_latest_10q_info(ticker: str)-> Latest10QInfo:
     }
     return data
 
+
 def get_price_at_period_of_report(
-    ticker: str,
-    period_of_report: Optional[str] = None
+    ticker: str, period_of_report: Optional[str] = None
 ) -> float:
     """
     Retrieve the stock closing price for a given ticker on its reporting date.
@@ -398,9 +408,8 @@ def get_price_at_period_of_report(
 
     # Lookup if not explicit
     if not explicit:
-        period_of_report = (
-            get_ticker_info_and_attachments(ticker)
-            .get("period_of_report")
+        period_of_report = get_ticker_info_and_attachments(ticker).get(
+            "period_of_report"
         )
         if not period_of_report:
             raise ValueError(f"Could not determine reporting period for {ticker}")
