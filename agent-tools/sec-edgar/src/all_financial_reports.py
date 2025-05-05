@@ -1,11 +1,11 @@
 from dotenv import load_dotenv
-from edgar import Company, use_local_storage, set_identity, XBRLData
-from langchain_core.messages import HumanMessage, SystemMessage
+from edgar import Company, use_local_storage, set_identity
+from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
-
-from src.specific_10Q_report import specific_report_text
-from src.criteria_matching import get_ticker_report, save_latest10Q_financial_statements
 from pydantic import BaseModel, Field
+
+from src.criteria_matching import get_ticker_report, save_latest10Q_financial_statements
+from src.specific_10Q_report import specific_report_text
 
 load_dotenv()
 
