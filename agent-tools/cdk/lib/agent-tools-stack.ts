@@ -93,7 +93,6 @@ export class AgentToolsStack extends cdk.Stack {
           OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
           POLYGON_API_KEY: process.env.POLYGON_API_KEY!,
           EDGAR_LOCAL_DATA_DIR: "/tmp/edgar_data",
-          EDGAR_USE_LOCAL_DATA: "/tmp/edgar_data",
         },
       });
       
