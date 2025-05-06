@@ -1,12 +1,15 @@
 from dotenv import load_dotenv
-from edgar import Company, use_local_storage, set_identity
-
+from edgar import Company, set_identity
+from edgar.xbrl.standardization.core import initialize_default_mappings, ConceptMapper
 from src.reports_search_map import search_map
 
 load_dotenv()
 
 # Initialize edgar settings
-use_local_storage()
+# use_local_storage()
+# prevent any writes
+store = initialize_default_mappings(read_only=True)
+mapper = ConceptMapper(store)
 set_identity("your_email@example.com")
 
 

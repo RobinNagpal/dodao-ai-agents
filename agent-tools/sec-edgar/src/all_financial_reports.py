@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
-from edgar import Company, use_local_storage, set_identity
+from edgar import Company, set_identity
+from edgar.xbrl.standardization.core import initialize_default_mappings, ConceptMapper
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
@@ -11,9 +12,12 @@ import pandas as pd
 load_dotenv()
 
 # Initialize edgar settings
-use_local_storage()
+# use_local_storage()
 set_identity("your_email@example.com")
 
+# prevent any writes
+store = initialize_default_mappings(read_only=True)
+mapper = ConceptMapper(store)
 
 class ColumnsToInclude(BaseModel):
     columns_to_include: list[str] = Field(
@@ -69,7 +73,14 @@ def filter_older_columns(df: pd.DataFrame, period_of_report: str):
     if df is None or df.empty:
         return df  # Return as-is if DataFrame is empty
 
-    columns_text = "\n".join(df.columns)  # Convert column names to text
+    # Ignore metadata columns
+    metadata_cols = ["dimension", "level", "label", "abstract", "concept"]
+    columns_with_data = [col for col in df.columns if col not in metadata_cols]
+    if not columns_with_data:
+        print("No relevant columns found in the DataFrame")
+        return None
+
+    columns_text = "\n".join(columns_with_data)  # Convert column names to text
 
     llm = ChatOpenAI(temperature=1, model="o4-mini")
 
@@ -99,8 +110,8 @@ def filter_older_columns(df: pd.DataFrame, period_of_report: str):
     # Check if columns_to_include is not empty and columns exist in DataFrame
     if not columns_to_include.columns_to_include:
         return None
-    valid_cols = [col for col in columns_to_include.columns_to_include if col in df.columns]
-    if not valid_cols:
+    columns_with_data = [col for col in columns_to_include.columns_to_include if col in df.columns]
+    if not columns_with_data:
         return None
     
     # Drop only existing columns to prevent KeyErrors
@@ -127,12 +138,19 @@ def fetch_from_raw_html(ticker: str, report_type: str, period_of_report: str) ->
             f"No raw content found for ticker '{ticker}' and report type '{report_type}'."
         )
 
-    print(f"Raw content fetched successfully. {raw_content}")
+    print(f"Raw content fetched successfully for {ticker} and report type {report_type}.")
     user_prompt = f""" 
     The following is the raw text from an SEC 10-Q financial statement table:
     
-    I want to to focus on the latest quarter and exclude the columns that are older or is not specific to the latest 
-    quarter i.e. three months. If the data is for nine months or year, exclude that.
+    For Balance Sheet and Income Statement
+    - I want to to focus on the latest quarter and exclude the columns that are older or is not specific to the latest 
+      quarter i.e. three months. 
+    - If the data is for nine months or year, exclude that.
+    
+    For Cash Flow and Statement and Equity Statement filter out the columns that are not relevant to the latest quarter.
+    - In case of cash flow statement, exclude the columns that are not specific to the latest quarter.
+    - In this case the data is normally for nine months so you can include it.
+    
     
     Return the consolidated version of the financial statement that is correct and make sure to include the latest quarter.
     
@@ -225,10 +243,11 @@ def get_xbrl_financials(ticker: str, force_refresh: bool = False) -> str:
 
     # Extract financial statements
     statements = {
-        "Balance Sheet": tenq.balance_sheet.to_dataframe(),
-        "Income Statement": tenq.income_statement.to_dataframe(),
-        "Cash Flow Statement": tenq.cash_flow_statement.to_dataframe(),
-        "Equity Statement": tenq.financials.statement_of_equity().to_dataframe(),
+        # Note: The names are very specific as they are used in the search_map
+        "Balance Sheet": tenq.balance_sheet.to_dataframe(standard=False),
+        "Income Statement": tenq.income_statement.to_dataframe(standard=False),
+        "Cash Flow": tenq.cash_flow_statement.to_dataframe(standard=False),
+        "Equity Statement": tenq.financials.statement_of_equity().to_dataframe(standard=False),
     }
 
     filtered_statements = []
