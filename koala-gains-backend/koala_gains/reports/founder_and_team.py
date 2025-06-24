@@ -134,7 +134,7 @@ def generate_team_member_report(startup_name: str, member: TeamMemberStructure) 
     try:
         query = f"Find the LinkedIn profile url of {member.name} working as {member.title} at {startup_name}"
 
-        linked_in_url = search_linkedin_url(query)
+        linked_in_url = search_linkedin_url(query, member.name)
         if linked_in_url == "":
             print(f"Could not find LinkedIn url for {member.name} from search")
             return f"## {member.name} - ${member.title}:\nLinkedin Info:  Could not find LinkedIn profile\n\nInfo on startup Page: {member.info}"
