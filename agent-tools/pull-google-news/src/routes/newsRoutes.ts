@@ -6,44 +6,73 @@ import Parser from '@postlight/parser';
 import {decodeGoogleNewsUrl} from "./newGoogleDecoder";
 import {ResolveError, resolveFinalUrlWithPuppeteer, ResolveResult} from "./resolve-final-url";
 import {decodeGoogleNewsUrls} from "./googleNewsDecoder";
+import logger, { logStep } from '../utils/logger';
 
 
 // Node 18+/Bun/Deno (has fetch). Follows redirects and returns the final URL.
 export async function resolveGoogleNewsUrl(u: string, method: 'HEAD' | 'GET' = 'HEAD'): Promise<string> {
+  logStep('Resolving Google News URL', { url: u, method });
+
   // Try HEAD first (lighter); some sites reject HEAD → fall back to GET.
   const tryOnce = async (m: 'HEAD' | 'GET') => {
-    console.log('Trying', m, 'on', u);
+    logger.info(`Trying ${m} request on URL`, { url: u, method: m });
     const r = await fetch(u, { method: m, redirect: 'follow' });
-    console.log('Response:', r);
+    logger.debug('Fetch response received', { status: r.status, statusText: r.statusText });
     return r.url || u;
   };
+
   try {
     const finalHead = await tryOnce(method);
-    if (finalHead !== u) return finalHead;
+    if (finalHead !== u) {
+      logger.info('URL resolved successfully', { originalUrl: u, resolvedUrl: finalHead });
+      return finalHead;
+    }
+
     // If HEAD didn’t redirect, try GET just in case.
-    return await tryOnce('GET');
-  } catch {
-    console.log('HEAD failed, falling back to GET');
+    logger.info('HEAD request did not redirect, trying GET request');
+    const finalGet = await tryOnce('GET');
+    logger.info('GET request completed', { resolvedUrl: finalGet });
+    return finalGet;
+  } catch (error) {
+    logger.warn('Standard fetch methods failed, falling back to manual redirect handling', { error: error?.message });
+
     // Last resort: manual redirect handling (rarely needed)
-    const r = await fetch(u, { method: 'GET', redirect: 'manual' });
-    const loc = r.headers.get('location');
-    console.log('Final URL:', loc);
-    return loc ? new URL(loc, u).toString() : u;
+    try {
+      const r = await fetch(u, { method: 'GET', redirect: 'manual' });
+      const loc = r.headers.get('location');
+      logger.info('Manual redirect handling result', { locationHeader: loc });
+      const finalUrl = loc ? new URL(loc, u).toString() : u;
+      logger.info('Final URL resolved', { finalUrl });
+      return finalUrl;
+    } catch (manualError) {
+      logger.error('Manual redirect handling failed', manualError, { url: u });
+      return u; // Return original URL if all methods fail
+    }
   }
 }
 
 
 
 const getPrettyUrl = (uglyUrl: string): string | null => {
+  logStep('Getting pretty URL from ugly URL', { uglyUrl });
+
   const base64Match = uglyUrl.match(/\/read\/([A-Za-z0-9-_]+)/);
   if (!base64Match) {
+    logger.debug('No base64 match found in URL', { uglyUrl });
     return null;
   }
+
   const base64String = base64Match[1];
+  logger.debug('Base64 string extracted', { base64String });
+
   try {
     const decodedString = Buffer.from(base64String, "base64").toString("ascii");
+    logger.debug('Decoded base64 string', { decodedStringLength: decodedString.length });
+
     const urlPattern = /https?:\/\/[^\s"']+/g;
     const matches = decodedString.match(urlPattern) || [];
+    logger.debug('URL matches found in decoded string', { matchCount: matches.length });
+
     const urls: string[] = matches.flatMap(match => {
       const splitUrls = match.split(/(?<!http:|https:)R(?![a-zA-Z0-9-_])|(?<!http:|https:)y(?![a-zA-Z0-9-_])/);
       return splitUrls.filter(url => {
@@ -51,12 +80,20 @@ const getPrettyUrl = (uglyUrl: string): string | null => {
         return cleanUrl;
       });
     });
+
     const uniqueUrls: string[] = [...new Set(urls)];
+    logger.debug('Unique URLs extracted', { uniqueUrlCount: uniqueUrls.length });
+
     const finalUrl = uniqueUrls.length ? uniqueUrls[0] : uglyUrl;
-    console.log('Decoded string:', decodedString);
+    logger.info('Pretty URL extracted successfully', { 
+      originalUrl: uglyUrl,
+      finalUrl: finalUrl,
+      decodedString: decodedString.substring(0, 100) + (decodedString.length > 100 ? '...' : '') // Truncate long strings
+    });
+
     return finalUrl;
   } catch (error) {
-    console.error(error);
+    logger.error('Error decoding URL', error, { uglyUrl });
     return null;
   }
 }
@@ -150,15 +187,19 @@ type ParsedArticle = {
  * POST /api/user-topics
  */
 router.post('/user-topics', async (req, res) => {
-  console.log('Request received:', JSON.stringify(req.body, null, 2));
+  logStep('Handling POST /user-topics request');
+  logger.info('Request received', { body: req.body });
 
   try {
     const body: GetUserTopicsRequestBody = req.body;
     const { userId } = body;
 
     if (!userId) {
+      logger.warn('Missing userId in request', { body });
       return res.status(400).json({ error: 'userId is required' });
     }
+
+    logger.info('Fetching topics for user', { userId });
 
     // Fetch topics for the user from the database
     const topics = await prisma.newsTopic.findMany({
@@ -167,9 +208,10 @@ router.post('/user-topics', async (req, res) => {
       },
     });
 
+    logger.info('Topics fetched successfully', { userId, topicCount: topics.length });
     return res.status(200).json({ topics });
   } catch (error: any) {
-    console.error('Error fetching user topics:', error);
+    logger.error('Error fetching user topics', error, { body: req.body });
     return res.status(500).json({
       error: 'Internal server error',
       details: error?.message,

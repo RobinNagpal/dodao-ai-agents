@@ -1,29 +1,48 @@
 # Use Node.js LTS as the base image
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Install yarn and dependencies for Puppeteer
+RUN apk add --no-cache \
+    yarn \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Set environment variables
+ENV TOOL_NAME=pull-google-news
+ENV LOG_LEVEL=info
+ENV PORT=3000
+# Tell Puppeteer to use the installed Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install
+RUN yarn install --frozen-lockfile
 
 # Copy Prisma schema
 COPY prisma ./prisma/
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN yarn prisma generate
 
 # Copy the rest of the application
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN yarn build
 
 # Expose the port the app runs on
 EXPOSE 3000
 
 # Command to run the application
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

@@ -78,22 +78,35 @@ export class AgentToolsStack extends cdk.Stack {
         ],
       });
 
-      // Create a Lambda function that uses the container image.
-      const timeout = tool === "sec-edgar" ? cdk.Duration.seconds(900): cdk.Duration.seconds(30);
-      const memorySize = tool === "sec-edgar" ? 1024: 512;
+      let timeout = cdk.Duration.seconds(30);
+      let memorySize = 512;
+
+      const defaultEnvironmentVariables: Record<string, string> = {
+        SCRAPINGANT_API_KEY: process.env.SCRAPINGANT_API_KEY || "",
+        OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
+        POLYGON_API_KEY: process.env.POLYGON_API_KEY!,
+        EDGAR_LOCAL_DATA_DIR: "/tmp/edgar_data",
+      };
+
+      if (tool === "sec-edgar") {
+        timeout = cdk.Duration.seconds(900);
+        memorySize = 1024;
+      }
+
+      if(tool=== "pull-google-news") {
+        defaultEnvironmentVariables.DATABASE_URL = process.env.PULL_GOOGLE_NEWS_DATABASE_URL!;
+        timeout = cdk.Duration.seconds(900);
+        memorySize = 1024;
+      }
 
       console.log(`Creating Lambda function for ${tool} with timeout ${timeout.toSeconds()}s and memory ${memorySize}MB`);
+
       const lambdaFunction = new lambda.DockerImageFunction(this, `${tool}Function`, {
         functionName: tool,
         code: lambda.DockerImageCode.fromImageAsset(toolDir),
         timeout: timeout,
         memorySize: memorySize,
-        environment: {
-          SCRAPINGANT_API_KEY: process.env.SCRAPINGANT_API_KEY || "",
-          OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
-          POLYGON_API_KEY: process.env.POLYGON_API_KEY!,
-          EDGAR_LOCAL_DATA_DIR: "/tmp/edgar_data",
-        },
+        environment: defaultEnvironmentVariables,
       });
       
       // Add permissions so the Lambda role can access your S3 bucket

@@ -11,6 +11,9 @@
     {
       "name": "s3-uploader",
       "enabled": true
+    }, {
+      "name": "pull-google-news",
+      "enabled": true
     }
   ]
 }
