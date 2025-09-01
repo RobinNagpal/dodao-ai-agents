@@ -55,53 +55,59 @@ docker run -d --name langflow \\
   -p 127.0.0.1:7860:7860 \\
   public.ecr.aws/p7g4h0z9/langflow-public:latest
 
-# Create SSL certificate directories
-mkdir -p /etc/letsencrypt/live/${langflow_domain}
-cat <<CERT_EOF > /etc/letsencrypt/live/${langflow_domain}/cert.pem
-${cert_pem}
-CERT_EOF
+# Remove default site just in case
+rm -f /etc/nginx/sites-enabled/* /etc/nginx/sites-available/default
 
-cat <<CHAIN_EOF > /etc/letsencrypt/live/${langflow_domain}/chain.pem
-${chain_pem}
-CHAIN_EOF
-
-cat <<FULLCHAIN_EOF > /etc/letsencrypt/live/${langflow_domain}/fullchain.pem
-${fullchain_pem}
-FULLCHAIN_EOF
-
-cat <<PRIVKEY_EOF > /etc/letsencrypt/live/${langflow_domain}/privkey.pem
-${privkey_pem}
-PRIVKEY_EOF
-
-# Configure Nginx for HTTPS
-rm -f /etc/nginx/sites-enabled/*
-cat <<NGINX_EOF > /etc/nginx/sites-available/langflow
-server {
-  listen 80;
-  server_name ${langflow_domain};
-  return 301 https://\\\$host\\\$request_uri;
+# Helper maps (keep $ variables intact by single-quoting the heredoc)
+cat >/etc/nginx/conf.d/proto_map.conf <<'MAPEOF'
+map $$http_cloudfront_forwarded_proto $$xfp {
+    default $$http_cloudfront_forwarded_proto;
+    ""      $$scheme;
 }
+map $$http_upgrade $$connection_upgrade {
+    default upgrade;
+    ""      close;
+}
+MAPEOF
 
+# Actual site config (single-quoted heredoc!)
+cat >/etc/nginx/sites-available/langflow <<'NGINX_EOF'
 server {
-  listen 443 ssl;
-  server_name ${langflow_domain};
+  listen 80 default_server;
+  server_name origin-langflow.dodao.io langflow.dodao.io;
 
-  ssl_certificate /etc/letsencrypt/live/${langflow_domain}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/${langflow_domain}/privkey.pem;
+  # health endpoint
+  location /health {
+    add_header Content-Type text/plain;
+    return 200 'ok';
+  }
 
+  # Langflow app on localhost:7860
   location / {
+    proxy_http_version 1.1;
+
+    # WebSockets
+    proxy_set_header Upgrade $$http_upgrade;
+    proxy_set_header Connection $$connection_upgrade;
+
     proxy_pass http://127.0.0.1:7860;
+
+    # standard proxy headers
     proxy_set_header Host $$host;
     proxy_set_header X-Real-IP $$remote_addr;
     proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $$scheme;
+
+    # reflect viewer protocol if CloudFront supplied it, else use $$scheme
+    proxy_set_header X-Forwarded-Proto $$xfp;
+    proxy_set_header X-Forwarded-Host $$host;
   }
 }
 NGINX_EOF
 
-ln -s /etc/nginx/sites-available/langflow /etc/nginx/sites-enabled/
-nginx -t
-systemctl restart nginx
+ln -sf /etc/nginx/sites-available/langflow /etc/nginx/sites-enabled/langflow
+nginx -t && systemctl reload nginx
+
+
 
 echo -e "[\$(date)] Docker setup completed successfully"
 SCRIPT_EOF

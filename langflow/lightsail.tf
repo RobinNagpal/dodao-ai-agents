@@ -7,12 +7,14 @@ data "template_file" "setup_langflow" {
     postgres_url              = var.postgres_url
     openai_api_key            = var.openai_api_key
     langflow_domain           = "langflow.dodao.io"
-    cert_pem                  = file("./langflow.dodao.io/cert1.pem")
-    chain_pem                 = file("./langflow.dodao.io/chain1.pem")
-    fullchain_pem             = file("./langflow.dodao.io/fullchain1.pem")
-    privkey_pem               = file("./langflow.dodao.io/privkey1.pem")
+    cf_origin_secret             = var.cf_origin_secret
+    # cert_pem                  = file("./langflow.dodao.io/cert1.pem")
+    # chain_pem                 = file("./langflow.dodao.io/chain1.pem")
+    # fullchain_pem             = file("./langflow.dodao.io/fullchain1.pem")
+    # privkey_pem               = file("./langflow.dodao.io/privkey1.pem")
   }
 }
+
 resource "aws_lightsail_instance" "langflow_docker_instance" {  # Changed resource name
   name              = "langflow-docker-instance"  # Changed instance name
   availability_zone = var.aws_availability_zone
@@ -42,11 +44,11 @@ resource "aws_lightsail_instance_public_ports" "langflow_docker_ports" {  # Chan
     protocol  = "tcp"
   }
 
-  port_info {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-  }
+  # port_info {
+  #   from_port = 443
+  #   to_port   = 443
+  #   protocol  = "tcp"
+  # }
 }
 
 ##########################################################
@@ -56,14 +58,6 @@ resource "aws_lightsail_instance_public_ports" "langflow_docker_ports" {  # Chan
 data "aws_route53_zone" "primary" {
   name         = "dodao.io"
   private_zone = false
-}
-
-resource "aws_route53_record" "langflow_docker_dns" {
-  zone_id = data.aws_route53_zone.primary.zone_id
-  name    = "langflow.dodao.io"
-  type    = "A"
-  ttl     = 300
-  records = [aws_lightsail_instance.langflow_docker_instance.public_ip_address]
 }
 
 ##################################################
@@ -133,4 +127,11 @@ variable "certbot_email" {
   type        = string
   description = "Email address for Let's Encrypt notifications."
   default     = "robinnagpal.tiet@gmail.com"
+}
+
+variable "cf_origin_secret" {
+  type        = string
+  description = "Shared secret CloudFront sends to origin to block direct hits."
+  default     = ""
+
 }

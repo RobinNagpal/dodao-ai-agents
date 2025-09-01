@@ -8,6 +8,13 @@ terraform {
   }
 }
 
+# Your existing default region provider
 provider "aws" {
   region = var.aws_region
+}
+
+# Add: CloudFront needs the cert in us-east-1
+provider "aws" {
+  alias  = "virginia"
+  region = "us-east-1"
 }
