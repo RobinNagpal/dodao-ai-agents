@@ -11,6 +11,10 @@
     {
       "name": "s3-uploader",
       "enabled": true
+    },
+    {
+      "name": "stocks-lambda",
+      "enabled": true
     }
   ]
 }
