@@ -4,6 +4,7 @@ import logging
 from typing import Dict, List, Optional
 import os
 from datetime import datetime
+import threading
 
 ticker_generation_api = Blueprint('ticker_generation_api', __name__)
 
@@ -199,18 +200,27 @@ def process_generation_requests():
                 'error': 'No generation request provided in request body'
             }), 400
         
-        logger.info(f"Processing generation request from body")
+        request_id = generation_request.get('id')
+        ticker_symbol = generation_request.get('ticker', {}).get('symbol')
         
-        # Process the single request
-        result = process_single_request(generation_request)
+        logger.info(f"Received generation request {request_id} for ticker {ticker_symbol}")
         
+        # Start background processing
+        thread = threading.Thread(
+            target=process_single_request,
+            args=(generation_request,),
+            daemon=True
+        )
+        thread.start()
+        
+        # Return immediate response
         return jsonify({
             'success': True,
-            'processed_count': 1,
-            'successful': 1 if result['status'] == GenerationRequestStatus.COMPLETED else 0,
-            'failed': 1 if result['status'] == GenerationRequestStatus.FAILED else 0,
-            'result': result
-        }), 200
+            'message': f'Processing request {request_id} for ticker {ticker_symbol} in background',
+            'request_id': request_id,
+            'ticker_symbol': ticker_symbol,
+            'status': 'accepted'
+        }), 202
         
     except Exception as e:
         logger.error(f"Error in process_generation_requests: {str(e)}")
