@@ -3,7 +3,7 @@ import requests
 import logging
 from typing import Dict, List, Optional
 import os
-from datetime import datetime
+import threading
 
 ticker_generation_api = Blueprint('ticker_generation_api', __name__)
 
@@ -30,7 +30,7 @@ INVESTOR_KEYS = {
 }
 
 
-def update_request_status(request_id: str, ticker_symbol: str, status: str) -> bool:
+def update_request_status(request_id: str, ticker_symbol: str, status: str, completed_steps: List[str] = None, failed_steps: List[str] = None, mark_started: bool = False, mark_completed: bool = False) -> bool:
     """Update the generation request status"""
     try:
         url = f"{NEXTJS_BACKEND_URL}/api/{SPACE_ID}/tickers-v1/{ticker_symbol}/update-request-status"
@@ -38,6 +38,19 @@ def update_request_status(request_id: str, ticker_symbol: str, status: str) -> b
             'id': request_id,
             'status': status
         }
+        
+        # Add completed and failed steps to payload if provided
+        if completed_steps is not None:
+            payload['completed_steps'] = completed_steps
+        if failed_steps is not None:
+            payload['failed_steps'] = failed_steps
+        
+        # Add timestamp indicators if provided
+        if mark_started:
+            payload['mark_started'] = True
+        if mark_completed:
+            payload['mark_completed'] = True
+            
         response = requests.post(url, json=payload, timeout=30)
         response.raise_for_status()
         logger.info(f"Updated request {request_id} status to {status}")
@@ -74,87 +87,111 @@ def process_single_request(generation_request: Dict) -> Dict:
     
     logger.info(f"Processing generation request {request_id} for ticker {ticker_symbol}")
     
-    # Update status to InProgress
-    update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS)
+    # Update status to InProgress and mark as started
+    update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, mark_started=True)
     
-    analysis_steps = []
+    completed_steps = []
     failed_steps = []
     
     try:
         # Step 1: Competition Analysis (if needed)
         if generation_request.get('regenerateCompetition', False):
-            analysis_steps.append('competition')
-            if not call_analysis_api(ticker_symbol, 'competition'):
+            if call_analysis_api(ticker_symbol, 'competition'):
+                completed_steps.append('competition')
+            else:
                 failed_steps.append('competition')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 2: Financial Analysis (if needed)
         if generation_request.get('regenerateFinancialAnalysis', False):
-            analysis_steps.append('financial-analysis')
-            if not call_analysis_api(ticker_symbol, 'financial-analysis'):
+            if call_analysis_api(ticker_symbol, 'financial-analysis'):
+                completed_steps.append('financial-analysis')
+            else:
                 failed_steps.append('financial-analysis')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 3: Business and Moat (if needed)
         if generation_request.get('regenerateBusinessAndMoat', False):
-            analysis_steps.append('business-and-moat')
-            if not call_analysis_api(ticker_symbol, 'business-and-moat'):
+            if call_analysis_api(ticker_symbol, 'business-and-moat'):
+                completed_steps.append('business-and-moat')
+            else:
                 failed_steps.append('business-and-moat')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 4: Past Performance (if needed)
         if generation_request.get('regeneratePastPerformance', False):
-            analysis_steps.append('past-performance')
-            if not call_analysis_api(ticker_symbol, 'past-performance'):
+            if call_analysis_api(ticker_symbol, 'past-performance'):
+                completed_steps.append('past-performance')
+            else:
                 failed_steps.append('past-performance')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 5: Future Growth (if needed)
         if generation_request.get('regenerateFutureGrowth', False):
-            analysis_steps.append('future-growth')
-            if not call_analysis_api(ticker_symbol, 'future-growth'):
+            if call_analysis_api(ticker_symbol, 'future-growth'):
+                completed_steps.append('future-growth')
+            else:
                 failed_steps.append('future-growth')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 6: Fair Value (if needed)
         if generation_request.get('regenerateFairValue', False):
-            analysis_steps.append('fair-value')
-            if not call_analysis_api(ticker_symbol, 'fair-value'):
+            if call_analysis_api(ticker_symbol, 'fair-value'):
+                completed_steps.append('fair-value')
+            else:
                 failed_steps.append('fair-value')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 7: Future Risk (if needed)
         if generation_request.get('regenerateFutureRisk', False):
-            analysis_steps.append('future-risk')
-            if not call_analysis_api(ticker_symbol, 'future-risk'):
+            if call_analysis_api(ticker_symbol, 'future-risk'):
+                completed_steps.append('future-risk')
+            else:
                 failed_steps.append('future-risk')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 8: Warren Buffett Analysis (if needed)
         if generation_request.get('regenerateWarrenBuffett', False):
-            analysis_steps.append('investor-analysis-warren-buffett')
             payload = {'investorKey': INVESTOR_KEYS['WARREN_BUFFETT']}
-            if not call_analysis_api(ticker_symbol, 'investor-analysis', payload):
+            if call_analysis_api(ticker_symbol, 'investor-analysis', payload):
+                completed_steps.append('investor-analysis-warren-buffett')
+            else:
                 failed_steps.append('investor-analysis-warren-buffett')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 9: Charlie Munger Analysis (if needed)
         if generation_request.get('regenerateCharlieMunger', False):
-            analysis_steps.append('investor-analysis-charlie-munger')
             payload = {'investorKey': INVESTOR_KEYS['CHARLIE_MUNGER']}
-            if not call_analysis_api(ticker_symbol, 'investor-analysis', payload):
+            if call_analysis_api(ticker_symbol, 'investor-analysis', payload):
+                completed_steps.append('investor-analysis-charlie-munger')
+            else:
                 failed_steps.append('investor-analysis-charlie-munger')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 10: Bill Ackman Analysis (if needed)
         if generation_request.get('regenerateBillAckman', False):
-            analysis_steps.append('investor-analysis-bill-ackman')
             payload = {'investorKey': INVESTOR_KEYS['BILL_ACKMAN']}
-            if not call_analysis_api(ticker_symbol, 'investor-analysis', payload):
+            if call_analysis_api(ticker_symbol, 'investor-analysis', payload):
+                completed_steps.append('investor-analysis-bill-ackman')
+            else:
                 failed_steps.append('investor-analysis-bill-ackman')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 11: Final Summary (if needed)
         if generation_request.get('regenerateFinalSummary', False):
-            analysis_steps.append('final-summary')
-            if not call_analysis_api(ticker_symbol, 'final-summary'):
+            if call_analysis_api(ticker_symbol, 'final-summary'):
+                completed_steps.append('final-summary')
+            else:
                 failed_steps.append('final-summary')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Step 12: Cached Score (if needed)
         if generation_request.get('regenerateCachedScore', False):
-            analysis_steps.append('cached-score')
-            if not call_analysis_api(ticker_symbol, 'cached-score'):
+            if call_analysis_api(ticker_symbol, 'cached-score'):
+                completed_steps.append('cached-score')
+            else:
                 failed_steps.append('cached-score')
+            update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, completed_steps, failed_steps)
         
         # Determine final status
         if failed_steps:
@@ -164,20 +201,20 @@ def process_single_request(generation_request: Dict) -> Dict:
             final_status = GenerationRequestStatus.COMPLETED
             logger.info(f"Request {request_id} completed successfully")
         
-        # Update final status
-        update_request_status(request_id, ticker_symbol, final_status)
+        # Update final status and mark as completed
+        update_request_status(request_id, ticker_symbol, final_status, completed_steps, failed_steps, mark_completed=True)
         
         return {
             'request_id': request_id,
             'ticker_symbol': ticker_symbol,
             'status': final_status,
-            'steps_completed': analysis_steps,
+            'steps_completed': completed_steps,
             'failed_steps': failed_steps
         }
         
     except Exception as e:
         logger.error(f"Error processing request {request_id}: {str(e)}")
-        update_request_status(request_id, ticker_symbol, GenerationRequestStatus.FAILED)
+        update_request_status(request_id, ticker_symbol, GenerationRequestStatus.FAILED, mark_completed=True)
         return {
             'request_id': request_id,
             'ticker_symbol': ticker_symbol,
@@ -186,46 +223,40 @@ def process_single_request(generation_request: Dict) -> Dict:
         }
 
 
-@ticker_generation_api.route('/process-generation-requests', methods=['POST'])
-def process_generation_requests():
-    """Main endpoint to process generation requests"""
+@ticker_generation_api.route('/process-single-request', methods=['POST'])
+def process_single_request():
+    """Main endpoint to process a single generation request"""
     try:
-        # Fetch pending generation requests from Next.js backend
-        url = f"{NEXTJS_BACKEND_URL}/api/{SPACE_ID}/tickers-v1/get-generation-requests"
-        logger.info(f"Fetching generation requests from: {url}")
+        # Get request from body
+        generation_request = request.get_json()
         
-        response = requests.get(url, timeout=30)
-        response.raise_for_status()
-        data = response.json()
-        
-        requests_to_process = data.get('requests', [])
-        
-        if not requests_to_process:
+        if not generation_request:
             return jsonify({
-                'success': True,
-                'message': 'No pending requests to process',
-                'processed_count': 0
-            }), 200
+                'success': False,
+                'error': 'No generation request provided in request body'
+            }), 400
         
-        logger.info(f"Found {len(requests_to_process)} requests to process")
+        request_id = generation_request.get('id')
+        ticker_symbol = generation_request.get('ticker', {}).get('symbol')
         
-        # Process each request
-        results = []
-        for gen_request in requests_to_process:
-            result = process_single_request(gen_request)
-            results.append(result)
+        logger.info(f"Received generation request {request_id} for ticker {ticker_symbol}")
         
-        # Count successes and failures
-        successful = sum(1 for r in results if r['status'] == GenerationRequestStatus.COMPLETED)
-        failed = sum(1 for r in results if r['status'] == GenerationRequestStatus.FAILED)
+        # Start background processing
+        thread = threading.Thread(
+            target=process_single_request,
+            args=(generation_request,),
+            daemon=True
+        )
+        thread.start()
         
+        # Return immediate response
         return jsonify({
             'success': True,
-            'processed_count': len(results),
-            'successful': successful,
-            'failed': failed,
-            'results': results
-        }), 200
+            'message': f'Processing request {request_id} for ticker {ticker_symbol} in background',
+            'request_id': request_id,
+            'ticker_symbol': ticker_symbol,
+            'status': 'accepted'
+        }), 202
         
     except Exception as e:
         logger.error(f"Error in process_generation_requests: {str(e)}")
