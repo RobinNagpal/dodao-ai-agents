@@ -190,41 +190,26 @@ def process_single_request(generation_request: Dict) -> Dict:
 def process_generation_requests():
     """Main endpoint to process generation requests"""
     try:
-        # Fetch pending generation requests from Next.js backend
-        url = f"{NEXTJS_BACKEND_URL}/api/{SPACE_ID}/tickers-v1/get-generation-requests"
-        logger.info(f"Fetching generation requests from: {url}")
+        # Get request from body
+        generation_request = request.get_json()
         
-        response = requests.get(url, timeout=30)
-        response.raise_for_status()
-        data = response.json()
-        
-        requests_to_process = data.get('requests', [])
-        
-        if not requests_to_process:
+        if not generation_request:
             return jsonify({
-                'success': True,
-                'message': 'No pending requests to process',
-                'processed_count': 0
-            }), 200
+                'success': False,
+                'error': 'No generation request provided in request body'
+            }), 400
         
-        logger.info(f"Found {len(requests_to_process)} requests to process")
+        logger.info(f"Processing generation request from body")
         
-        # Process each request
-        results = []
-        for gen_request in requests_to_process:
-            result = process_single_request(gen_request)
-            results.append(result)
-        
-        # Count successes and failures
-        successful = sum(1 for r in results if r['status'] == GenerationRequestStatus.COMPLETED)
-        failed = sum(1 for r in results if r['status'] == GenerationRequestStatus.FAILED)
+        # Process the single request
+        result = process_single_request(generation_request)
         
         return jsonify({
             'success': True,
-            'processed_count': len(results),
-            'successful': successful,
-            'failed': failed,
-            'results': results
+            'processed_count': 1,
+            'successful': 1 if result['status'] == GenerationRequestStatus.COMPLETED else 0,
+            'failed': 1 if result['status'] == GenerationRequestStatus.FAILED else 0,
+            'result': result
         }), 200
         
     except Exception as e:
