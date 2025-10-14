@@ -218,9 +218,9 @@ def process_single_request(generation_request: Dict) -> Dict:
         }
 
 
-@ticker_generation_api.route('/process-generation-requests', methods=['POST'])
-def process_generation_requests():
-    """Main endpoint to process generation requests"""
+@ticker_generation_api.route('/process-single-request', methods=['POST'])
+def process_single_request():
+    """Main endpoint to process a single generation request"""
     try:
         # Get request from body
         generation_request = request.get_json()
