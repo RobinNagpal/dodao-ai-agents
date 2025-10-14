@@ -3,7 +3,6 @@ import requests
 import logging
 from typing import Dict, List, Optional
 import os
-from datetime import datetime
 import threading
 
 ticker_generation_api = Blueprint('ticker_generation_api', __name__)
@@ -31,7 +30,7 @@ INVESTOR_KEYS = {
 }
 
 
-def update_request_status(request_id: str, ticker_symbol: str, status: str, completed_steps: List[str] = None, failed_steps: List[str] = None) -> bool:
+def update_request_status(request_id: str, ticker_symbol: str, status: str, completed_steps: List[str] = None, failed_steps: List[str] = None, mark_started: bool = False, mark_completed: bool = False) -> bool:
     """Update the generation request status"""
     try:
         url = f"{NEXTJS_BACKEND_URL}/api/{SPACE_ID}/tickers-v1/{ticker_symbol}/update-request-status"
@@ -45,6 +44,12 @@ def update_request_status(request_id: str, ticker_symbol: str, status: str, comp
             payload['completed_steps'] = completed_steps
         if failed_steps is not None:
             payload['failed_steps'] = failed_steps
+        
+        # Add timestamp indicators if provided
+        if mark_started:
+            payload['mark_started'] = True
+        if mark_completed:
+            payload['mark_completed'] = True
             
         response = requests.post(url, json=payload, timeout=30)
         response.raise_for_status()
@@ -82,8 +87,8 @@ def process_single_request(generation_request: Dict) -> Dict:
     
     logger.info(f"Processing generation request {request_id} for ticker {ticker_symbol}")
     
-    # Update status to InProgress
-    update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS)
+    # Update status to InProgress and mark as started
+    update_request_status(request_id, ticker_symbol, GenerationRequestStatus.IN_PROGRESS, mark_started=True)
     
     completed_steps = []
     failed_steps = []
@@ -196,8 +201,8 @@ def process_single_request(generation_request: Dict) -> Dict:
             final_status = GenerationRequestStatus.COMPLETED
             logger.info(f"Request {request_id} completed successfully")
         
-        # Update final status
-        update_request_status(request_id, ticker_symbol, final_status, completed_steps, failed_steps)
+        # Update final status and mark as completed
+        update_request_status(request_id, ticker_symbol, final_status, completed_steps, failed_steps, mark_completed=True)
         
         return {
             'request_id': request_id,
@@ -209,7 +214,7 @@ def process_single_request(generation_request: Dict) -> Dict:
         
     except Exception as e:
         logger.error(f"Error processing request {request_id}: {str(e)}")
-        update_request_status(request_id, ticker_symbol, GenerationRequestStatus.FAILED)
+        update_request_status(request_id, ticker_symbol, GenerationRequestStatus.FAILED, mark_completed=True)
         return {
             'request_id': request_id,
             'ticker_symbol': ticker_symbol,
