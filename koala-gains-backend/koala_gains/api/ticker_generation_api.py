@@ -199,7 +199,6 @@ def process_generation_requests():
         data = response.json()
         
         requests_to_process = data.get('requests', [])
-        more_exist = data.get('moreExist', False)
         
         if not requests_to_process:
             return jsonify({
@@ -225,7 +224,6 @@ def process_generation_requests():
             'processed_count': len(results),
             'successful': successful,
             'failed': failed,
-            'more_exist': more_exist,
             'results': results
         }), 200
         

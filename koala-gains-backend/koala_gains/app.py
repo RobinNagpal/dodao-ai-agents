@@ -35,7 +35,7 @@ CORS(
 
 app.register_blueprint(crowdfunding_api)
 app.register_blueprint(public_equity_api, url_prefix="/api/public-equities/US")
-app.register_blueprint(ticker_generation_api, url_prefix="/api/ticker-generation")
+app.register_blueprint(ticker_generation_api, url_prefix="/api/ticker-v1/generate-reports")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
