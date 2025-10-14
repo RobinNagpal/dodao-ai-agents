@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Get Next.js backend URL from environment
-NEXTJS_BACKEND_URL = os.getenv('NEXTJS_BACKEND_URL', 'http://localhost:3000')
-SPACE_ID = os.getenv('SPACE_ID', 'koala_gains')
+NEXTJS_BACKEND_URL = os.getenv('KOALAGAINS_BACKEND_URL', 'http://localhost:3000')
+SPACE_ID = 'koala_gains'
 
 # Status enum matching the Next.js backend
 class GenerationRequestStatus:
