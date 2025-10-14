@@ -52,6 +52,7 @@ def update_request_status(request_id: str, ticker_symbol: str, status: str, comp
             payload['mark_completed'] = True
             
         response = requests.post(url, json=payload, timeout=30)
+        logger.info(f"Response status: {response.status_code}")
         response.raise_for_status()
         logger.info(f"Updated request {request_id} status to {status}")
         return True
@@ -80,7 +81,7 @@ def call_analysis_api(ticker_symbol: str, endpoint: str, payload: Optional[Dict]
         return False
 
 
-def process_single_request(generation_request: Dict) -> Dict:
+def process_generation_request(generation_request: Dict) -> Dict:
     """Process a single generation request"""
     request_id = generation_request['id']
     ticker_symbol = generation_request['ticker']['symbol']
@@ -243,7 +244,7 @@ def process_single_request():
         
         # Start background processing
         thread = threading.Thread(
-            target=process_single_request,
+            target=process_generation_request,
             args=(generation_request,),
             daemon=True
         )
